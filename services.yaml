@@ -1,0 +1,199 @@
+# Overmind Service Catalog
+# ONDA 마이크로서비스 메타데이터 정의
+# Leader가 영향 분석 및 작업 계획 수립에 사용
+
+services:
+  # ─────────────────────────────────────────────
+  # Shared Infrastructure
+  # ─────────────────────────────────────────────
+  - name: "protobuf"
+    repo_url: "github.com/tportio/protobuf"
+    path: "../protobuf"
+    description: "gRPC Protobuf 공유 스펙 레지스트리. 모든 서비스 간 통신 계약을 정의하고 Java/Node.js 코드를 생성하여 배포."
+    tech_stack: ["protobuf", "grpc", "gradle", "kotlin", "node", "ts-proto"]
+    critical_paths:
+      - path: "proto/hub"
+        description: "허브 서비스 프로토 정의 (booking, channel, content, content_ml, ria, vendor)"
+      - path: "proto/gds"
+        description: "GDS 연동 프로토 정의 (ari, vendor)"
+      - path: "proto/onda"
+        description: "범용 서비스 프로토 정의 (mapping, notification)"
+      - path: "proto/grpc"
+        description: "gRPC 인프라 프로토 (health check)"
+    dependencies: []
+    test_command: "./gradlew clean build"
+    lint_command: "npm run build"
+
+  # ─────────────────────────────────────────────
+  # Backend Services
+  # ─────────────────────────────────────────────
+  - name: "interfaces-service"
+    repo_url: "github.com/tportio/interfaces-service"
+    path: "../interfaces-service"
+    description: "벤더 통합 게이트웨이. outbound(gRPC+REST): ONDA→벤더 연동, Expedia 등 10+ 벤더 API 통합, Kafka로 콘텐츠 이벤트 발행. inbound(REST): 외부 판매채널→ONDA Chita B2B 프로토콜."
+    tech_stack: ["kotlin-2.0", "spring-boot-3.2", "armeria", "gradle-kts", "grpc", "kafka-producer", "mysql", "redis", "jvm-21"]
+    critical_paths:
+      - path: "apps/outbound"
+        description: "outbound gRPC/REST 앱 (VendorGrpcController, VendorService)"
+      - path: "apps/inbound"
+        description: "inbound REST 앱 (Chita B2B 프로토콜)"
+      - path: "drivers/outbound-driver"
+        description: "벤더별 드라이버 구현 (Expedia, Resom, Diglett 등)"
+      - path: "drivers/inbound-driver"
+        description: "인바운드 드라이버 (ChitaController, InboundServiceAggregator)"
+      - path: "modules/datastores/kafka"
+        description: "Kafka producer 및 이벤트 서비스 (VendorKafkaEventService)"
+    dependencies:
+      - service: "protobuf"
+        type: "data-only"
+        interface: "grpc"
+        contract: "proto/hub/vendor"
+      - service: "content"
+        type: "async"
+        interface: "kafka"
+        contract: "hub.vendor.content.json"
+        note: "콘텐츠 이벤트 발행 → content 서비스가 소비"
+    kafka_topics:
+      produces:
+        - topic: "hub.vendor.content.json"
+          description: "벤더 숙소/객실/요금 콘텐츠 이벤트 (sync/created/updated/deleted/status)"
+          locale_status: "sync/created/updated는 body에 locale 포함, deleted/status는 locale 미포함"
+        - topic: "hub.vendor.region.json"
+          description: "벤더 지역 데이터 이벤트"
+          locale_status: "body + header 모두 locale 포함"
+      consumes: []
+    test_command: "./gradlew test"
+    lint_command: null
+
+  - name: "content"
+    repo_url: "github.com/tportio/content"
+    path: "../content"
+    description: "ONDA 숙소 콘텐츠 관리 서비스. 공급사로부터 데이터를 수신하여 처리하고, Kafka 이벤트를 통해 동기화하며, GraphQL/gRPC/REST API로 판매 채널에 제공."
+    tech_stack: ["java", "spring-boot-3.2", "gradle", "graphql", "grpc", "kafka", "mysql", "mongodb", "qdrant"]
+    critical_paths:
+      - path: "src/main/java/me/onda/content/service"
+        description: "핵심 비즈니스 로직 (주소, AI, 인증, 이미지, Kafka, MongoDB, 오퍼레이터, OSP, PCS)"
+      - path: "src/main/java/me/onda/content/presentation"
+        description: "API 진입점 (GraphQL resolver, gRPC service, REST controller)"
+      - path: "modules/clients"
+        description: "외부 서비스 클라이언트 (gRPC: channel, content-ml, mapping)"
+      - path: "modules/datastores"
+        description: "데이터 저장소 계층 (ARI, OSP, PCS, MongoDB, Qdrant)"
+      - path: "common"
+        description: "공통 유틸리티 및 공유 모델"
+    dependencies:
+      - service: "protobuf"
+        type: "data-only"
+        interface: "grpc"
+        contract: "proto/hub/content/v1/content_service.proto"
+      - service: "content-ml"
+        type: "sync"
+        interface: "grpc"
+        contract: "proto/hub/content/v1/content_ml_service.proto"
+      - service: "osp-gql"
+        type: "sync"
+        interface: "grpc"
+        contract: "proto/onda/mapping/v1/mapping_service.proto"
+      - service: "interfaces-service"
+        type: "async"
+        interface: "kafka"
+        contract: "hub.vendor.content.json"
+        note: "interfaces-service가 발행한 벤더 콘텐츠 이벤트를 소비"
+    test_command: "./gradlew test"
+    lint_command: "./gradlew checkstyleMain"
+
+  - name: "content-ml"
+    repo_url: "github.com/tportio/content-ml"
+    path: "../content-ml"
+    description: "콘텐츠 ML 서비스. ONNX Runtime 기반 AI 이미지 분류, 임베딩, 유사도 계산, 라벨링 제공. content 서비스의 ML 기능 백엔드."
+    tech_stack: ["java", "spring-boot-3.3", "gradle-kts", "grpc", "onnx-runtime", "huggingface-tokenizers", "smile-ml"]
+    critical_paths:
+      - path: "src/main/java/me/onda/contentml/service"
+        description: "ML 비즈니스 로직 (Embedding, Clustering, Similarity, Labeling, ONNX Inference, Image Processing)"
+      - path: "src/main/java/me/onda/contentml/grpc"
+        description: "gRPC 서비스 엔드포인트 (ContentMLGrpcService)"
+      - path: "src/main/java/me/onda/contentml/rest"
+        description: "REST 컨트롤러 (Embedding, Labeling, Similarity)"
+      - path: "src/main/resources/models"
+        description: "ONNX 모델 파일 (image-classifier, room-image-similarity, room-name-similarity)"
+    dependencies:
+      - service: "protobuf"
+        type: "data-only"
+        interface: "grpc"
+        contract: "proto/hub/content/v1/content_ml_service.proto"
+    test_command: "./gradlew test"
+    lint_command: "./gradlew check"
+
+  # ─────────────────────────────────────────────
+  # OSP (ONDA Standard Properties) Layer
+  # ─────────────────────────────────────────────
+  - name: "osp-gql"
+    repo_url: "github.com/tportio/osp-gql"
+    path: "../osp-gql"
+    description: "OSP GraphQL API 서버. 숙소/객실 표준 데이터의 CRUD를 담당하는 핵심 백엔드. Lerna + Nx monorepo로 gql(내부)과 gql-public(외부) 두 앱 운영."
+    tech_stack: ["typescript", "nestjs", "typeorm", "mysql", "graphql", "lerna", "nx", "vitest"]
+    critical_paths:
+      - path: "packages/modules/src"
+        description: "비즈니스 모듈 (property, roomtype, rawProperty, rawRoomtype, mapping, vendor, seller, operator, review, image, address, code)"
+      - path: "apps/gql/src/resolvers"
+        description: "내부용 GraphQL 리졸버 (property, roomtype, rawProperty, vendor, review 등 15개)"
+      - path: "apps/gql-public/src/resolvers"
+        description: "외부 공개용 GraphQL 리졸버 (property, roomtype)"
+      - path: "packages/common"
+        description: "공통 유틸리티 및 데이터베이스 연결"
+      - path: "packages/graphql"
+        description: "GraphQL 스키마 정의"
+    dependencies: []
+    test_command: "npx lerna run test"
+    lint_command: "npx lerna run lint"
+
+  - name: "osp-api"
+    repo_url: "github.com/tportio/osp-api"
+    path: "../osp-api"
+    description: "OSP RESTful API 서버. 숙소/객실 정보 조회 API를 외부에 제공하고, 11번가 연동(ELEV), 공공데이터 통합, 빈대 인증 조회 등 특화 서비스 운영."
+    tech_stack: ["typescript", "nestjs", "graphql-client", "jest"]
+    critical_paths:
+      - path: "src/v1"
+        description: "V1 API 모듈 (숙소/객실 조회 컨트롤러, 서비스, 필터, 가드)"
+      - path: "src/apis"
+        description: "외부 API 연동 모듈"
+      - path: "src/elev"
+        description: "11번가 ELEV 연동 모듈"
+      - path: "src/localdata"
+        description: "지방 데이터 포탈 공공데이터 통합 모듈"
+      - path: "src/common"
+        description: "공통 서비스 (GraphQLService, 인증 가드, 예외 필터)"
+    dependencies:
+      - service: "osp-gql"
+        type: "sync"
+        interface: "graphql"
+        contract: "docs/schema.graphqls"
+    test_command: "npm test"
+    lint_command: "npm run lint"
+
+  # ─────────────────────────────────────────────
+  # Frontend
+  # ─────────────────────────────────────────────
+  - name: "osp-web"
+    repo_url: "github.com/tportio/osp-web"
+    path: "../osp-web"
+    description: "OSP 관리 웹 프론트엔드. React + Apollo Client 기반 SPA. 숙소 표준 관리, 이미지 관리, 자동 그룹핑, 리뷰 등의 운영 도구 제공."
+    tech_stack: ["typescript", "react-19", "apollo-client", "tailwindcss", "cypress", "react-scripts"]
+    critical_paths:
+      - path: "src/pages"
+        description: "페이지 컴포넌트 (표준 숙소, 이미지 관리, 자동 그룹핑, Raw 데이터 상세)"
+      - path: "src/services"
+        description: "비즈니스 로직 서비스 (property, roomtype, standard, image, autoGrouping 등)"
+      - path: "src/components"
+        description: "재사용 가능한 UI 컴포넌트"
+      - path: "src/hooks"
+        description: "커스텀 React 훅"
+      - path: "src/apolloClient.ts"
+        description: "Apollo Client 설정 및 GraphQL 연결"
+    dependencies:
+      - service: "osp-gql"
+        type: "sync"
+        interface: "graphql"
+        contract: "docs/schema.graphqls"
+    test_command: "npm test"
+    lint_command: "npm run lint"
