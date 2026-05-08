@@ -1,199 +1,171 @@
 # Overmind Service Catalog
-# ONDA 마이크로서비스 메타데이터 정의
+# BOMAPP 마이크로서비스 메타데이터 정의 (보험 상품 도메인)
 # Leader가 영향 분석 및 작업 계획 수립에 사용
 
 services:
   # ─────────────────────────────────────────────
   # Shared Infrastructure
   # ─────────────────────────────────────────────
-  - name: "protobuf"
-    repo_url: "github.com/tportio/protobuf"
-    path: "../protobuf"
-    description: "gRPC Protobuf 공유 스펙 레지스트리. 모든 서비스 간 통신 계약을 정의하고 Java/Node.js 코드를 생성하여 배포."
-    tech_stack: ["protobuf", "grpc", "gradle", "kotlin", "node", "ts-proto"]
+  - name: "infra"
+    repo_url: "github.com/bomapp/infra"
+    path: "../infra"
+    description: "BOMAPP AWS 인프라 IaC. Terraform으로 ECS 클러스터, RDS, ElastiCache, ALB, MSK 등을 관리하며 next-backend의 9개 ECS 서비스를 배포한다."
+    tech_stack: ["terraform", "aws", "ecs", "rds", "elasticache", "alb", "msk"]
     critical_paths:
-      - path: "proto/hub"
-        description: "허브 서비스 프로토 정의 (booking, channel, content, content_ml, ria, vendor)"
-      - path: "proto/gds"
-        description: "GDS 연동 프로토 정의 (ari, vendor)"
-      - path: "proto/onda"
-        description: "범용 서비스 프로토 정의 (mapping, notification)"
-      - path: "proto/grpc"
-        description: "gRPC 인프라 프로토 (health check)"
+      - path: "terraform"
+        description: "Terraform 모듈 및 환경별 설정 (dev/stg/prod)"
     dependencies: []
-    test_command: "./gradlew clean build"
-    lint_command: "npm run build"
+    test_command: "terraform validate"
+    lint_command: "terraform fmt -check"
+    notes:
+      - "PROD 리소스는 prevent_destroy로 보호. destroy/replace 작업 절대 금지."
+      - "변경 전 반드시 terraform state를 완전히 읽어 확인 후 plan/apply 수행."
+      - "ECS 배포 대상 서비스: alimtalk-callback, bomapp-api, chat-api, mydata-api, open-api, bomapp-batch, mydata-batch, statics-batch, wings-api"
 
   # ─────────────────────────────────────────────
-  # Backend Services
+  # Next-Generation Backend Platform
   # ─────────────────────────────────────────────
-  - name: "interfaces-service"
-    repo_url: "github.com/tportio/interfaces-service"
-    path: "../interfaces-service"
-    description: "벤더 통합 게이트웨이. outbound(gRPC+REST): ONDA→벤더 연동, Expedia 등 10+ 벤더 API 통합, Kafka로 콘텐츠 이벤트 발행. inbound(REST): 외부 판매채널→ONDA Chita B2B 프로토콜."
-    tech_stack: ["kotlin-2.0", "spring-boot-3.2", "armeria", "gradle-kts", "grpc", "kafka-producer", "mysql", "redis", "jvm-21"]
+  - name: "next-backend"
+    repo_url: "github.com/bomapp/next-backend"
+    path: "../next-backend"
+    description: "차세대 BOMAPP 백엔드 플랫폼. Gradle 멀티모듈로 5계층(core/internal/domain/external/server) 아키텍처를 구성하고, 9개 마이크로서비스 앱(API, 배치, 채팅, 마이데이터, 웹훅 등)을 단일 리포에서 빌드/배포한다. 보험 상품 조회/추천/판매의 핵심 도메인 로직 담당."
+    tech_stack: ["java-21", "spring-boot-3.4", "spring-cloud-2024", "gradle-multi-module", "querydsl", "kafka-msk", "redisson", "jwt", "elastic-apm", "jib", "distroless"]
     critical_paths:
-      - path: "apps/outbound"
-        description: "outbound gRPC/REST 앱 (VendorGrpcController, VendorService)"
-      - path: "apps/inbound"
-        description: "inbound REST 앱 (Chita B2B 프로토콜)"
-      - path: "drivers/outbound-driver"
-        description: "벤더별 드라이버 구현 (Expedia, Resom, Diglett 등)"
-      - path: "drivers/inbound-driver"
-        description: "인바운드 드라이버 (ChitaController, InboundServiceAggregator)"
-      - path: "modules/datastores/kafka"
-        description: "Kafka producer 및 이벤트 서비스 (VendorKafkaEventService)"
+      - path: "bomapp-core/src/main/java"
+        description: "공통 유틸리티 및 코어 라이브러리"
+      - path: "bomapp-internal/src/main/java"
+        description: "내부 프레임워크 (인증, 인가, 공통 인터셉터 등)"
+      - path: "bomapp-domain/rds/src/main/java"
+        description: "RDS 기반 도메인 모델 및 리포지토리"
+      - path: "bomapp-domain/redis/src/main/java"
+        description: "Redis 기반 도메인 모델 및 캐시"
+      - path: "bomapp-external/src/main/java"
+        description: "외부 시스템 연동 (14개 외부 클라이언트)"
+      - path: "bomapp-server/bomapp-api"
+        description: "메인 REST API 서버 (보험 상품 도메인)"
+      - path: "bomapp-server/chat-api"
+        description: "WebSocket 기반 상담 채팅 서버"
+      - path: "bomapp-server/mydata-api"
+        description: "마이데이터 통합 API (mydata-agent / bomapp_my_data 호출)"
+      - path: "bomapp-server/mydata-batch"
+        description: "마이데이터 일괄 수집 배치"
+      - path: "bomapp-server/open-api"
+        description: "외부 파트너 공개 API"
+      - path: "bomapp-server/bomapp-batch"
+        description: "BOMAPP 메인 배치"
+      - path: "bomapp-server/statics-batch"
+        description: "통계 집계 배치"
+      - path: "bomapp-server/wings-api"
+        description: "Wings(설계사 도구) API"
+      - path: "bomapp-server/alimtalk-callback"
+        description: "카카오 알림톡 콜백 웹훅 수신"
     dependencies:
-      - service: "protobuf"
-        type: "data-only"
-        interface: "grpc"
-        contract: "proto/hub/vendor"
-      - service: "content"
-        type: "async"
-        interface: "kafka"
-        contract: "hub.vendor.content.json"
-        note: "콘텐츠 이벤트 발행 → content 서비스가 소비"
-    kafka_topics:
-      produces:
-        - topic: "hub.vendor.content.json"
-          description: "벤더 숙소/객실/요금 콘텐츠 이벤트 (sync/created/updated/deleted/status)"
-          locale_status: "sync/created/updated는 body에 locale 포함, deleted/status는 locale 미포함"
-        - topic: "hub.vendor.region.json"
-          description: "벤더 지역 데이터 이벤트"
-          locale_status: "body + header 모두 locale 포함"
-      consumes: []
+      - service: "mydata-agent"
+        type: "sync"
+        interface: "rest"
+        note: "mydata-api 가 외부 마이데이터 기관 통신을 위해 mydata-agent 게이트웨이를 호출"
+      - service: "bomapp_my_data"
+        type: "sync"
+        interface: "rest"
+        note: "(추정) 마이데이터 인증/동의 처리를 위해 bomapp_my_data 호출. 도메인 레이어에 레거시 인스턴스 정리 TODO 존재"
     test_command: "./gradlew test"
     lint_command: null
+    notes:
+      - "앱별 테스트 실행: ./gradlew :bomapp-server-{app}:test"
+      - "환경별 프로파일 분리: local/dev/stg/prod. application-{profile}.yml 다중 사용."
+      - "JUnit 5 사용 (useJUnitPlatform). checkstyle/ktlint 미설정."
 
-  - name: "content"
-    repo_url: "github.com/tportio/content"
-    path: "../content"
-    description: "ONDA 숙소 콘텐츠 관리 서비스. 공급사로부터 데이터를 수신하여 처리하고, Kafka 이벤트를 통해 동기화하며, GraphQL/gRPC/REST API로 판매 채널에 제공."
-    tech_stack: ["java", "spring-boot-3.2", "gradle", "graphql", "grpc", "kafka", "mysql", "mongodb", "qdrant"]
+  - name: "next-frontend"
+    repo_url: "github.com/bomapp/next-frontend"
+    path: "../next-frontend"
+    description: "차세대 BOMAPP 프론트엔드 모노레포. Yarn workspaces로 6개 웹/모바일/데스크톱/어드민 앱을 함께 관리하며 Vue 3 + Vite + Tailwind 스택 사용. next-backend의 API들을 axios/TanStack Query로 호출."
+    tech_stack: ["typescript-5.8", "vue-3.5", "vite-7", "tailwind-3.4", "yarn-workspaces", "pinia", "tanstack-query", "sockjs-stomp", "sentry", "amplitude"]
     critical_paths:
-      - path: "src/main/java/me/onda/content/service"
-        description: "핵심 비즈니스 로직 (주소, AI, 인증, 이미지, Kafka, MongoDB, 오퍼레이터, OSP, PCS)"
-      - path: "src/main/java/me/onda/content/presentation"
-        description: "API 진입점 (GraphQL resolver, gRPC service, REST controller)"
-      - path: "modules/clients"
-        description: "외부 서비스 클라이언트 (gRPC: channel, content-ml, mapping)"
-      - path: "modules/datastores"
-        description: "데이터 저장소 계층 (ARI, OSP, PCS, MongoDB, Qdrant)"
-      - path: "common"
-        description: "공통 유틸리티 및 공유 모델"
+      - path: "shared"
+        description: "공유 컴포넌트, 유틸, 타입"
+      - path: "bomapp-web/src"
+        description: "BOMAPP 메인 웹 (보험 상품 검색/조회/가입)"
+      - path: "open-web/src"
+        description: "공개 파트너 웹"
+      - path: "nextjs-bds-web/src"
+        description: "BDS 웹 (브랜드 디자인 시스템 또는 비즈니스 데이터 서비스)"
+      - path: "planner-mobile/src"
+        description: "재정설계 모바일 앱"
+      - path: "planner-desktop/src"
+        description: "재정설계 데스크톱 앱"
+      - path: "planner-admin/src"
+        description: "재정설계 어드민"
     dependencies:
-      - service: "protobuf"
-        type: "data-only"
-        interface: "grpc"
-        contract: "proto/hub/content/v1/content_service.proto"
-      - service: "content-ml"
+      - service: "next-backend"
         type: "sync"
-        interface: "grpc"
-        contract: "proto/hub/content/v1/content_ml_service.proto"
-      - service: "osp-gql"
-        type: "sync"
-        interface: "grpc"
-        contract: "proto/onda/mapping/v1/mapping_service.proto"
-      - service: "interfaces-service"
-        type: "async"
-        interface: "kafka"
-        contract: "hub.vendor.content.json"
-        note: "interfaces-service가 발행한 벤더 콘텐츠 이벤트를 소비"
-    test_command: "./gradlew test"
-    lint_command: "./gradlew checkstyleMain"
-
-  - name: "content-ml"
-    repo_url: "github.com/tportio/content-ml"
-    path: "../content-ml"
-    description: "콘텐츠 ML 서비스. ONNX Runtime 기반 AI 이미지 분류, 임베딩, 유사도 계산, 라벨링 제공. content 서비스의 ML 기능 백엔드."
-    tech_stack: ["java", "spring-boot-3.3", "gradle-kts", "grpc", "onnx-runtime", "huggingface-tokenizers", "smile-ml"]
-    critical_paths:
-      - path: "src/main/java/me/onda/contentml/service"
-        description: "ML 비즈니스 로직 (Embedding, Clustering, Similarity, Labeling, ONNX Inference, Image Processing)"
-      - path: "src/main/java/me/onda/contentml/grpc"
-        description: "gRPC 서비스 엔드포인트 (ContentMLGrpcService)"
-      - path: "src/main/java/me/onda/contentml/rest"
-        description: "REST 컨트롤러 (Embedding, Labeling, Similarity)"
-      - path: "src/main/resources/models"
-        description: "ONNX 모델 파일 (image-classifier, room-image-similarity, room-name-similarity)"
-    dependencies:
-      - service: "protobuf"
-        type: "data-only"
-        interface: "grpc"
-        contract: "proto/hub/content/v1/content_ml_service.proto"
-    test_command: "./gradlew test"
-    lint_command: "./gradlew check"
+        interface: "rest"
+        note: "bomapp-api / mydata-api / open-api / chat-api 호출. 환경별 .env.{dev,stg,prod} 로 API URL 분기"
+    test_command: null
+    lint_command: null
+    notes:
+      - "package.json 에 test/lint 스크립트가 정의되어 있지 않다. 변경 시 빌드(`yarn build`)로만 1차 검증 가능."
+      - "각 앱별 환경 파일은 .env.dev / .env.stg / .env.prod 패턴."
 
   # ─────────────────────────────────────────────
-  # OSP (ONDA Standard Properties) Layer
+  # MyData Layer (마이데이터 연동)
   # ─────────────────────────────────────────────
-  - name: "osp-gql"
-    repo_url: "github.com/tportio/osp-gql"
-    path: "../osp-gql"
-    description: "OSP GraphQL API 서버. 숙소/객실 표준 데이터의 CRUD를 담당하는 핵심 백엔드. Lerna + Nx monorepo로 gql(내부)과 gql-public(외부) 두 앱 운영."
-    tech_stack: ["typescript", "nestjs", "typeorm", "mysql", "graphql", "lerna", "nx", "vitest"]
+  - name: "mydata-agent"
+    repo_url: "github.com/bomapp/mydata-agent"
+    path: "../mydata-agent"
+    description: "마이데이터 게이트웨이. 외부 마이데이터 기관과의 SSL 통신을 담당하며 next-backend의 mydata-api로부터 호출되어 보험 상품 데이터를 수집/조회한다. WebFlux 기반 비동기 처리."
+    tech_stack: ["java-17", "spring-boot-3.0", "spring-webflux", "gradle"]
     critical_paths:
-      - path: "packages/modules/src"
-        description: "비즈니스 모듈 (property, roomtype, rawProperty, rawRoomtype, mapping, vendor, seller, operator, review, image, address, code)"
-      - path: "apps/gql/src/resolvers"
-        description: "내부용 GraphQL 리졸버 (property, roomtype, rawProperty, vendor, review 등 15개)"
-      - path: "apps/gql-public/src/resolvers"
-        description: "외부 공개용 GraphQL 리졸버 (property, roomtype)"
-      - path: "packages/common"
-        description: "공통 유틸리티 및 데이터베이스 연결"
-      - path: "packages/graphql"
-        description: "GraphQL 스키마 정의"
+      - path: "src/main/java/kr/co/mydata_agent"
+        description: "에이전트 애플리케이션 진입점 및 핵심 로직"
+      - path: "src/main/java/kr/co/mydata_agent/gateway"
+        description: "마이데이터 기관 통신 게이트웨이 (SSL 인증서 기반)"
+      - path: "src/main/resources"
+        description: "application.yml 및 SSL keystore 경로 설정"
     dependencies: []
-    test_command: "npx lerna run test"
-    lint_command: "npx lerna run lint"
+    test_command: "./gradlew test"
+    lint_command: null
+    notes:
+      - "포트: stg=8008. 기본/prod 포트는 application.yml 에서 환경별로 확인 필요."
+      - "SSL 키스토어 (jks) 경로가 설정에 하드코딩되어 있어 배포 환경마다 차이 주의."
+      - "단일 application.yml 에 모든 환경 프로파일이 포함되어 있다."
 
-  - name: "osp-api"
-    repo_url: "github.com/tportio/osp-api"
-    path: "../osp-api"
-    description: "OSP RESTful API 서버. 숙소/객실 정보 조회 API를 외부에 제공하고, 11번가 연동(ELEV), 공공데이터 통합, 빈대 인증 조회 등 특화 서비스 운영."
-    tech_stack: ["typescript", "nestjs", "graphql-client", "jest"]
+  - name: "bomapp_my_data"
+    repo_url: "github.com/bomapp/bomapp_my_data"
+    path: "../bomapp_my_data"
+    description: "(레거시) 마이데이터 인증/동의 관리 서비스. 사용자의 마이데이터 토큰 발급/갱신/폐기 및 동의 정보를 관리한다. 차세대 mydata-api 로 이관 중인 상태."
+    tech_stack: ["java-11", "spring-boot-2.3", "spring-cloud-hoxton", "spring-cloud-openfeign", "jpa", "redis", "thymeleaf"]
     critical_paths:
-      - path: "src/v1"
-        description: "V1 API 모듈 (숙소/객실 조회 컨트롤러, 서비스, 필터, 가드)"
-      - path: "src/apis"
-        description: "외부 API 연동 모듈"
-      - path: "src/elev"
-        description: "11번가 ELEV 연동 모듈"
-      - path: "src/localdata"
-        description: "지방 데이터 포탈 공공데이터 통합 모듈"
-      - path: "src/common"
-        description: "공통 서비스 (GraphQLService, 인증 가드, 예외 필터)"
-    dependencies:
-      - service: "osp-gql"
-        type: "sync"
-        interface: "graphql"
-        contract: "docs/schema.graphqls"
-    test_command: "npm test"
-    lint_command: "npm run lint"
+      - path: "src/main/java/kr/co/bomapp/auth"
+        description: "마이데이터 인증/토큰/동의 처리 로직"
+      - path: "src/main/resources"
+        description: "application.properties 환경별 설정 및 Thymeleaf 템플릿"
+    dependencies: []
+    test_command: "mvn test"
+    lint_command: null
+    notes:
+      - "포트: develop/product=11000, staging=15000."
+      - "Spring Boot 2.3 / Java 11 — EOL 임박. next-backend/mydata-api 로 단계적 이관 진행 중."
+      - "OpenFeign 기반 다른 서비스 호출 단서 존재."
 
   # ─────────────────────────────────────────────
-  # Frontend
+  # Legacy Monolith
   # ─────────────────────────────────────────────
-  - name: "osp-web"
-    repo_url: "github.com/tportio/osp-web"
-    path: "../osp-web"
-    description: "OSP 관리 웹 프론트엔드. React + Apollo Client 기반 SPA. 숙소 표준 관리, 이미지 관리, 자동 그룹핑, 리뷰 등의 운영 도구 제공."
-    tech_stack: ["typescript", "react-19", "apollo-client", "tailwindcss", "cypress", "react-scripts"]
+  - name: "legacy-backend"
+    repo_url: "github.com/bomapp/legacy-backend"
+    path: "../legacy-backend"
+    description: "(레거시) 모놀리스 보험 상품 API/어드민/웹뷰 통합 시스템. Spring Boot 1.5 / Java 1.8 / WAR 패키징 기반. 차세대 next-backend 로 점진 이관 중이며 신규 기능 추가는 지양한다."
+    tech_stack: ["java-1.8", "spring-boot-1.5", "maven", "war-packaging", "jedis", "elasticsearch-7.12"]
     critical_paths:
-      - path: "src/pages"
-        description: "페이지 컴포넌트 (표준 숙소, 이미지 관리, 자동 그룹핑, Raw 데이터 상세)"
-      - path: "src/services"
-        description: "비즈니스 로직 서비스 (property, roomtype, standard, image, autoGrouping 등)"
-      - path: "src/components"
-        description: "재사용 가능한 UI 컴포넌트"
-      - path: "src/hooks"
-        description: "커스텀 React 훅"
-      - path: "src/apolloClient.ts"
-        description: "Apollo Client 설정 및 GraphQL 연결"
-    dependencies:
-      - service: "osp-gql"
-        type: "sync"
-        interface: "graphql"
-        contract: "docs/schema.graphqls"
-    test_command: "npm test"
-    lint_command: "npm run lint"
+      - path: "bomapp_api_server/src/main/java"
+        description: "레거시 API 서버 (포트 8080)"
+      - path: "bomapp_redmin/src/main/java"
+        description: "레거시 운영자 어드민"
+      - path: "bomapp_webview_server/src/main/java"
+        description: "앱 인앱 웹뷰 서버"
+    dependencies: []
+    test_command: "mvn test"
+    lint_command: null
+    notes:
+      - "pom.xml 에서 maven.test.skip=true 로 테스트가 기본 비활성화되어 있다. 변경 시 명시적으로 -Dmaven.test.skip=false 사용."
+      - "Java 1.8 / Spring Boot 1.5 로 EOL 상태. 보안 패치 및 의존성 업그레이드 시 충돌 주의."
+      - "로컬 lib 디렉토리에 의존하는 jar 가 있으니 빌드 시 누락 확인."
