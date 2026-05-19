@@ -92,8 +92,8 @@ next-backend/
 | 항목 | 값 |
 |------|----|
 | 컨테이너 포트 | 8080 (REST) + WebSocket |
-| 클러스터 (PROD) | **PROD-Chat** (c5a.xlarge × 2, 별도 VPC subnet) |
-| Redis | PROD-Chat 전용 ElastiCache (cache.r7g.large × 3, Multi-AZ) |
+| 클러스터 (PROD) | **PROD-Cluster** 의 `SVC-ECS-PROD-chat-api` (m7g.xlarge × 4 노드 공유, `CP-ECS-PROD` 또는 Fargate). 과거 `PROD-Chat` 클러스터(c5a.xlarge × 2 별도 VPC)는 2026-05-19 시점에 존재하지 않음. |
+| Redis | (과거 PROD-Chat 전용 cache.r7g.large × 3 Multi-AZ ElastiCache. 클러스터 통합 후 현재 구성 미검증 — 변경 시 ElastiCache 인스턴스 확인 필요) |
 | Kafka | `chat-message`, `chat-status` 토픽 (MSK SASL/SCRAM) |
 | 이미지 태그 | `latest` (P1: 롤백 불가 — 개선 권고) |
 
@@ -119,7 +119,7 @@ next-backend/
 |------|----|
 | 컨테이너 포트 | 8080 |
 | 리소스 | CPU 2048 / Memory 3584 (다른 API 의 2배) |
-| 클러스터 (PROD) | `PROD-MYDATA-API-240522-ARM` (t4g.medium × 2, ARM64) |
+| 클러스터 (PROD) | `PROD-MYDATA-API-240522-ARM` (ARM64, 2 인스턴스 — 2026-05-19 기준 인스턴스 타입은 `describe-container-instances` 로 추가 확인 필요). 별도로 `PROD-Cluster` 의 `SVC-ECS-PROD-mydata-api` 도 존재 — 트래픽 분배 형태 미검증. |
 
 **환경별 도메인**
 

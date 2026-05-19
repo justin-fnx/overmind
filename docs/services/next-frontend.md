@@ -41,7 +41,7 @@ next-frontend/
 └── planner-admin/          # 관리자 패널 (SPA)
 ```
 
-> 노션 자료(`Planner -FrontEnd`)에 따르면 `planner-mobile`(public/tools 영역)과 `planner-desktop` 이 공통 코드를 공유하며 Pinia 도입 검토 중. PROD ECS 측에는 `prod-next-frontend-was` 단일 task(t3.medium, port 3000-3002)가 별도로 동작하는데, 이는 SSR 또는 Next.js 전용으로 추정됨 (`nextjs-bds-web`).
+> 노션 자료(`Planner -FrontEnd`)에 따르면 `planner-mobile`(public/tools 영역)과 `planner-desktop` 이 공통 코드를 공유하며 Pinia 도입 검토 중. PROD ECS 측에는 `prod-next-frontend-was` 단일 task(port 3000-3002)가 `PROD-FRONT-NEXT` 클러스터에서 별도로 동작하는데, 이는 SSR 또는 Next.js 전용으로 추정됨 (`nextjs-bds-web`). (인스턴스 타입은 2026-05-19 시점 미재검증)
 
 ---
 
@@ -112,7 +112,7 @@ next-frontend/
 
 ### 3.6 nextjs-bds-web (BDS 웹)
 
-- 추정: Next.js 기반. PROD 의 `prod-next-frontend-was` ECS task(t3.medium × 1, port 3000-3002) 가 이 앱의 SSR 일 가능성 높음.
+- 추정: Next.js 기반. PROD 의 `prod-next-frontend-was` ECS task(`PROD-FRONT-NEXT` 클러스터, port 3000-3002) 가 이 앱의 SSR 일 가능성 높음.
 - 도메인 매핑은 정적 파일(CloudFront)이 아닌 **PROD-FRONT-NEXT 클러스터** 의 ECS 서비스가 담당.
 
 ### 3.7 bomapp-next-web

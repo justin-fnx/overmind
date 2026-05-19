@@ -6,6 +6,7 @@
 | 항목 | 값 |
 |------|----|
 | 1차 검증 일자 | 2026-05-07 |
+| 2차 검증 일자 | 2026-05-19 (vkey 8080 connector / transkeyServlet 확정) |
 | 검증자 IAM | `arn:aws:iam::044488971141:user/justin` |
 | 사용 도구 | aws CLI, SSM Run Command, gunzip+grep+awk on ALB access log |
 
@@ -79,7 +80,7 @@ volume:    /was/data (host volume)  →  컨테이너 /was/data
 
 | PID | UID | jar | 출처 프로젝트 | listening 포트 | Spring Boot ver |
 |----:|-----|-----|--------------|:-------------:|----------------|
-| 1205 | bomapp | (Tomcat catalina bootstrap) | **bomapp-vkey** (별개, `bm.service=bomapp_key`) | (8005 shutdown, 65355 JMX 외 connector 포트는 별도 확인 필요) | Tomcat WAR (Spring Boot 아님) |
+| 1205 | bomapp | (Tomcat catalina bootstrap) | **bomapp-vkey** (별개 프로젝트 `Bomapp/transkey_servlet`, `bm.service=bomapp_key`) | **8080 ✓** (HTTP connector, transkeyServlet), 8005 shutdown, 65355 JMX | Tomcat 9.0.45 WAR (Spring Boot 아님) |
 | 1428 | root | `bomapp_webview_server-0.1.0.jar` | **legacy-backend / bomapp_webview_server** | **7778** | SB 1.x (JDK 8) |
 | 5953 | root | `bomapp-server-open-api.jar` | **next-backend / open-api** | **8105** | SB 3.4 |
 | 10745 | root | `bomapp-server-bomapp-api.jar` | **next-backend / bomapp-api** | **8107** | SB 3.4 |
@@ -92,6 +93,33 @@ volume:    /was/data (host volume)  →  컨테이너 /was/data
 - **이미지 이름이 `next-backend-was` 라서 next-backend 로 단정하면 안 된다.** 컨테이너 내부에 여러 프로젝트의 jar 가 함께 떠 있는 공용 WAS 패턴.
 - **`enable_execute_command = false`** + **awslogs 미설정** → 운영 가시성이 매우 낮음.
 - 컨테이너 Up 3 years — 새 jar 배포는 ECS task 재시작이 아니라 컨테이너 안에서 jar 재기동으로 추정.
+
+### 2.6 vkey (bomapp-vkey) 상세 (2026-05-19 추가)
+
+PID 1205 (UID `bomapp`) 의 정체를 SSM 으로 추가 검증한 결과:
+
+| 항목 | 값 |
+|------|----|
+| 프로세스 | `java -Dbm.service=bomapp_key -Dcatalina.base=/was/run/bomapp-vkey -Dcatalina.home=/was/run/bomapp-vkey org.apache.catalina.startup.Bootstrap start` |
+| 런타임 | Tomcat **9.0.45** (Spring Boot 아님, WAR 배포) |
+| listening | **8080** (HTTP connector), 8005 (shutdown), 65355 (JMX) |
+| JVM 설정 | `-Xmx512m`, JVM 이름 `bomapp_key` |
+| 응답 컨텐츠 | `curl 127.0.0.1:8080/` → HTTP 200, HTML 내 `/TouchEn/transkey/transkey.js` 및 `/transkeyServlet/decode` form |
+| 기능 | 라온시큐어 **TouchEn 가상키보드 (transkey)** 의 서버측 복호화 서블릿 |
+| 비즈니스 용도 | **보험금 청구 플로우에서 주민번호 입력용 가상키보드** (출처: 노션 "인프라" 페이지, 2025-10-15) |
+| 소스 리포지토리 | [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) (조직 이전 후 정식 URL; 노션 등재 시점에는 `Bomapp/transkey_servlet` 표기). 2020-06-04 초기 커밋 1개, IntelliJ artifact 기반 WAR, `web/WEB-INF/lib/` 에 라온 jar 직접 포함 (Maven/Gradle 없음). 상세: [bomapp-vkey 서비스 문서](./services/bomapp-vkey.md) |
+| 운영 형태 | "바이너리 파일 통으로 가지고 있어서 실행만 하면 됨" — 빌드 산출물(WAR) 직배포 (출처: 동일 노션 "인프라" 페이지) |
+| 과거 위치 | `10.10.10.51` / `10.10.10.52` (2022 시점) → 2024-02-20 "PROD-ETC-API WAS 로 통합" 작업으로 `api-was2 (10.1.1.20)` 로 이전 = 현재 PROD-BACK `i-03f0178089f760c6f` 와 일치 (출처: 노션 작업기록) |
+| 과거 도메인 | `cf-vkey.bomapp.co.kr` (CloudFront 경유, 2024-09 걷어냄) |
+| 관련 abandoned PoC | [`bomapp-inc/transkey_springboot`](https://github.com/bomapp-inc/transkey_springboot) — 동일 개발자가 4분 뒤 만든 Spring Boot 포팅(`kr.co.bomapp:securekey:0.0.1-SNAPSHOT`, `POST /securekey`). 초기 커밋 1개 후 작업 없음. 운영 미배포. |
+| 호스트 마운트 형태 (2026-05-19 SSM) | `/was/data/bomapp-vkey/vkey.tar` (126MB, 2023-04-04) + `restart.sh` (1019 B). 운영자가 vkey.tar 를 untar → `/was/run/bomapp-vkey/` 에 풀어서 가동하는 패턴. 2023-04-04 이후 갱신 없음. |
+| Tomcat webapps 배포 형태 | `/was/run/bomapp-vkey/webapps/` 에 `ROOT/` 와 `secure_servlet/` 두 컨텍스트 deploy. 동일 WAR. 호출자가 `vkey.bomapp.co.kr/transkeyServlet` 와 `vkey.bomapp.co.kr/secure_servlet/transkeyServlet` 둘 다 사용 가능 (ALB log 분석으로 실 사용 path 결정 필요). |
+| 운영 라이선스 (2026-05-19 SSM) | `transkey_license.ini` 의 `license.type=p` (Permanent 활성). `transkey__P_license/Server2048.pem` X.509 Subject = `C=KR, O=bomapp, CN=T=P&D=[*.bomapp.co.kr]`, Issuer = `RaonSecure Co., Ltd. Quality Assurance`, 유효기간 **2019-08-19 ~ 2049-08-11 (30년)**. SHA-256 fingerprint `3C:3D:40:4F:9A:77:57:A9...`. CA 인증서 `ca.crt` 도 RaonSecure self-signed root (2013-2043). 인증서 체인 `openssl verify` 통과, 개인키/인증서 modulus 일치 확인. `*.bomapp.co.kr` 와일드카드 → DEV/STG/PROD 도메인 모두 커버. **갱신 우려 사실상 없음.** |
+| T 라이선스 (잔재) | `transkey__T_license/Server2048.pem` Subject = `O=HahaSavings, CN=T=T&D=[*]`, 만료 2021-09-16. `license.type=p` 모드라 미사용이지만 다른 회사 라이선스가 컨테이너에 잘못 들어 있는 상태. 새 빌드 시 T 디렉토리 제외 권장. |
+| `domain.inf` (stale) | `localhost,10.0.0.72,*.raonsecure.com` — 실 인증서 CN(`*.bomapp.co.kr`) 과 불일치. 라이브러리 동작에 영향 미확정. 새 빌드 시 `*.bomapp.co.kr` 로 정정 권장. |
+| `ExE2EKey_bomapp` 경로 미해결 | `config.ini` 의 `/Users/zard21/...` 절대경로가 컨테이너에 없음에도 가동 중 → `ExE2E block 모드` 실 호출 없는 것으로 추정. |
+
+> 이로써 §7 의 다음 미검증 항목이 모두 해소됨: 구 §7.2 "vkey 의 실제 처리 jar", §7.4 출처 리포지토리(`bomapp-vkey`), §7.1 "두 번째 PROD-BACK 인스턴스 v6 의 jar 구성", 운영 라이선스 위치/도메인/유효기간.
 
 ---
 
@@ -106,7 +134,7 @@ volume:    /was/data (host volume)  →  컨테이너 /was/data
 | `wapi.bomapp.co.kr` | ALB:443 (priority 미기재, 별도 rule) | (8102 TG) | **8102** | `bomapp-server-wings-api.jar` (PID 19422) | next-backend / wings-api |
 | `oapi.bomapp.co.kr` 외 | (priority 별도) | (8105 TG로 추정) | **8105** | `bomapp-server-open-api.jar` (PID 5953) | next-backend / open-api |
 | `sapi.bomapp.co.kr` | ALB:443 priority 150 + ALB:3001 priority 1 | prod-back-ecs-host-http-8103 | **8103 — listening 프로세스 없음** | — | (no-op, 502 발생 예상) |
-| `vkey.bomapp.co.kr` | ALB:443 priority 10 | prod-back-ecs-host-http-8080 | **8080** (호스트 docker-proxy 존재, 컨테이너 내 PID 미확정) | (vkey Tomcat 의 connector 일 가능성, 미확정) | 미확정 |
+| `vkey.bomapp.co.kr` | ALB:443 priority 10 | prod-back-ecs-host-http-8080 | **8080 ✓** (PID 1205 Tomcat catalina HTTP connector) | **bomapp-vkey (Tomcat 9.0.45 WAR, `bm.service=bomapp_key`, `/was/run/bomapp-vkey`)** — TouchEn transkeyServlet (라온시큐어 가상키보드 복호화) | **별개 프로젝트** [`Bomapp/transkey_servlet`](https://github.com/Bomapp/transkey_servlet) — 보험금 청구 플로우의 주민번호 입력용 |
 | `api.bomapp.co.kr` (✱ 정리됨) | ALB:443 priority 160 | (정리 전: 8107) | — (현재 410 fixed-response) | — | — |
 | `my-data-cbt.bomapp.co.kr` (✱ 정리됨) | 동일 priority 160 host header | — (현재 410 fixed-response) | — | — | — |
 
@@ -203,10 +231,10 @@ volume:    /was/data (host volume)  →  컨테이너 /was/data
 
 다음 항목은 본 문서의 검증 범위를 벗어나며, 다른 문서에서 추정으로만 다룸:
 
-1. **두 번째 PROD-BACK 인스턴스 (`i-09e36b30bad90990d`)** 의 docker ps / 활성 jar 구성. v5 와 v6 가 다른 jar 셋을 가질 가능성 있음.
-2. **vkey.bomapp.co.kr 의 실제 처리 jar** — 8080 의 호스트 docker-proxy 는 있지만 컨테이너 내 listen process 매핑이 안 됨. Tomcat 의 connector 일 가능성이 높음(추정).
-3. **bomapp_my_data 의 listening 포트** — host docker-proxy 11000 존재 + PID 15890 활성 자바 프로세스(`bomappmydata-0.0.1-SNAPSHOT.jar`) 가 있지만, 컨테이너 내 netstat 결과에 11000 의 PID 매핑이 표시되지 않음.
-4. **`bomapp-oauth`, `bomapp-vkey`, `saas-api`** 의 출처 리포지토리 — `services.yaml` 에 등재되지 않은 별개 프로젝트들. 소스 위치 미확인.
+1. ~~**두 번째 PROD-BACK 인스턴스 (`i-09e36b30bad90990d`)** 의 docker ps / 활성 jar 구성. v5 와 v6 가 다른 jar 셋을 가질 가능성 있음.~~ — **2026-05-19 해소.** SSM 검증 결과 `i-09e36b30bad90990d` 의 `/was/data` 에는 `bomapp-vkey`, `bomapp-mydata-prod`, `bomapp-webview-prod` 가 **없고** `bomapp-api`, `wings-api`, `open-api`, `bomapp-oauth`, `legacy-bomapp-api`, `saas-api`, `bomapp-redmin` + `integrate_svc_info.json` (다른 인스턴스에는 없음) 으로 구성. 즉 **v5(i-03f0178089f760c6f) 와 v6(i-09e36b30bad90990d) 가 서로 다른 jar 셋을 운영하며, vkey/mydata/webview 는 v5 단일 인스턴스 의존 → SPOF 확인됨**. 새 ECS service 신설 시 desired_count ≥ 2 권장.
+2. **bomapp_my_data 의 listening 포트** — host docker-proxy 11000 존재 + PID 15890 활성 자바 프로세스(`bomappmydata-0.0.1-SNAPSHOT.jar`) 가 있지만, 컨테이너 내 netstat 결과에 11000 의 PID 매핑이 표시되지 않음.
+3. **`bomapp-oauth`, `saas-api`** 의 출처 리포지토리 — `services.yaml` 에 등재되지 않은 별개 프로젝트들. 소스 위치 미확인. (`bomapp-vkey` 는 2026-05-19 노션 "BM 운영 구성 / Git Repository" 조회로 [`Bomapp/transkey_servlet`](https://github.com/Bomapp/transkey_servlet) 확정).
+4. **bomapp_oauth jar 의 활성 여부 불일치** — 노션 2024-02-20 "PROD-ETC-API WAS로 통합" 작업 기록에는 oauth 가 "미사용 확인되어 기동 중지" 로 종료 처리됨에도, 2026-05-07 SSM 검증 시점에 PID 32329 `bomapp_oauth-0.1.0.jar` 가 활성. 재기동 시점/주체/사유 미확인.
 5. **PROD-NLB / NLB access log** 의 listener별 트래픽 분포 — NLB log 는 host header 정보가 없어 도메인별 분리 어려움.
 6. **PROD-BACK 의 27개 portMapping 중 실 사용 포트는 8개 미만** — 나머지(8101, 8104, 8106, 8201~8207, 8888, 9200, 9300, 14000 등)는 host docker-proxy 만 있고 컨테이너 내 listening 없음. 사용 종료 또는 일부 인스턴스에만 떠있을 가능성.
 7. **HTTP/2 connection coalescing 으로 web 도메인에 multiplex 된 bapi 호출 209건의 처리 위치** — bapi 의 정식 라우팅(8107 TG → bomapp-api) 와 동일하다고 추정되지만 ALB 가 multiplex 시 실제로 어느 TG 로 routing 하는지는 별도 검증 필요.

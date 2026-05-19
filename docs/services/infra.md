@@ -52,7 +52,7 @@ infra/
     ├── autoscaling.tf
     ├── capacity_providers.tf
     ├── security_groups.tf
-    ├── elasticache.tf             # PROD-Chat Redis
+    ├── elasticache.tf             # ElastiCache Redis (과거 PROD-Chat 전용. 2025-2026 클러스터 통합 후 재검증 필요)
     ├── service_discovery.tf       # CloudMap HTTP namespace 6개
     ├── cloudfront_static_sites.tf # 정적 사이트 CloudFront
     ├── s3_static_sites.tf

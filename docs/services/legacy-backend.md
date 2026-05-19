@@ -45,8 +45,8 @@ legacy-backend/
 | 환경 | 클러스터/호스트 | 비고 |
 |------|----------------|------|
 | PROD | **PROD-BACK** (t3.xlarge × 2) | ECS service `prod-next-backend-was-v5/v6`. **단일 컨테이너 `next-backend-was:1.1` 가 호스트 `/was/data` 마운트로 12개 디렉토리 / 7개 활성 jar 를 수동 운영하는 공용 WAS 패턴**. legacy-backend 의 `bomapp_webview_server-0.1.0.jar` (PID 1428, port 7778) 가 SSM 검증으로 활성 확인됨. 컨테이너 27개 portMapping 중 실 listening 은 8개 미만 ([검증 상세](../runtime-verification.md#2-prod-back-클러스터-운영-실체-ssm-검증)) |
-| STG | `next-stg-back` (10.1.1.149) | 직접 호스트 (Route53 고정) |
-| DEV | NEXT-DEV 클러스터 (`dev-az.bomapp.co.kr`) | |
+| STG | `next-stg-back` (10.1.1.149) | 직접 호스트 (Route53 고정). legacy 잔존 영역 한정 — `STG-Cluster` 내 `SVC-ECS-STG-legacy-bomapp-api`, `SVC-ECS-STG-bomapp-redmin`, `SVC-ECS-STG-bomapp-webview` 도 같이 가동 중 |
+| DEV | `DEV-Cluster` 의 `SVC-ECS-DEV-legacy-bomapp-api`, `SVC-ECS-DEV-bomapp-redmin`, `SVC-ECS-DEV-bomapp-webview` | 과거 `NEXT-DEV` 클러스터(`dev-az.bomapp.co.kr`) 는 폐기됨. 2026-05-19 재검증 |
 
 ### 3.2 도메인 (legacy-backend 잔존 영역)
 
@@ -56,7 +56,7 @@ legacy-backend/
 | `redmin.bomapp.co.kr` | PROD | 7575 | `bomapp-redmin-prod` 디렉토리 존재. 검증 인스턴스에서 ps 비활성 |
 | `dev-rapi.bomapp.co.kr` | DEV | — | redmin (DEV) |
 | `sapi.bomapp.co.kr` | PROD | 8103 | **dead routing (SSM 검증)** — 8103 listening 프로세스 없음, 7일 ALB log 0건 |
-| `vkey.bomapp.co.kr` | PROD | 8080 | (vkey Tomcat connector 일 가능성, 미확정) |
+| `vkey.bomapp.co.kr` | PROD | 8080 | **별개 프로젝트** [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) (Tomcat 9.0.45 WAR, `bm.service=bomapp_key`, PID 1205) ✓ — legacy-backend 가 아님. 라온시큐어 TouchEn 가상키보드 복호화 서블릿, 청구 플로우 주민번호 입력용. PROD-BACK 공용 WAS 컨테이너에 같이 떠 있어서 표에 함께 기재. [상세 서비스 문서](./bomapp-vkey.md) |
 | `f.bomapp.co.kr` | PROD | — | webview_server / 정적 파일 (CloudFront 경유 추정) |
 | `az.bomappworks.com` | PROD | 3001 (frontend ALB) | legacy az frontend |
 | `api-was1.bomapp.co.kr` `(10.1.1.10)` | PROD | — | 레거시 직접 호스트 (ECS 외) |

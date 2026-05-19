@@ -258,9 +258,9 @@ graph LR
 | `oapi.bomapp.co.kr` / `openapi.bomapp.co.kr` | `dev-oapi`/`dev-openapi` | `stg-oapi.bomapp.co.kr` | 8105 | **next-backend / open-api** (`bomapp-server-open-api.jar`, PID 5953) ✓ |
 | `mapi.bomapp.co.kr` (`mapi1`, `mapi2`) | `dev-mapi.bomapp.co.kr` | `stg-mapi.bomapp.co.kr` | (PROD-MYDATA-API ARM 클러스터로 라우팅 추정) | **mydata-api** (next-backend) — 별도 클러스터 |
 | `sapi.bomapp.co.kr` | `dev-sapi.bomapp.co.kr` | `stg-az.bomapp.co.kr` 등 | 8103 | **listening 프로세스 없음 (dead routing)**. 7일 ALB log 0건 ✓ |
-| `vkey.bomapp.co.kr` | — | — | 8080 | (vkey Tomcat connector 일 가능성, 미확정) |
+| `vkey.bomapp.co.kr` | — | — | 8080 | **bomapp-vkey** (Tomcat 9.0.45 WAR, `bm.service=bomapp_key`, PID 1205) ✓ — TouchEn transkeyServlet (라온시큐어 가상키보드 복호화, 청구 플로우 주민번호 입력용). 별개 프로젝트 [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet). [상세 서비스 문서](./services/bomapp-vkey.md) |
 | `redmin.bomapp.co.kr` | `dev-rapi.bomapp.co.kr` | — | 7575 | (`bomapp-redmin-prod` 디렉토리 존재하나 ps 비활성, 다른 인스턴스 미검증) |
-| (chat) | `dev-chat.bomapp.co.kr`, `dev-chat-api.bomapp.co.kr` | `stg-chat.bomapp.co.kr` | — | **chat-api** (PROD-Chat 클러스터, 별도) |
+| (chat) | `dev-chat.bomapp.co.kr`, `dev-chat-api.bomapp.co.kr` | `stg-chat.bomapp.co.kr` | — | **chat-api** (DEV/STG/PROD-Cluster 내 service `SVC-ECS-{ENV}-chat-api`; 과거 별도 `PROD-Chat` 클러스터에서 통합됨) |
 | `az.bomappworks.com` | — | — | 3001 (frontend ALB) | legacy az frontend |
 | ~~`api.bomapp.co.kr`~~ | — | — | — | **2026-05-07 정리 — fixed-response 410** (이전 8107 forward) |
 | ~~`my-data-cbt.bomapp.co.kr`~~ | — | — | — | **2026-05-07 정리 — fixed-response 410** |
@@ -312,23 +312,28 @@ graph LR
 
 ## 7. ECS 클러스터 / Capacity Provider
 
-| 클러스터 | 환경 | 용도 | 노드 |
-|---------|------|------|-----|
-| `DEV-Cluster` | DEV | 공용 (legacy/wings) | t3.small × 3 |
-| `NEXT-DEV` | DEV | next-backend 9개 앱 | r6g.large × 1 |
-| `STG-Cluster` | STG | 공용 batch | t3.small × 3 |
-| `NEXT-STG` | STG | next-backend | r6g.medium × 1 |
-| `stg-Chat` | STG | chat | t3.medium × 2 |
-| `PROD-Cluster` | PROD | 공용 batch (4 인스턴스 유휴) | t3.small × 1 |
-| `PROD-BACK` | PROD | **공용 WAS 컨테이너** (next-backend-was:1.1 이미지, `/was/data` 마운트) — 12개 디렉토리 / 7개 활성 jar 수동 운영. ECS service: `prod-next-backend-was-v5/v6`. **next-backend, legacy-backend, bomapp_my_data, oauth, vkey 등 다중 프로젝트 jar 가 단일 컨테이너에 공존** ([상세](./runtime-verification.md#2-prod-back-클러스터-운영-실체-ssm-검증)) | t3.xlarge × 2 |
-| `PROD_NEXT_BAPI` | PROD | extended-bapi | t3.medium × 2 |
-| `PROD-FRONT-NEXT` | PROD | frontend-was | t3.medium × 1 |
-| `PROD-Chat` | PROD | chat | c5a.xlarge × 2 |
-| `PROD-MYDATA-API-240522-ARM` | PROD | mydata-api | t4g.medium × 2 |
-| `PROD-MYDATA-AGENT-240523-ARM` | PROD | mydata-agent | **Fargate** |
-| `NEXT-PROD-BATCH-II` | PROD | next batch | r6g.medium × 1 |
+> **2026-05-19 재검증** (`aws ecs list-clusters` + `describe-clusters/services/container-instances`). 과거 분리되어 있던 NEXT-DEV / NEXT-STG / stg-Chat / PROD_NEXT_BAPI / PROD-Chat 5개 클러스터가 사라지고, **DEV/STG/PROD-Cluster 가 next-backend 와 legacy 앱을 통합 호스팅** 하는 형태로 재편되었다. 노드 인스턴스 타입도 전부 **m7g.xlarge (ARM Graviton)** 으로 통일.
 
-명명 규칙: `SVC-ECS-{ENV}-{앱이름}`, Task Definition: `TD-ECS-{ENV}-{앱이름}`, Task Role: `{env}-{앱이름}-task-role`.
+| 클러스터 | 환경 | 인스턴스 | Capacity Provider | running tasks | 호스팅 서비스 |
+|---------|------|---------|-------------------|:-:|--------------|
+| `DEV-Cluster` | DEV | m7g.xlarge × 1 | `CP-ECS-DEV` + FARGATE + FARGATE_SPOT | 9 | bomapp-api, mydata-api, mydata-agent, mydata-batch, bomapp-batch, statics-batch, open-api, wings-api, chat-api, alimtalk-callback, legacy-bomapp-api, bomapp-redmin, bomapp-webview, planner-card-ssr, recipient-extractor (15개 서비스) |
+| `STG-Cluster` | STG | m7g.xlarge × 1 | `CP-ECS-STG` + FARGATE + FARGATE_SPOT | 7 | 동일 (15개 서비스) |
+| `PROD-Cluster` | PROD | m7g.xlarge × 4 | `CP-ECS-PROD` + FARGATE + FARGATE_SPOT | 9 | 14개 서비스 — DEV/STG 와 동일하되 `recipient-extractor` 부재 |
+| `PROD-BACK` | PROD | t3.xlarge × 2 | (capacity provider 없음, EC2 직접) | 2 | **공용 WAS 컨테이너** (`next-backend-was:1.1` 이미지, `/was/data` 마운트) — 12개 디렉토리 / 7개 활성 jar 수동 운영. ECS service: `prod-next-backend-was-v5/v6`. **bomapp-vkey 등 레거시 jar 가 단일 컨테이너에 공존** ([상세](./runtime-verification.md#2-prod-back-클러스터-운영-실체-ssm-검증)) |
+| `PROD-FRONT-NEXT` | PROD | 1 instance | (EC2 직접) | 1 | next-frontend WAS |
+| `PROD-MYDATA-API-240522-ARM` | PROD | m7g.xlarge × 2 (추정 — ARM Graviton) | `Infra-ECS-Cluster-PROD-MYDATA-API-240522-ARM-...-EC2CapacityProvider` | 2 | mydata-api 전용 (PROD 만) |
+| `PROD-MYDATA-AGENT-240523-ARM` | PROD | — | FARGATE + FARGATE_SPOT | 2 | mydata-agent 전용 (PROD 만, Fargate 만) |
+| `NEXT-PROD-BATCH-II` | PROD | 1 instance | `Infra-ECS-Cluster-NEXT-PROD-BATCH-II-...-EC2CapacityProvider` | 1 | next batch |
+
+> **참고**: PROD 환경에서 `mydata-api` / `mydata-agent` 는 PROD-Cluster 의 service 외에 별도 ARM 클러스터(`PROD-MYDATA-API-240522-ARM`, `PROD-MYDATA-AGENT-240523-ARM`)에서도 가동된다. 트래픽이 어느 쪽으로 흐르는지는 `architecture.md §6.2` 의 ALB 라우팅 참조.
+
+명명 규칙: `SVC-ECS-{ENV}-{앱이름}`, Task Definition: `TD-ECS-{ENV}-{앱이름}`, Task Role: `{env}-{앱이름}-task-role`. 모든 서비스가 `launchType` 대신 `capacityProviderStrategy` 사용.
+
+### 7.1 신규 서비스 배포 시 권장 클러스터
+
+- **EC2 capacity provider 가 필요한 경우** (자원/네트워크 격리 등): DEV-Cluster / STG-Cluster / PROD-Cluster 에 `CP-ECS-{ENV}` 로 추가.
+- **Fargate 격리가 필요한 경우** (예: bomapp-vkey 분리 배포): 동일 클러스터의 `FARGATE` capacity provider 사용 — 신규 클러스터 신설 불필요.
+- **레거시 격리**: `PROD-BACK` 의 공용 WAS 컨테이너는 **신규 서비스 추가 금지**. 기존 jar 들도 점진 이관 대상.
 
 ---
 
@@ -337,7 +342,7 @@ graph LR
 | 컴포넌트 | 사용 서비스 | 비고 |
 |---------|------------|------|
 | **Aurora MySQL (RDS)** | next-backend 전 앱, legacy-backend, bomapp_my_data | DEV/STG/PROD 환경별. Terraform 미관리 (수동) |
-| **ElastiCache Redis (Serverless, TLS)** | next-backend (Redisson), chat-api, bomapp_my_data | PROD-Chat 전용 클러스터 + 공용 클러스터 |
+| **ElastiCache Redis (Serverless, TLS)** | next-backend (Redisson), chat-api, bomapp_my_data | 과거 PROD-Chat 전용 + 공용으로 분리되어 있었으나 클러스터 통합 후 재검증 필요. 현재 Redis 인스턴스 구성은 2026-05-19 시점에 확인되지 않음. |
 | **Amazon MSK (Kafka, SASL/SCRAM)** | chat-api (`chat-message`, `chat-status`), next-backend 일부 | `b-*.prodmskcluster.c4.kafka.ap-northeast-2.amazonaws.com:9096` |
 | **AWS Secrets Manager** | next-backend (Spring Cloud AWS, dev/stg/prod 환경별) | 2026-04 정식 적용 |
 
@@ -406,7 +411,7 @@ infra 의 ECS 감사(2026-04-06) 와 운영 문서에서 도출된 핵심 이슈
 - **Service Discovery (CloudMap HTTP namespace)** 만 생성, 실제 등록은 미완
 
 ### 유휴 리소스 (월 ~$167)
-- PROD-Cluster 4 × t3.medium, STG-Cluster 2 × t3.small, DEV-Cluster 1 × t3.small
+- PROD-Cluster m7g.xlarge × 4, STG-Cluster m7g.xlarge × 1, DEV-Cluster m7g.xlarge × 1 (2026-05-19 확인. 모두 ARM Graviton, capacity provider `CP-ECS-{ENV}` + Fargate)
 - 미사용 Target Group 25개 (`target_groups.tf` 하단 주석)
 
 ### Terraform 미관리
