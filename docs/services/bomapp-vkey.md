@@ -341,3 +341,244 @@ transkey_springboot/
 - [`services/legacy-backend.md §3.2`](./legacy-backend.md#32-도메인-legacy-backend-잔존-영역) — legacy-backend 가 *아님* 을 명시
 - 노션 "[BOMAPP 인프라](https://www.notion.so/28d673e85b34804eb7ffef90dc2c60af)" 페이지
 - 노션 "[Git Repository / transkey_servlet](https://www.notion.so/6b506857a3d743fca7869530ce0ace50)" 항목
+
+---
+
+## 9. Spring Boot 부활본 동등성 검증 (BV-2, 2026-05-20)
+
+**검증 대상**
+
+| 구분 | 설명 |
+|------|------|
+| 로컬 가동본 | `/Users/justin/Projects/transkey_springboot` main 브랜치 (BV-1 머지 상태). `securekey-0.0.1-SNAPSHOT.jar` (Spring Boot 2.7.18 / Java 21 / embedded Tomcat 9.0.83). |
+| PROD | `vkey.bomapp.co.kr` / `i-03f0178089f760c6f` 컨테이너 내 `/was/run/bomapp-vkey` (Tomcat 9.0.45 WAR). SSM Run Command 로 응답 캡쳐. |
+
+**빌드 환경**
+
+```
+Java  : 21.0.10 (로컬), 1.8 (PROD)
+Maven : ./mvnw (wrapper, apache-maven-3.6.2)
+빌드  : mvn clean package -DskipTests → BUILD SUCCESS (1.25 s)
+라이선스: src/main/webapp/WEB-INF/raon_config/transkey__P_license/ 에 P 라이선스 8개 배치
+         (~/Downloads/bomapp-vkey-license-prod/P/ 에서 복사 — git commit 제외)
+기동 : java -DRAON_LICENSE_PATH=~/Downloads/bomapp-vkey-license-prod \
+           -jar target/securekey-0.0.1-SNAPSHOT.jar --spring.profiles.active=local
+```
+
+---
+
+### 9.1 A — Startup 검증
+
+| 항목 | 결과 |
+|------|:----:|
+| `mvn clean package -DskipTests` 성공 | ✓ |
+| `Tomcat started on port(s): 8080 (http)` 로그 | ✓ |
+| `[transkey] log : TranskeyServlet init...` 로그 | ✓ |
+| `[transkey] log : Transkey setConfigMap.` 로그 | ✓ (config.ini 정상 로드) |
+| 라이선스 검증 ERROR | 0건 ✓ |
+| 기동 소요 시간 | 약 2.1 s |
+
+로그 증거 (기동 시):
+
+```
+[transkey] log : TranskeyServlet init...
+[transkey] log : Transkey setConfigMap.
+INFO  o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat started on port(s): 8080 (http) with context path ''
+INFO  k.c.b.securekey.SecureKeyApplication    : Started SecureKeyApplication in 2.129 seconds
+```
+
+---
+
+### 9.2 B — 자판 매핑 동작 검증
+
+`loadOnStartup=1` 설정으로 TranskeyServlet init 이 앱 기동 시 즉시 실행되고 자판 설정(`setConfigMap`)이 완료됨이 로그로 확인.
+
+```bash
+# getKeyboard op — 로컬 및 PROD 모두 동일 결과
+curl -s -o /tmp/local-keyboard-qwerty.txt -w "HTTP %{http_code} / size: %{size_download}" \
+  "http://localhost:8080/transkeyServlet?op=getKeyboard&kbdType=qwerty"
+# → HTTP 200 / size: 0  (로컬)
+# → HTTP 200 / size: 0  (PROD — curl https://vkey.bomapp.co.kr/...)
+```
+
+`op=getKeyboard` 가 200 / Content-Length: 0 을 반환하는 것은 **로컬과 PROD 동일 동작**이다. 자판 이미지(iai/iar 파일)는 클라이언트 JS 가 `op=getToken` 으로 세션을 초기화한 뒤 렌더링 단계에서 별도 호출하는 방식이므로, 파라미터 없는 `getKeyboard` 의 빈 응답은 정상.
+
+라이브러리가 `.iai/.iar` 파일을 정상 로드했음은 `setConfigMap` 성공 + `op=getInitTime` 동작으로 간접 확인:
+
+```bash
+curl -s "http://localhost:8080/transkeyServlet?op=getToken"
+# → var TK_requestToken=0;   ✓
+
+curl -s "http://localhost:8080/transkeyServlet?op=getInitTime"
+# → var decInitTime='202605200947';var initTime='7214012aa3049d20e02ae858';var limitTime=0;var useSession=false;  ✓
+```
+
+자판 파일 경로 설정 (`config.ini`):
+
+```ini
+qwerty=/WEB-INF/raon_config/keyboard/qwerty
+number=/WEB-INF/raon_config/keyboard/number
+letters=/WEB-INF/raon_config/keyboard/letters
+qwertyMobile=/WEB-INF/raon_config/keyboard/qwertyMobileFX
+numberMobile=/WEB-INF/raon_config/keyboard/numberMobileFX
+```
+
+TldScanner 로그에서 해당 경로들이 모두 스캔됨 확인 (keyboard/qwerty/, keyboard/number/ 등 — TLD 아니므로 "No TLD found" 정상).
+
+**시나리오 (a)/(b) fix 불필요**: 파일이 `src/main/webapp/WEB-INF/raon_config/keyboard/` 에 존재하고 embedded Tomcat 의 Document root 가 `src/main/webapp` 으로 설정됨 → `ServletContext.getRealPath()` 정상 작동.
+
+---
+
+### 9.3 C — iniFilePath / licenseIniPath getRealPath() 동작
+
+```
+Document root: /Users/justin/Projects/transkey_springboot/src/main/webapp
+```
+
+embedded Tomcat 이 `src/main/webapp` 을 webapp base 로 인식하여, TranskeyServlet 의 `ServletContext.getRealPath("/WEB-INF/raon_config/config.ini")` 가 아래 실존 경로로 해소됨:
+
+```
+/Users/justin/Projects/transkey_springboot/src/main/webapp/WEB-INF/raon_config/config.ini
+/Users/justin/Projects/transkey_springboot/src/main/webapp/WEB-INF/raon_config/transkey_license.ini
+/Users/justin/Projects/transkey_springboot/src/main/webapp/WEB-INF/raon_config/transkey__P_license/  (8개 파일)
+```
+
+TranskeyServlet init 성공 (`TranskeyServlet init...` + `Transkey setConfigMap.` 로그) 으로 getRealPath() null 반환 없음이 간접 확인됨.
+
+**주의 (Dockerfile BV-3 가이드)**: `java -jar` 실행 경로가 `src/main/webapp` 이 없는 디렉토리인 경우, embedded Tomcat 의 `documentRoot` 가 jar 와 같은 디렉토리의 `src/main/webapp` 을 탐색한다. **jar 단독 배포 시 `src/main/webapp/` 를 jar 와 함께 COPY 해야 getRealPath() 가 non-null 을 반환한다.** (→ §9.6 BV-3 설계 가이드 참조)
+
+---
+
+### 9.4 D — 호출자 응답 패턴 비교
+
+#### D-1. 루트(/) 응답 diff
+
+| 구분 | 응답 |
+|------|------|
+| **로컬** (`http://localhost:8080/`) | `{"status":404,"error":"Not Found","path":"/"}` (89 bytes) |
+| **PROD SSM** (`curl http://127.0.0.1:8080/`) | HTML 데모 페이지 (1,146 bytes) |
+
+**차이 원인**: PROD Tomcat WAR 의 `ROOT/` 컨텍스트에 `index.html` 데모 파일이 포함되어 있으나, Spring Boot 부활본은 `src/main/webapp/` 에 루트 HTML 없음. 기능상 차이 없음 — 실 호출자(`next-frontend`)는 루트 `/` 를 사용하지 않고 `/transkeyServlet?op=...` 엔드포인트만 사용.
+
+PROD HTML 파일 참조용 (`/tmp/prod-root.html`):
+
+```html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "...">
+<html xml:lang="ko" ...>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/TouchEn/transkey/transkey.js"></script>
+    <link rel="stylesheet" type="text/css" href="/TouchEn/transkey/transkey.css" />
+</head>
+<body onload="initTranskey();">
+<form name="frm" id="frm" action="/transkeyServlet/decode" method="post">
+    <input type="password" name="pwd2" id="pwd2" data-tk-useinput="true" data-tk-kbdType="number" .../>
+    <input type="submit" onclick="tk.fillEncData();"></input>
+</form>
+</body>
+</html>
+```
+
+#### D-2. transkey.js sha256 — 완전 일치
+
+```bash
+# 로컬
+curl -s "http://localhost:8080/TouchEn/transkey/transkey.js" | shasum -a 256
+# d94351fec53ffcff7432cd389dbd41d97f74e3726e6b81a09248d2145c808076  -
+
+# PROD (공개 URL)
+curl -s "https://vkey.bomapp.co.kr/TouchEn/transkey/transkey.js" | shasum -a 256
+# d94351fec53ffcff7432cd389dbd41d97f74e3726e6b81a09248d2145c808076  -
+
+# PROD SSM (컨테이너 내부)
+# d94351fec53ffcff7432cd389dbd41d97f74e3726e6b81a09248d2145c808076  -
+```
+
+**3개 경로 모두 동일 sha256.** `src/main/resources/static/TouchEn/transkey/transkey.js` 파일이 PROD WAR 의 정적 파일과 동일한 바이너리임을 확인.
+
+#### D-3. 핵심 op 비교
+
+| op | 로컬 | PROD SSM | 일치 |
+|----|------|----------|:----:|
+| `op=getToken` | `var TK_requestToken=0;` | `var TK_requestToken=0;` | ✓ |
+| `op=getInitTime` | `var decInitTime='...'; var initTime='...'; var limitTime=0; var useSession=false;` | 동일 패턴 | ✓ |
+| `op=getKeyboard&kbdType=qwerty` | HTTP 200 / 0 bytes | HTTP 200 / 0 bytes | ✓ |
+
+---
+
+### 9.5 E — CORS 동작
+
+```bash
+# 허용 origin (bomapp.co.kr 서브도메인)
+curl -I -H "Origin: https://www.bomapp.co.kr" \
+     -H "Access-Control-Request-Method: POST" \
+     -X OPTIONS http://localhost:8080/transkeyServlet
+```
+
+응답 헤더:
+
+```
+HTTP/1.1 200
+Access-Control-Allow-Origin: https://www.bomapp.co.kr
+Access-Control-Allow-Methods: GET,POST,HEAD,OPTIONS,PUT
+Access-Control-Allow-Credentials: true
+Access-Control-Max-Age: 3600
+```
+
+```bash
+# 거부 origin (외부 도메인)
+curl -I -H "Origin: https://evil.example.com" -X OPTIONS http://localhost:8080/transkeyServlet
+```
+
+응답: `HTTP/1.1 403` — `Access-Control-Allow-Origin` 헤더 없음.
+
+PROD Tomcat WAR 의 CORS 설정(`web.xml`: `cors.allowed.origins=*`)과 달리, Spring Boot 부활본은 `CorsConfig.java` 에서 `*.bomapp.co.kr` 패턴으로 **origin 제한이 강화**된 상태. 보안 측면에서 개선임.
+
+---
+
+### 9.6 F — Actuator
+
+```bash
+curl http://localhost:8080/actuator/health
+# {"status":"UP"}  ✓
+```
+
+PROD Tomcat WAR 에는 Actuator 없음. Spring Boot 부활본에서 신규 추가.
+
+---
+
+### 9.7 발견된 미세 차이 정리
+
+| 항목 | PROD (Tomcat 9.0.45 WAR) | 로컬 Spring Boot | 기능 영향 |
+|------|--------------------------|-----------------|:--------:|
+| Java 버전 | 1.8 | 21.0.10 | 없음 (javax.servlet 기반 라이브러리 동작 동일) |
+| Tomcat 버전 | 9.0.45 | 9.0.83 (embedded) | 없음 |
+| 루트(`/`) 응답 | HTML 데모 | 404 | **없음** (실 호출자 미사용 경로) |
+| CORS 정책 | `*` 전 도메인 | `*.bomapp.co.kr` 패턴 | **개선** (더 안전) |
+| Actuator | 없음 | `/actuator/health` | 신규 기능 (개선) |
+| 라이선스 로딩 | filesystem (WAR 내 경로) | getRealPath() via webapp dir | 동작 동일 |
+| `transkey.js` sha256 | `d94351fe...` | `d94351fe...` | **완전 일치** |
+| `getToken` / `getInitTime` 응답 | 정상 | 정상 (동일 패턴) | **완전 일치** |
+
+---
+
+### 9.8 Fix 사항
+
+**코드 fix 없음.** BV-1 머지 상태의 main 브랜치가 A~F 모든 검증을 통과했으며, `feature/bv-2-equivalence-fix` 브랜치 생성 불필요.
+
+---
+
+### 9.9 BV-3 (Dockerfile) 설계 가이드
+
+본 검증으로 결정된 packaging 전략:
+
+| 항목 | 결정 |
+|------|------|
+| jar 단독 가동 가능 여부 | **단독 가동 가능** (단, `src/main/webapp/` 동반 필요) |
+| Dockerfile COPY 필요 항목 | `COPY target/securekey-0.0.1-SNAPSHOT.jar /app/securekey.jar` + **`COPY src/main/webapp/ /app/src/main/webapp/`** (embedded Tomcat 의 document root 가 jar 실행 디렉토리 기준 `src/main/webapp/` 를 찾음) |
+| 라이선스 파일 | `/app/raon_config/transkey__P_license/` 에 secret volume mount. COPY 금지 (git commit 금지와 동일 이유). `transkey_license.ini` 의 `license.pathType=r` + `license.permanent.path=/WEB-INF/raon_config/transkey__P_license` → webapp dir 기준 경로. **또는** 라이선스 디렉토리 전체를 `src/main/webapp/WEB-INF/raon_config/transkey__P_license/` 로 secret mount. |
+| 대안 (document root 명시) | `TomcatContextCustomizer` Bean 을 추가하여 `context.setDocBase(...)` 로 document root 를 명시적으로 지정하면 jar 와 webapp 을 분리된 경로에 둘 수 있음. BV-3 에서 선택 가능. |
+| 권고 WORKDIR | `/app` |
+| 권고 CMD | `java -jar /app/securekey.jar --spring.profiles.active=prod` |
+
+> AIDEV-NOTE: embedded Tomcat 에서 `src/main/webapp/` document root 경로 해소 동작은 `TomcatServletWebServerFactory.getWebServer()` → `prepareContext()` → `docRoot = getValidDocumentRoot()` 체인에서 결정됨. jar 실행 시 현재 디렉토리의 `src/main/webapp` 을 찾으므로, WORKDIR 과 COPY 경로가 정확히 맞아야 한다.
