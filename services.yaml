@@ -1,6 +1,15 @@
 # Overmind Service Catalog
 # BOMAPP 마이크로서비스 메타데이터 정의 (보험 상품 도메인)
 # Leader가 영향 분석 및 작업 계획 수립에 사용
+#
+# 필드 참고:
+#   docs_to_read (optional, list[str])
+#     - Teammate이 worktree 진입 직후 반드시 읽어야 할 추가 문서 경로 (worktree 루트 기준 상대경로).
+#     - 해당 서비스의 work에 항상 적용되는 도메인 규칙·운영 절차 문서를 나열한다.
+#     - `CLAUDE.md` / `AGENTS.md` 는 절대 규칙으로 자동 선독되므로 명시하지 않아도 되지만,
+#       방어적으로 중복 명시해도 무방하다 (Teammate 보고서에 인용되어 누락 적발이 쉬워짐).
+#     - 상황별 runbook(예: 인증서 갱신)은 여기에 넣지 말고, 해당 작업이 트리거됐을 때
+#       Leader가 Teammate 프롬프트에 추가로 전달한다.
 
 services:
   # ─────────────────────────────────────────────
@@ -14,6 +23,8 @@ services:
     critical_paths:
       - path: "terraform"
         description: "Terraform 모듈 및 환경별 설정 (dev/stg/prod)"
+    docs_to_read:
+      - "CLAUDE.md"   # Terraform 작업 규정 1~5번 (state 선독, destroy 금지, -target 점진 apply, prevent_destroy, AWS 실제 값 반영). 절대 규칙으로 이미 자동 선독되지만, 인프라 작업은 위반 시 영향이 커서 방어적으로 명시.
     dependencies: []
     test_command: "terraform validate"
     lint_command: "terraform fmt -check"
