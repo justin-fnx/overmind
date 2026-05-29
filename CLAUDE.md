@@ -75,9 +75,16 @@
     # 작업 대상 리포지토리에서 새 worktree 생성
     cd <services.yaml의 path>
     git fetch origin
-    git worktree add -b <feature-branch-name> ../<repo>-<task-id> origin/main
+    git worktree add -b <feature-branch-name> ../<repo>-<task-id> origin/<feature_base_branch>
     cd ../<repo>-<task-id>
     ```
+  - **`<feature_base_branch>`는 `services.yaml`의 `feature_base_branch` 필드 값을 사용한다.**
+    - `next-backend`: `dev` — PR도 반드시 `dev` 브랜치를 대상으로 생성한다.
+    - `infra`, `bomapp-vkey`, `next-frontend`: `main`
+    - `mydata-agent`: `prod`
+    - `bomapp_my_data`, `legacy-backend`: `master`
+    - 브랜치 전략 상세: `docs/git-branching-strategy.md` 참조.
+  - **PR 생성 시 base 브랜치를 `feature_base_branch`로 명시**한다. `gh pr create --base <feature_base_branch>` 또는 해당 호스트의 MR 설정.
   - worktree 디렉토리 명명 규칙: `<원본_repo_디렉토리명>-<linear_task_id_또는_식별자>` (예: `next-backend-BOM-1234`).
   - Teammate은 해당 worktree 디렉토리 내에서만 파일을 수정한다. 원본 디렉토리는 절대 건드리지 않는다.
   - 작업 완료 후 worktree 제거 책임은 Leader에게 있다. (Finalize 단계에서 `git worktree remove` 실행)

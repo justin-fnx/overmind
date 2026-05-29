@@ -18,6 +18,7 @@ services:
   - name: "infra"
     repo_url: "github.com/bomapp-inc/infra"
     path: "../infra"
+    feature_base_branch: "main"
     description: "BOMAPP AWS 인프라 IaC. Terraform으로 ECS 클러스터, RDS, ElastiCache, ALB, MSK 등을 관리하며 next-backend의 9개 ECS 서비스를 배포한다."
     tech_stack: ["terraform", "aws", "ecs", "rds", "elasticache", "alb", "msk"]
     critical_paths:
@@ -39,6 +40,7 @@ services:
   - name: "next-backend"
     repo_url: "github.com/bomapp-inc/next-backend"
     path: "../next-backend"
+    feature_base_branch: "dev"   # prod=운영, dev=개발통합, feature/*는 dev에서 분기→dev로 PR. docs/git-branching-strategy.md 참조.
     description: "차세대 BOMAPP 백엔드 플랫폼. Gradle 멀티모듈로 5계층(core/internal/domain/external/server) 아키텍처를 구성하고, 9개 마이크로서비스 앱(API, 배치, 채팅, 마이데이터, 웹훅 등)을 단일 리포에서 빌드/배포한다. 보험 상품 조회/추천/판매의 핵심 도메인 로직 담당."
     tech_stack: ["java-21", "spring-boot-3.4", "spring-cloud-2024", "gradle-multi-module", "querydsl", "kafka-msk", "redisson", "jwt", "elastic-apm", "jib", "distroless"]
     critical_paths:
@@ -89,6 +91,7 @@ services:
   - name: "next-frontend"
     repo_url: "github.com/bomapp-inc/next-frontend"
     path: "../next-frontend"
+    feature_base_branch: "main"
     description: "차세대 BOMAPP 프론트엔드 모노레포. Yarn workspaces로 6개 웹/모바일/데스크톱/어드민 앱을 함께 관리하며 Vue 3 + Vite + Tailwind 스택 사용. next-backend의 API들을 axios/TanStack Query로 호출."
     tech_stack: ["typescript-5.8", "vue-3.5", "vite-7", "tailwind-3.4", "yarn-workspaces", "pinia", "tanstack-query", "sockjs-stomp", "sentry", "amplitude"]
     critical_paths:
@@ -123,6 +126,7 @@ services:
   - name: "mydata-agent"
     repo_url: "github.com/bomapp-inc/mydata-agent"
     path: "../mydata-agent"
+    feature_base_branch: "prod"
     description: "마이데이터 게이트웨이. 외부 마이데이터 기관과의 SSL 통신을 담당하며 next-backend의 mydata-api로부터 호출되어 보험 상품 데이터를 수집/조회한다. WebFlux 기반 비동기 처리."
     tech_stack: ["java-17", "spring-boot-3.0", "spring-webflux", "gradle"]
     critical_paths:
@@ -143,6 +147,7 @@ services:
   - name: "bomapp_my_data"
     repo_url: "github.com/bomapp-inc/bomapp_my_data"
     path: "../bomapp_my_data"
+    feature_base_branch: "master"
     description: "(레거시) 마이데이터 인증/동의 관리 서비스. 사용자의 마이데이터 토큰 발급/갱신/폐기 및 동의 정보를 관리한다. 차세대 mydata-api 로 이관 중인 상태."
     tech_stack: ["java-11", "spring-boot-2.3", "spring-cloud-hoxton", "spring-cloud-openfeign", "jpa", "redis", "thymeleaf"]
     critical_paths:
@@ -164,6 +169,7 @@ services:
   - name: "bomapp-vkey"
     repo_url: "github.com/bomapp-inc/transkey_servlet"
     path: "../transkey_servlet"
+    feature_base_branch: "main"
     description: "라온시큐어 TouchEn 가상키보드(transkey) 서버측 복호화 서블릿. 신용정보원 회원가입/비번재설정 주민번호, 연동(자동차·진료·건강검진·공인인증서) 인증서 비번 및 주민번호, 청구 주민번호, 마켓 카드번호 등 민감 정보 입력 플로우에서 클라이언트 가상키보드 페이로드를 복호화한다. `vkey.bomapp.co.kr` 도메인으로 노출. 벤더 1차 컨택: 장지수(라온 Technical Support Team II, jsjang@raoncorp.com, 2021 기록)."
     tech_stack: ["java-1.8", "jakarta-servlet-4.0", "tomcat-9.0.45", "war-packaging", "raonsecure-transkey-4.6", "raonsecure-transkey-decrypt-etoe-1.5"]
     critical_paths:
@@ -198,6 +204,7 @@ services:
   - name: "legacy-backend"
     repo_url: "github.com/bomapp-inc/legacy-backend"
     path: "../legacy-backend"
+    feature_base_branch: "master"
     description: "(레거시) 모놀리스 보험 상품 API/어드민/웹뷰 통합 시스템. Spring Boot 1.5 / Java 1.8 / WAR 패키징 기반. 차세대 next-backend 로 점진 이관 중이며 신규 기능 추가는 지양한다."
     tech_stack: ["java-1.8", "spring-boot-1.5", "maven", "war-packaging", "jedis", "elasticsearch-7.12"]
     critical_paths:
