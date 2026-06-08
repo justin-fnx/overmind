@@ -86,7 +86,7 @@ volume:    /was/data (host volume)  →  컨테이너 /was/data
 | 10745 | root | `bomapp-server-bomapp-api.jar` | **next-backend / bomapp-api** | **8107** | SB 3.4 |
 | 15890 | bomapp | `bomappmydata-0.0.1-SNAPSHOT.jar` | **bomapp_my_data** 프로젝트 | (host docker-proxy 11000 존재, 컨테이너 내 PID 매핑은 미확정) | SB 2.3 |
 | 19422 | root | `bomapp-server-wings-api.jar` | **next-backend / wings-api** | **8102** | SB 3.4 |
-| 32329 | bomapp | `bomapp_oauth-0.1.0.jar` | **별개 OAuth 프로젝트** | (확인 미흡) | (확인 미흡) |
+| 32329 | bomapp | `bomapp_oauth-0.1.0.jar` | **별개 OAuth 프로젝트** = legacy `bomapp_api_server` 의 `security.server`(토큰발급) | **8888** (확정 — §10) — 단 **TG/LB 경로 없음** → 인바운드 도달 불가 | (jar 존재만 확인) |
 
 ### 2.5 운영상 함의
 
@@ -111,7 +111,7 @@ PID 1205 (UID `bomapp`) 의 정체를 SSM 으로 추가 검증한 결과:
 | 운영 형태 | "바이너리 파일 통으로 가지고 있어서 실행만 하면 됨" — 빌드 산출물(WAR) 직배포 (출처: 동일 노션 "인프라" 페이지) |
 | 과거 위치 | `10.10.10.51` / `10.10.10.52` (2022 시점) → 2024-02-20 "PROD-ETC-API WAS 로 통합" 작업으로 `api-was2 (10.1.1.20)` 로 이전 = 현재 PROD-BACK `i-03f0178089f760c6f` 와 일치 (출처: 노션 작업기록) |
 | 과거 도메인 | `cf-vkey.bomapp.co.kr` (CloudFront 경유, 2024-09 걷어냄) |
-| 관련 abandoned PoC | [`bomapp-inc/transkey_springboot`](https://github.com/bomapp-inc/transkey_springboot) — 동일 개발자가 4분 뒤 만든 Spring Boot 포팅(`kr.co.bomapp:securekey:0.0.1-SNAPSHOT`, `POST /securekey`). 초기 커밋 1개 후 작업 없음. 운영 미배포. |
+| 관련 abandoned PoC | [`bomapp-inc/bomapp-vkey`](https://github.com/bomapp-inc/bomapp-vkey) — 동일 개발자가 4분 뒤 만든 Spring Boot 포팅(`kr.co.bomapp:securekey:0.0.1-SNAPSHOT`, `POST /securekey`). 초기 커밋 1개 후 작업 없음. 운영 미배포. |
 | 호스트 마운트 형태 (2026-05-19 SSM) | `/was/data/bomapp-vkey/vkey.tar` (126MB, 2023-04-04) + `restart.sh` (1019 B). 운영자가 vkey.tar 를 untar → `/was/run/bomapp-vkey/` 에 풀어서 가동하는 패턴. 2023-04-04 이후 갱신 없음. |
 | Tomcat webapps 배포 형태 | `/was/run/bomapp-vkey/webapps/` 에 `ROOT/` 와 `secure_servlet/` 두 컨텍스트 deploy. 동일 WAR. 호출자가 `vkey.bomapp.co.kr/transkeyServlet` 와 `vkey.bomapp.co.kr/secure_servlet/transkeyServlet` 둘 다 사용 가능 (ALB log 분석으로 실 사용 path 결정 필요). |
 | 운영 라이선스 (2026-05-19 SSM) | `transkey_license.ini` 의 `license.type=p` (Permanent 활성). `transkey__P_license/Server2048.pem` X.509 Subject = `C=KR, O=bomapp, CN=T=P&D=[*.bomapp.co.kr]`, Issuer = `RaonSecure Co., Ltd. Quality Assurance`, 유효기간 **2019-08-19 ~ 2049-08-11 (30년)**. SHA-256 fingerprint `3C:3D:40:4F:9A:77:57:A9...`. CA 인증서 `ca.crt` 도 RaonSecure self-signed root (2013-2043). 인증서 체인 `openssl verify` 통과, 개인키/인증서 modulus 일치 확인. `*.bomapp.co.kr` 와일드카드 → DEV/STG/PROD 도메인 모두 커버. **갱신 우려 사실상 없음.** |
@@ -133,12 +133,22 @@ PID 1205 (UID `bomapp`) 의 정체를 SSM 으로 추가 검증한 결과:
 | `web.bomapp.co.kr` | ALB:443 priority 260 | prod-back-ecs-host-http-7778 | **7778** | `bomapp_webview_server-0.1.0.jar` (PID 1428) | legacy-backend / bomapp_webview_server |
 | `wapi.bomapp.co.kr` | ALB:443 (priority 미기재, 별도 rule) | (8102 TG) | **8102** | `bomapp-server-wings-api.jar` (PID 19422) | next-backend / wings-api |
 | `oapi.bomapp.co.kr` 외 | (priority 별도) | (8105 TG로 추정) | **8105** | `bomapp-server-open-api.jar` (PID 5953) | next-backend / open-api |
-| `sapi.bomapp.co.kr` | ALB:443 priority 150 + ALB:3001 priority 1 | prod-back-ecs-host-http-8103 | **8103 — listening 프로세스 없음** | — | (no-op, 502 발생 예상) |
 | `vkey.bomapp.co.kr` | ALB:443 priority 10 | prod-back-ecs-host-http-8080 | **8080 ✓** (PID 1205 Tomcat catalina HTTP connector) | **bomapp-vkey (Tomcat 9.0.45 WAR, `bm.service=bomapp_key`, `/was/run/bomapp-vkey`)** — TouchEn transkeyServlet (라온시큐어 가상키보드 복호화) | **별개 프로젝트** [`Bomapp/transkey_servlet`](https://github.com/Bomapp/transkey_servlet) — 보험금 청구 플로우의 주민번호 입력용 |
 | `api.bomapp.co.kr` (✱ 정리됨) | ALB:443 priority 160 | (정리 전: 8107) | — (현재 410 fixed-response) | — | — |
 | `my-data-cbt.bomapp.co.kr` (✱ 정리됨) | 동일 priority 160 host header | — (현재 410 fixed-response) | — | — | — |
 
 **(✱)** 사용자가 2026-05-07 에 listener rule 을 fixed-response 410 으로 정리. 본 문서의 "현재" 매핑은 정리 후 상태.
+
+### 3.1 미사용 도메인 폐기 (2026-06-01, BOM-99) — `mapi`/`mapi1`/`mapi2`/`wapi1`/`wapi2`
+
+PROD-ALB 의 아래 5개 도메인에 대응하는 **리스너 룰 + 타깃그룹 + Route53 CNAME 15개를 완전 삭제**(2026-05-07 의 fixed-response 410 방식과 달리 코드/리소스 전체 제거). `terraform apply -target`(정확히 15개) → `0 added, 0 changed, 15 destroyed`. state serial 2200→2216.
+
+| 폐기 도메인 | 30일 외부 요청 | 대상 TG | 폐기 사유 |
+|------------|:---:|--------|----------|
+| `mapi` / `mapi1` / `mapi2` | **0** | `mydata-api[-1/-2]-http-8080` (등록 타깃 0개) | 외부 진입 경로 비기능화. 실 마이데이터는 내부 `int-mapi`(**4,563,564건/30일**) + `magent`(4,571,999건)로 정상 — mydata-api 서비스 자체는 운영 유지 |
+| `wapi1` / `wapi2` | **각 1** | `prod-back-ecs-host-1/2-http-8102` | wings-api 인스턴스별 재기동 훅(`GET /open/server/restart/wings-api-prod`, 2026-05-12 사내 IP curl). 활성 `wapi`(2,455,077건/30일)는 신규 IP-target TG 이관 완료 → 구 8102 per-instance 경로 폐기, 재기동은 표준 ECS 배포로 대체 |
+
+> **측정 방법 교정 (중요)**: 본 폐기 판단은 ALB 액세스 로그를 **요청-URL authority** 기준으로 재집계해 확정했다. 초기 집계가 쓴 `domain_name`(SNI) 필드는 **HTTP/2 connection coalescing** 시 실제 요청 `:authority` 와 달라져 오귀속된다(예: 활성 `wapi` SNI 2,992,209건 vs authority 2,455,077건 — 약 53.7만건이 다른 호스트의 coalesced 요청). 또한 Glue 테이블 `alb_logs_v2`/`internal_alb_logs_v2` 는 **SerDe 미스매치로 모든 컬럼이 NULL** 이고 파티션 프로젝션이 없어 30일 중 다수 일자가 미등록 상태였다 → 신뢰 불가. 재측정은 **raw 테이블(`alb_raw`/`int_alb_raw`)** 에 파티션을 수동 등록(`ALTER TABLE ... ADD PARTITION`)한 뒤 `regexp_extract(line,'https?://([^:/ ]+)',1)` 로 authority 를 파싱해 수행했다. (Athena workgroup `primary`, 출력 `s3://bomapp-athena-results/elb-results/`.)
 
 ---
 
@@ -150,15 +160,9 @@ PID 1205 (UID `bomapp`) 의 정체를 SSM 으로 추가 검증한 결과:
 
 | 호스트 | 7일 합계 | 정상 응답 (2xx/3xx) | 봇/스캐너 비율 |
 |--------|--------:|------------------:|--------------:|
-| `sapi.bomapp.co.kr` | **0** | 0 | — |
 | `api.bomapp.co.kr` | 725 | 0 (2xx) | ~98% (.php/wp-*) |
 | `my-data-cbt.bomapp.co.kr` | 3 | 0 (모두 401) | 0% (정상 path 이지만 인증 실패) |
 | `web.bomapp.co.kr` | 2,608 | 483 (200 + 303) | ~80% (wp-login/wp-admin) |
-
-### 4.2 sapi.bomapp.co.kr 결론
-- 7일 0건. PROD-ALB 까지 도달하는 sapi 도메인 트래픽이 없음.
-- "sapi" 단순 키워드 매칭 4건은 모두 봇이 ALB IP 직접 호출로 path `/sapi/debug/...` (PHP SAPI 익스플로잇) 시도 — 도메인이 sapi 가 아님.
-- 라우팅 자체는 살아있으나(8103 TG → 컨테이너 8103) **listening 프로세스 부재**.
 
 ### 4.3 api.bomapp.co.kr (정리 전) 7일 분포
 - status: 712 401, 5 500, 4 403, 4 400 — **2xx 0건**
@@ -232,20 +236,29 @@ PID 1205 (UID `bomapp`) 의 정체를 SSM 으로 추가 검증한 결과:
 다음 항목은 본 문서의 검증 범위를 벗어나며, 다른 문서에서 추정으로만 다룸:
 
 1. ~~**두 번째 PROD-BACK 인스턴스 (`i-09e36b30bad90990d`)** 의 docker ps / 활성 jar 구성. v5 와 v6 가 다른 jar 셋을 가질 가능성 있음.~~ — **2026-05-19 해소.** SSM 검증 결과 `i-09e36b30bad90990d` 의 `/was/data` 에는 `bomapp-vkey`, `bomapp-mydata-prod`, `bomapp-webview-prod` 가 **없고** `bomapp-api`, `wings-api`, `open-api`, `bomapp-oauth`, `legacy-bomapp-api`, `saas-api`, `bomapp-redmin` + `integrate_svc_info.json` (다른 인스턴스에는 없음) 으로 구성. 즉 **v5(i-03f0178089f760c6f) 와 v6(i-09e36b30bad90990d) 가 서로 다른 jar 셋을 운영하며, vkey/mydata/webview 는 v5 단일 인스턴스 의존 → SPOF 확인됨**. 새 ECS service 신설 시 desired_count ≥ 2 권장.
-2. **bomapp_my_data 의 listening 포트** — host docker-proxy 11000 존재 + PID 15890 활성 자바 프로세스(`bomappmydata-0.0.1-SNAPSHOT.jar`) 가 있지만, 컨테이너 내 netstat 결과에 11000 의 PID 매핑이 표시되지 않음.
+2. ~~**bomapp_my_data 의 listening 포트** — host docker-proxy 11000 존재 + PID 15890 활성 자바 프로세스(`bomappmydata-0.0.1-SNAPSHOT.jar`) 가 있지만, 컨테이너 내 netstat 결과에 11000 의 PID 매핑이 표시되지 않음.~~ — **2026-06-04 해소(§10).** `prod-back-ecs-host-2-http-11000` TG(i-03f0178089f760c6f:11000 healthy) ← prod-alb:5443 default ← prod-nlb:5443 ← `auth.bomapp.co.kr`. 실 트래픽 `POST /v2/mgmts/{consents,agreements}` 가 `bomapp_my_data` 리포의 `ManagementController`/`AgreementController` 핸들러와 정확히 일치 → 11000 = bomapp_my_data 확정.
 3. **`bomapp-oauth`, `saas-api`** 의 출처 리포지토리 — `services.yaml` 에 등재되지 않은 별개 프로젝트들. 소스 위치 미확인. (`bomapp-vkey` 는 2026-05-19 노션 "BM 운영 구성 / Git Repository" 조회로 [`Bomapp/transkey_servlet`](https://github.com/Bomapp/transkey_servlet) 확정).
-4. **bomapp_oauth jar 의 활성 여부 불일치** — 노션 2024-02-20 "PROD-ETC-API WAS로 통합" 작업 기록에는 oauth 가 "미사용 확인되어 기동 중지" 로 종료 처리됨에도, 2026-05-07 SSM 검증 시점에 PID 32329 `bomapp_oauth-0.1.0.jar` 가 활성. 재기동 시점/주체/사유 미확인.
+4. ~~**bomapp_oauth jar 의 활성 여부 불일치**~~ — **2026-06-04 기능적 해소(§10).** oauth=8888, 유일한 코드상 호출자는 legacy `bomapp_api_server`(자체가 비활성). **TG/LB 경로 0 + 액세스로그·CloudWatch 트래픽 0 + 노션상 2024-02 "미사용 확인 기동중지"** → 기능적 死(재기동된 PID는 좀비). 단 *JVM 의 현재(2026-06-04) 생존 여부* 와 *localhost:8888 내부 커넥션 유무* 는 컨테이너 introspection(SSM docker exec) 필요 — 미수행(권한 보류).
 5. **PROD-NLB / NLB access log** 의 listener별 트래픽 분포 — NLB log 는 host header 정보가 없어 도메인별 분리 어려움.
 6. **PROD-BACK 의 27개 portMapping 중 실 사용 포트는 8개 미만** — 나머지(8101, 8104, 8106, 8201~8207, 8888, 9200, 9300, 14000 등)는 host docker-proxy 만 있고 컨테이너 내 listening 없음. 사용 종료 또는 일부 인스턴스에만 떠있을 가능성.
 7. **HTTP/2 connection coalescing 으로 web 도메인에 multiplex 된 bapi 호출 209건의 처리 위치** — bapi 의 정식 라우팅(8107 TG → bomapp-api) 와 동일하다고 추정되지만 ALB 가 multiplex 시 실제로 어느 TG 로 routing 하는지는 별도 검증 필요.
 
 ---
 
-## 8. 사용자 운영 액션 기록 (2026-05-07)
+## 8. 사용자 운영 액션 기록
 
 | 일자 | 액션 | 대상 | 결과 |
 |------|------|------|------|
 | 2026-05-07 | listener rule fixed-response 410 적용 | `api.bomapp.co.kr`, `my-data-cbt.bomapp.co.kr` (PROD-ALB:443 priority 160) | 사용자 직접 적용 완료. 추후 추이 모니터링 예정. |
+| 2026-06-01 | sapi 도메인 전 리소스 제거 (infra MR) | `sapi.bomapp.co.kr` 라우팅(443/3001 룰·route53) + 8103 TG + ALB/NLB 3001 리스너 체인 + SG 3001 ingress | dead 재검증 후 제거 (상세 §8.1). MR [!20](https://gitlab.bomapp.co.kr/bomapp/infra/-/merge_requests/20) |
+
+### 8.1 sapi.bomapp.co.kr 제거 경위 (2026-06-01)
+
+- **제거 사유 (dead 재검증)**: 6/1·5/31 PROD-ALB access log 에서 SNI=`sapi.bomapp.co.kr` 요청 **0건** (동일 로그 대조군 `bapi` 255,722 / `oapi` 28,001 / `web` 123건은 정상 집계 → 누락이 아니라 실제 무트래픽). 8103 TG 타겟 2/2 `unhealthy`, 최근 30일 `HTTPCode_Target_2XX` 0건(백엔드 무응답). 기존 7일 로그(4/30~5/6)도 0건.
+- **구조적 근거**: `prod_alb_https_3001` 리스너가 sapi 전용(룰 1개 + default_action 모두 dead 8103 TG)이고, `prod_nlb_tcp_3001`→ALB:3001 체인도 sapi 전용 → 체인을 통째로 제거.
+- **제거 리소스(8)**: `prod_alb_https_443_rule_11`, `prod_alb_https_3001_rule_0`, `bomapp_co_kr_sapi_cname`(route53), `prod_alb_https_3001`(리스너), `prod_back_ecs_host_http_8103`(TG), `prod_nlb_tcp_3001`(리스너), `prod_nlb_to_alb_3001`(TG), `prod_alb_ingress_0`(SG 3001 ingress).
+- **범위 제외(유지)**: `az.bomapp.co.kr`/`dev-az`/`stg-az`(별도 `*_8080` 서비스, dead 미검증), `prod_front_esc_host_http_3001`(open/apps/bomapp.im 프론트가 443으로 사용) — sapi와 무관.
+- **적용 결과 (2026-06-01)**: MR [!20](https://gitlab.bomapp.co.kr/bomapp/infra/-/merge_requests/20) 머지 후 로컬 state로 `terraform apply -target`(8개) 실행 → **8 destroyed**. 검증: state·AWS에서 8개 삭제 확인, prod-alb 리스너 3001 제거(80/443/3002/5443 유지), `oapi`(8105) 등 타 도메인 무영향. (ALB:3001 리스너는 NLB→ALB TG deregister 전파 지연으로 1회 재시도 후 삭제.)
 
 ### 모니터링 방법 (재현 가능)
 
@@ -267,3 +280,45 @@ done
 - 추정·추측은 본 문서가 아니라 [`architecture.md`](./architecture.md), [`services/`](./services/) 본문에 caveat 와 함께 기재한다.
 - 미검증 영역(§7)은 검증 후 §1~§6 으로 이동한다.
 - listener rule / Route53 변경 등 운영 액션은 §8 에 시간순으로 누적한다.
+
+---
+
+## 10. `auth.bomapp.co.kr` ↔ `bomapp_oauth` ↔ `bomapp_my_data` 관계 (2026-06-04 검증)
+
+> **⚠️ 2026-06 갱신**: `bomapp_my_data` 는 이후 BOM-113 으로 현대화(SB 2.3→3.4.5/Java 11→21/jjwt 0.12)되고 BOM-121 으로 리네임됨 — repo `bomapp_my_data`→**`mydata-mgmts-api`**, 패키지 `kr.co.bomapp.auth.bomappmydata`→`kr.co.bomapp.mydata.mgmts`, artifact `bomappmydata`→`mydata-mgmts-api`. **단 PROD 미컷오버** — 아래 §10 본문의 리포·패키지·jar 명(`bomappmydata-0.0.1-SNAPSHOT.jar`)은 **2026-06-04 검증 시점의 실측(구 코드)** 으로 그대로 둔다.
+
+> 검증 방법: 라이브 AWS(`describe-rules`/`describe-target-groups`/`describe-target-health` — **TF 아닌 콘솔 상태 직접**), CloudWatch `RequestCountPerTarget`, ALB access log grep, 노션 작업기록, 로컬 리포 코드 grep. PROD-BACK 은 손으로 jar 를 띄우고 리스너도 콘솔 직접수정 가능한 패턴이므로 TF 만으로 판단하지 않음.
+
+### 10.1 결론 (한 줄)
+
+이름이 헷갈리지만 **세 개는 서로 다른 실체**다. `auth.bomapp.co.kr` 의 백엔드는 **`bomapp_my_data`(11000)** 이고, **`bomapp_oauth`(8888)** 는 이와 무관한 **이미 폐기된 legacy 토큰서버**다.
+
+### 10.2 `auth.bomapp.co.kr` → `bomapp_my_data` (11000, 활성·규제필수)
+
+| 항목 | 값 |
+|------|----|
+| 라우팅 | `auth.bomapp.co.kr` (route53 CNAME) → **prod-nlb** → NLB:5443 → ALB:5443 **default**(호스트룰 없음) → TG `prod-back-ecs-host-2-http-11000` → `i-03f0178089f760c6f:11000` (healthy) |
+| 실행 jar | `bomappmydata-0.0.1-SNAPSHOT.jar` (PID 15890, UID `bomapp`, SB 2.3) |
+| 코드베이스 | **`github.com/bomapp-inc/bomapp_my_data`** (로컬 `../bomapp_my_data`), 패키지 `kr.co.bomapp.auth.bomappmydata` — 패키지명의 `.auth.` 가 도메인과 직결 |
+| 실 트래픽 (ALB log) | `POST /v2/mgmts/consents`(151) + `POST /v2/mgmts/agreements`(61) → 핸들러 `ManagementController`/`AgreementController` 와 정확 일치. 나머지(`/.git/config`,`/.env`,`/actuator/env` 등)는 5443 노출면에 대한 스캐너 노이즈 |
+| CloudWatch | 11000 TG `RequestCountPerTarget` 14일 **2091** (~150/일, 생존) |
+| 호출자 IP | `210.216.219.20`(외부 마이데이터 표준 동의관리 API), `43.201.10.95`(AWS 서울 내부) |
+| 역할 | **금융 마이데이터 표준 동의·관리(mgmts) API 수신 서버**. OAuth 토큰발급(`ManagementService.issueOAuthToken`)을 **자체 구현**. 외부 의존: `my-data.management.org-url=https://api.mydatacenter.or.kr:7443`(종합포털) + Redis(`10.10.10.71`). 일부 경로는 `NextMyDataApiClient` 로 next-backend 에 위임("이관 중") |
+| 이관 상태 | **미이관.** 사용자 인지("mydata 전부 신규/prod-mydata-agent 로 이관")는 **수집·게이트웨이(mydata-agent/mydata-api)** 한정. 표준 mgmts 수신면은 DigiCert EV 인증서(auth 5443 구간)에 묶인 채 PROD-BACK 11000 에 잔존 |
+
+### 10.3 `bomapp_oauth` (8888, 기능적 死)
+
+| 근거 | 내용 |
+|------|------|
+| 포트 | **8888** — 노션 "prod api oauth/vkey 참조 변경"(`oauth:8888`, `vkey:8080`) + legacy `bomapp_api_server/application-*.properties` 의 `security.server.access-token-url=http://10.1.1.20:8888/oauth/token` (`10.1.1.20`=api-was2=현 PROD-BACK) |
+| 원래 역할 | legacy `bomapp_api_server`(legacy-backend api) 가 호출하던 **사내 OAuth 토큰 발급 "security server"** |
+| 폐기 기록 | 노션 "PROD-ETC-API WAS로 통합"(2024-02-13~20, Completed): oAuth "api was2로 이전 완료 + **미사용 확인되어 기동 중지**" |
+| 인바운드 도달성 | **0.** 8888 에 대응하는 TG 가 라이브 AWS 어디에도 없음(`oauth`/`auth` TG 검색 빈 결과). prod-alb:443/5443 어떤 호스트룰도 8888 로 forward 안 함 |
+| 트래픽 | ALB access log 전체에서 `:8888`/`bomapp_oauth` 경로 **0건**. 시스템 내 유일한 "oauth" 트래픽은 `oapi.bomapp.co.kr/api/external/v1/oauth-token`(=next-backend **open-api** 제휴 토큰발급, 무관) |
+| 코드상 호출자 | legacy `bomapp_api_server` 단 하나 — 그 앱 자체가 §2.3 에서 **비활성(死)**. `bomapp_my_data` 는 8888 을 호출하지 않음(자체 OAuth 구현) |
+| 현재 상태 | 2026-05-07 PID 32329 활성은 호스트/컨테이너 재기동 시 restart 스크립트의 **좀비 재기동**으로 판단. **기능적으로 死, 안전한 폐기 후보** |
+| 잔여 미검증 | JVM 의 현재 생존 + `localhost:8888` ESTABLISHED 커넥션 유무(내부 호출자 0 확인) → SSM docker-exec 필요(권한 보류) |
+
+### 10.4 'oauth' 네이밍 함정 (주의)
+
+`bomapp_oauth` 라는 이름 때문에 `auth.bomapp.co.kr` 의 백엔드로 오인하기 쉬우나 **아님**. auth 도메인은 `bomapp_my_data` 가 서빙하고, `bomapp_my_data` 의 OAuth 는 마이데이터 표준 토큰 엔드포인트를 자체 구현한 별개 코드다. `bomapp_oauth` 는 그 어디에도 연결돼 있지 않다.

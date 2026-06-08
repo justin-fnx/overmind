@@ -59,7 +59,7 @@ services:
       - path: "bomapp-server/chat-api"
         description: "WebSocket 기반 상담 채팅 서버"
       - path: "bomapp-server/mydata-api"
-        description: "마이데이터 통합 API (mydata-agent / bomapp_my_data 호출)"
+        description: "마이데이터 통합 API (mydata-agent / mydata-mgmts-api 호출)"
       - path: "bomapp-server/mydata-batch"
         description: "마이데이터 일괄 수집 배치"
       - path: "bomapp-server/open-api"
@@ -77,10 +77,10 @@ services:
         type: "sync"
         interface: "rest"
         note: "mydata-api 가 외부 마이데이터 기관 통신을 위해 mydata-agent 게이트웨이를 호출"
-      - service: "bomapp_my_data"
+      - service: "mydata-mgmts-api"
         type: "sync"
         interface: "rest"
-        note: "(추정) 마이데이터 인증/동의 처리를 위해 bomapp_my_data 호출. 도메인 레이어에 레거시 인스턴스 정리 TODO 존재"
+        note: "(추정) 마이데이터 인증/동의 처리를 위해 mydata-mgmts-api(구 bomapp_my_data) 호출. 도메인 레이어에 레거시 인스턴스 정리 TODO 존재"
     test_command: "./gradlew test"
     lint_command: null
     notes:
@@ -144,24 +144,91 @@ services:
       - "SSL 키스토어 (jks) 경로가 설정에 하드코딩되어 있어 배포 환경마다 차이 주의."
       - "단일 application.yml 에 모든 환경 프로파일이 포함되어 있다."
 
-  - name: "bomapp_my_data"
-    repo_url: "github.com/bomapp-inc/bomapp_my_data"
-    path: "../bomapp_my_data"
+  - name: "mydata-mgmts-api"   # 구 이름 bomapp_my_data (BOM-121 리네임, 2026-06)
+    repo_url: "github.com/bomapp-inc/mydata-mgmts-api"
+    path: "../mydata-mgmts-api"
     feature_base_branch: "master"
-    description: "(레거시) 마이데이터 인증/동의 관리 서비스. 사용자의 마이데이터 토큰 발급/갱신/폐기 및 동의 정보를 관리한다. 차세대 mydata-api 로 이관 중인 상태."
-    tech_stack: ["java-11", "spring-boot-2.3", "spring-cloud-hoxton", "spring-cloud-openfeign", "jpa", "redis", "thymeleaf"]
+    description: "금융 마이데이터 표준 '동의·관리(mgmts)' 수신 API 서버. 보맵이 마이데이터사업자(정보수신자)로서 `auth.bomapp.co.kr` 도메인에 노출하며, 종합포털(api.mydatacenter.or.kr)이 `POST /v2/mgmts/consents`·`/v2/mgmts/agreements` 등 표준 API를 호출한다. 마이데이터 OAuth 토큰 발급(RS512 자체 구현)·동의정보 관리를 표준 스펙대로 구현. 일부 경로는 next-backend/mydata-api 로 위임. DigiCert EV 인증서(prod-alb:5443 구간)에 묶인 표준 수신면 = 규제필수. (구 이름 bomapp_my_data / 패키지 kr.co.bomapp.auth.bomappmydata — BOM-121 에서 mydata-mgmts-api / kr.co.bomapp.mydata.mgmts 로 리네임. 이름 비슷한 폐기 jar `bomapp_oauth`(8888)와는 무관.)"
+    tech_stack: ["java-21", "spring-boot-3.4", "spring-cloud-2024", "spring-cloud-openfeign", "jpa", "redis", "thymeleaf", "jjwt-0.12", "maven", "docker"]
     critical_paths:
-      - path: "src/main/java/kr/co/bomapp/auth"
-        description: "마이데이터 인증/토큰/동의 처리 로직"
+      - path: "src/main/java/kr/co/bomapp/mydata/mgmts/controllers"
+        description: "표준 mgmts 수신 컨트롤러 — ManagementController(`/v2/mgmts/consents`), AgreementController(`/v2/mgmts/agreements*`), ConsentController(`/v2/mgmts/consents/revoke`). auth.bomapp.co.kr 실 트래픽 핸들러. (BOM-116 에서 deprecated v1·OpenApiController 제거.)"
+      - path: "src/main/java/kr/co/bomapp/mydata/mgmts/services"
+        description: "ManagementService.issueOAuthToken / JwtService(RS512) 등 — 마이데이터 OAuth 토큰발급·JWT 자체 구현. (BOM-116 에서 'servicese' 오타→'services' 리네임 + clientSecret 마스킹.)"
+      - path: "src/main/java/kr/co/bomapp/mydata/mgmts/client/NextMyDataApiClient.java"
+        description: "next-backend/mydata-api 로 일부 mgmts 경로 위임(OpenFeign). (url=stg-int-mapi:8080 하드코딩.)"
       - path: "src/main/resources"
-        description: "application.properties 환경별 설정 및 Thymeleaf 템플릿"
-    dependencies: []
-    test_command: "mvn test"
+        description: "application-{dev,stg,prod}.properties. 신규 ECS 배포는 server.port=8080(전 환경). 구 PROD jar 는 11000/15000. my-data.management.org-url=api.mydatacenter.or.kr:7443, spring.data.redis.host=10.10.10.71."
+      - path: "ops/ecs/ , Dockerfile , .github/workflows/"
+        description: "BOM-114 컨테이너화 산출물 — Dockerfile(temurin-21 멀티스테이지, ARM64), ops/ecs/mydata-mgmts-api/overlays/{dev,stg,prod}(prod CPU_RESERVATION soft·DESIRED 2), GH Actions(build→ECR→ECS). 실제 ECS 인프라/5443 컷오버는 미완(별도 infra 티켓)."
+    dependencies:
+      - service: "mydatacenter.or.kr (마이데이터 종합포털/지원기관)"
+        type: "sync"
+        interface: "rest"
+        note: "상위 표준 지원 API (`my-data.management.org-url`, prod=`api.mydatacenter.or.kr:7443`). 외부 규제 기관."
+      - service: "next-backend/mydata-api"
+        type: "sync"
+        interface: "rest"
+        note: "NextMyDataApiClient(OpenFeign)로 일부 `/v2/mgmts/*` 위임. (BomappApiClient 의 `bomapp.api.url` prod 빈 값 = /single-authorization 경로 별개.)"
+    docs_to_read:
+      - "README.md"
+      - "docs/ARCHITECTURE.md"
+    test_command: "mvn test"   # 로컬 JDK 없음 → docker maven:3.9-eclipse-temurin-21 권장. 현재 4통과/1스킵(SlackApiClientTest@Disabled, 실 웹훅).
     lint_command: null
     notes:
-      - "포트: develop/product=11000, staging=15000."
-      - "Spring Boot 2.3 / Java 11 — EOL 임박. next-backend/mydata-api 로 단계적 이관 진행 중."
-      - "OpenFeign 기반 다른 서비스 호출 단서 존재."
+      - "**리네임(BOM-121, 2026-06)**: repo `bomapp_my_data`→`mydata-mgmts-api`, 패키지 `kr.co.bomapp.auth.bomappmydata`→`kr.co.bomapp.mydata.mgmts`, artifact `bomappmydata`→`mydata-mgmts-api`(jar 명도). GitHub 구 URL 리디렉션. (APM `application_packages` 루트는 여전히 `kr.co.bomapp`.)"
+      - "**현대화 완료(코드, BOM-113)**: SB 2.3→3.4.5 / Java 11→21 / jjwt 0.11→0.12(RS512 토큰 바이트 동등 검증) / javax→jakarta / 죽은코드·보안(clientSecret 마스킹) 정리. **단 PROD 미배포** — 아래 런타임은 구 jar 기준."
+      - "**런타임 라우팅(2026-06-04 검증, 현 PROD = 구 jar)**: auth.bomapp.co.kr → prod-nlb:5443 → prod-alb:5443 default → TG `prod-back-ecs-host-2-http-11000` → `i-03f0178089f760c6f:11000`. PROD-BACK 공용 WAS 내 PID 15890 `bomappmydata-0.0.1-SNAPSHOT.jar`(구 코드, 미컷오버, UID `bomapp`). 상세: docs/runtime-verification.md §10."
+      - "**규제필수·미이관 (decommission 주의)**: 표준 mgmts 수신면이 EV 인증서(5443)에 묶여 PROD-BACK 11000 에 잔존. ~150 req/일(2026-06) 실가동. **임의 중단 금지.** ECS 컷오버(weighted/blue-green)는 별도 infra 티켓."
+      - "**배포**: 신규는 ECS(컨테이너 8080, 프로파일 dev/stg/prod). 레거시 `deploy/*`(SSH/S3 수동)는 DEPRECATED(롤백용 보존). 관측성(ES로그 `logs-{env}-mydata-mgmts-api` + Elastic APM)은 BOM-119."
+
+  # ─────────────────────────────────────────────
+  # External Partner Integration (에즈금융서비스 / AZ)
+  # ─────────────────────────────────────────────
+  - name: "az-was"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/az-was"   # 정본은 GitLab. github.com/bomapp-inc/az-was 는 카카오페이 모듈이 빠진 구버전 미러 — 사용 금지.
+    path: "../az-was"
+    feature_base_branch: "main"   # origin/HEAD=main. develop/staging/main 이 현재 동일 커밋(5049413)이나 최신 머지가 'into staging' 이라 통합 브랜치가 staging 일 가능성 — 팀 확인 필요(미확정). CI(Jenkins)는 브랜치-환경 자동매핑 없이 수동 파라미터로 배포.
+    description: "에즈금융서비스(AZ) 측 WAS = **카카오페이 보험상담 연동 허브 + 추가정보(설문) 수집** 서버. Spring Boot 3.2.5/Java 21, 헥사고날(com.az.kakaopay.consultation.*) + 레거시 설문(com.az.az_was.*). 흐름: 에즈브릿지 웹뷰→az-was→카카오페이(상담 PII pull)→보맵 chat-api(상담 신청/만료 통보). 보맵은 az-was 의 /api/v1/kakaopay-members* 로 회원 PII 를 역조회. 도메인 az.bomapp.co.kr. 카카오페이 회원 PII 의 실제 저장소(마스킹+SHA512해시+KMS봉투암호화)."
+    tech_stack: ["java-21", "spring-boot-3.2.5", "spring-cloud-2023", "openfeign", "spring-data-jpa", "mysql", "jjwt-0.12.3", "aws-kms-sdk-v1", "micrometer-tracing", "springdoc-openapi", "spring-dotenv"]
+    critical_paths:
+      - path: "src/main/java/com/az/kakaopay/consultation"
+        description: "카카오페이 상담 헥사고날 모듈 (presentation/application/domain/infrastructure)."
+      - path: "src/main/java/com/az/kakaopay/consultation/infrastructure/external/kakao"
+        description: "az-was→카카오페이 Feign (POST /api/v2/consults/{uuid} 상담PII, /api/v1/consults/canceled 취소polling). 인증 Authorization: PARTNER_KEY. KakaoPayKmsDecryptor 는 dead code."
+      - path: "src/main/java/com/az/kakaopay/consultation/infrastructure/external/planner"
+        description: "az-was→보맵 chat-api Feign (POST/PUT {chat.url}/external/consultations/kakaopay 상담 신청/만료). ⚠ KakaoPayFeignConfig 재사용으로 PARTNER_KEY 헤더 오부착 [Critical]."
+      - path: "src/main/java/com/az/kakaopay/consultation/presentation/controller/MemberController.java"
+        description: "보맵→az-was 인바운드 /api/v1/kakaopay-members* (평문 PII 반환). 무인증."
+      - path: "src/main/java/com/az/kakaopay/consultation/application/scheduler"
+        description: "ConsultationExpireScheduler — 카카오 취소 1분 polling + 제3자동의 만기 02:00 cron → 보맵 PUT 통보."
+      - path: "src/main/java/com/az/az_was/tenant"
+        description: "Customer-Type 헤더 기반 멀티테넌시. CustomerTableStatementInspector 가 단일 DB 내에서 user_response→kakaopay_user_response 식 테이블명 치환(크로스-DB 아님)."
+      - path: "src/main/java/com/az/az_was/external/planner"
+        description: "az-was→보맵 설문 상태 콜백 (POST /external/additional-info/status-changes, x-client-id=az-server / x-api-key)."
+      - path: "src/main/resources/application.yml"
+        description: "전 환경 설정 기준 (datasource 단일, external.chat.url/kakaopay.url/PARTNER_KEY, KMS, JWT 3종)."
+    dependencies:
+      - service: "kakaopay (외부)"
+        type: "sync"
+        interface: "rest"
+        note: "az-was→카카오페이 pull. POST {kakaopay.url}/api/v2/consults/{uuid}, /api/v1/consults/canceled. 인증 Authorization: PARTNER_KEY ${KAKAOPAY_PARTNER_KEY}. 카카오는 az-was 로 push 안 함(polling 구조)."
+      - service: "next-backend"
+        type: "sync"
+        interface: "rest"
+        note: "양방향 HTTP. az-was→보맵: POST/PUT {chat.url}/external/consultations/kakaopay(상담 신청/만료), POST /external/additional-info/status-changes(설문상태). 보맵→az-was: GET /api/v1/kakaopay-members*(회원 PII 조회, bomapp-external/az-managed), DELETE /consultations/{uuid}, /api/v1/planners/surveys*(설문, Planner/Survey JWT). ※DB 직접 공유는 양측 앱 코드에 없음 — 전부 HTTP."
+    test_command: "./gradlew test"
+    lint_command: null
+    notes:
+      - "**정본=GitLab.** github.com/bomapp-inc/az-was 는 카카오페이 모듈(com.az.kakaopay.*)이 누락된 구버전 미러 — 분석/작업 금지."
+      - "**공유-DB 결론**: az-was datasource 는 단일(자기 AZ DB). 보맵 DB 로의 2nd datasource·스키마·catalog 전무. next-backend 도 AZ DB 접근 코드 없음(2nd datasource·AZ 테이블·az_db 스키마 0건). → **보맵↔az-was 는 앱 코드 기준 100% HTTP(Feign).** 'DB 가운데 두고 교환'이 운영상 실재한다면 인프라/DBA 레벨(같은 Aurora + 스키마 GRANT/ETL)이며 코드로는 미확인 — SSM/DBA 확인 필요."
+      - "**멀티테넌시**: Customer-Type 헤더(기본 BOMAPP / KAKAOPAY) → Hibernate StatementInspector 가 user_response·user_response_group·user_response_group_history·user_consent·survey_tokens 를 kakaopay_* 로 치환. **DB 분리가 아니라 같은 DB 내 테이블 분리.** 마스터(survey/question 등)는 미치환 공유."
+      - "**PII 저장**(KakaoPayMember, @Table kakaopay_member): 이름/전화=마스킹+SHA512해시(앞30자, 검색용)+KMS봉투암호화(BME1=AES/GCM) 3형태. 생년월일(birth_sun/sang)=평문 varchar8. 성별=평문. 주민/CI/DI 컬럼 없음(미저장). 카카오 응답은 평문 수신→az 자체 BME1 암호화 저장. @Convert 미사용(서비스계층 수동 암복호)."
+      - "[Critical] PlannerFeignClient 가 KakaoPayFeignConfig 재사용 → 보맵 호출에 x-client-id/x-api-key 대신 카카오용 Authorization: PARTNER_KEY 오부착. external.chat.client-id/api-key 미사용."
+      - "[High] /api/v1/kakaopay-members*(평문 PII)·/consultations/*·/api/v1/test/* 무인증. JWT 인터셉터는 /api/v1/surveys, /api/v1/planners 에만 적용. CORS '*'+allowCredentials. Feign Logger.Level.FULL → PII·PARTNER_KEY·x-api-key 평문 로깅. error.include-stacktrace/message=always + prod swagger 노출. KakaoPayKmsDecryptor(RSAES_OAEP)=dead code."
+      - "포트 8080(yml 미지정). 운영: EC2 직접배포(Jenkins 파라미터 dev/stg/prod, Docker/ECS·.gitlab-ci.yml 없음). PROD 2대(10.1.13.11/10.1.14.11) ALB(TG-AZ-http-8080,계정 044488971141) drain+deregister 무중단(POST /internal/drain + graceful 120s). STG 10.1.13.10 / DEV 10.90.110.10. ※인프라 리포엔 ECS az-was-batch 흔적 있으나 본 리포엔 ECS 컴포넌트 없음(인앱 스케줄러)."
+      - "DB: 단일 MySQL Aurora, 접속정보 전부 env. ddl-auto=update + show-sql=true. insert_all.sh 에 dev DB 평문 비밀번호 하드코딩 [보안]. application-dev/stg.yml 은 .gitignore(개발팀 제공)."
+      - "로그: 로컬 파일(logs/az-was*.log) + stdout, Micrometer traceId. ES/Fluent Bit 직접연동 없음. 마스킹 미적용. CLAUDE.md/AGENTS.md 없음, lint 미설정."
 
   # ─────────────────────────────────────────────
   # Standalone Security Component
@@ -193,7 +260,7 @@ services:
       - "**ALB 라우팅**: PROD-ALB:443 priority 10, host `vkey.bomapp.co.kr` → TG `prod-back-ecs-host-http-8080`. Tomcat 의 webapps 에 `ROOT/` 와 `secure_servlet/` 두 컨텍스트가 동일 WAR 로 deploy되어 있음 (`/transkeyServlet` 와 `/secure_servlet/transkeyServlet` 둘 다 응답)."
       - "**운영 라이선스 확정 (2026-05-19 SSM 추출)**: `transkey_license.ini` 의 `license.type=p` 활성. P 라이선스 X.509 Subject = `O=bomapp, CN=T=P&D=[*.bomapp.co.kr]`, 유효 2019-08-19 ~ **2049-08-11 (30년 영구)**, RaonSecure CA 발급. 인증서 체인 / 개인키 modulus 검증 통과. 와일드카드라 DEV/STG/PROD 도메인 모두 커버. 추출본은 `~/Downloads/bomapp-vkey-license-prod/P/` (권한 0600) — Spring Boot 부활 시 AWS Secrets Manager 로 이관."
       - "**T 라이선스 잔재**: `transkey__T_license/` 에 다른 회사(`O=HahaSavings`) 라이선스가 잘못 들어 있음. `license.type=p` 모드라 미사용이나 새 빌드 시 T 디렉토리 제외 권장."
-      - "**관련 abandoned PoC**: [`github.com/bomapp-inc/transkey_springboot`](https://github.com/bomapp-inc/transkey_springboot) — 동일 개발자(zard21)가 2020-06-04 같은 날 만든 Spring Boot 포팅 시도. `kr.co.bomapp:securekey:0.0.1-SNAPSHOT`, `POST /securekey` REST endpoint 추가 시도. 초기 커밋 1개 후 작업 없음. 운영 배포 안 됨. 라온 jar 가 `javax.servlet` 기반이라 Spring Boot 3.x(jakarta) 불가 — 2.7.x 가 천장."
+      - "**관련 abandoned PoC**: [`github.com/bomapp-inc/bomapp-vkey`](https://github.com/bomapp-inc/bomapp-vkey) — 동일 개발자(zard21)가 2020-06-04 같은 날 만든 Spring Boot 포팅 시도. `kr.co.bomapp:securekey:0.0.1-SNAPSHOT`, `POST /securekey` REST endpoint 추가 시도. 초기 커밋 1개 후 작업 없음. 운영 배포 안 됨. 라온 jar 가 `javax.servlet` 기반이라 Spring Boot 3.x(jakarta) 불가 — 2.7.x 가 천장."
       - "**비표준 위치**: GitLab 셀프호스트(`gitlab.bomapp.co.kr`) 가 아닌 GitHub `bomapp-inc` 조직에 위치. BOMAPP 의 다른 서비스 호스팅 컨벤션 예외."
       - "이력: 2020-06-04 최초 작성 → 2024-02-20 \"PROD-ETC-API WAS로 통합\" 작업으로 별도 서버(10.10.10.51/52) → api-was2 통합 완료 → 2023-04-04 vkey.tar 마지막 갱신 (이후 frozen)."
       - "**테스트 명령 없음.** WAR 배포 후 `curl http://127.0.0.1:8080/` 응답에 `/TouchEn/transkey/transkey.js` 와 `/transkeyServlet/decode` form 포함 여부로 헬스 체크."
@@ -221,3 +288,197 @@ services:
       - "pom.xml 에서 maven.test.skip=true 로 테스트가 기본 비활성화되어 있다. 변경 시 명시적으로 -Dmaven.test.skip=false 사용."
       - "Java 1.8 / Spring Boot 1.5 로 EOL 상태. 보안 패치 및 의존성 업그레이드 시 충돌 주의."
       - "로컬 lib 디렉토리에 의존하는 jar 가 있으니 빌드 시 누락 확인."
+
+  # ─────────────────────────────────────────────
+  # App Distribution Portal (사내 앱 OTA 배포)
+  # ─────────────────────────────────────────────
+  - name: "apps-distribution"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/apps-distribution"
+    path: "../apps-distribution"
+    feature_base_branch: "main"   # 단일 main 브랜치만 존재. GitLab 셀프호스트(gitlab.bomapp.co.kr).
+    description: "사내 모바일 앱 OTA Ad-hoc 배포 포털. 보맵(bomapp)/플래너(planner) × iOS/Android × dev/stg/prod 빌드를 한 페이지에서 다운로드/설치하도록 제공한다. `history.yaml` 릴리스 노트 + 번들 파일 목록으로 정적 `index.html` 과 iOS itms-services manifest(.plist) 를 Node 스크립트로 생성한다. `apps.bomapp.co.kr` 도메인으로 노출. App Store/Play Store 정식 배포가 아닌 내부 QA/테스트 배포용."
+    tech_stack: ["node", "js-yaml", "static-site-generator", "bash", "rsync", "itms-services-ota", "yarn"]
+    critical_paths:
+      - path: "src/main.js"
+        description: "정적 사이트 생성기. bundles/ 의 `<app>-<version>-<env>.<apk|ipa>` 파일명을 파싱해 history.yaml 노트와 결합, index.html 의 릴리스 표와 iOS .plist manifest 들을 생성한다. (파일명 substring/split 파싱 + 문자열 버전 정렬 — 취약)"
+      - path: "src/manifest.plist"
+        description: "iOS itms-services OTA 설치용 plist 템플릿 ({{ipaUrl}}/{{bundleId}}/{{version}}/{{appName}} 치환). display-image 가 bomapp 아이콘으로 하드코딩됨(planner 도 동일 — 버그)."
+      - path: "src/index.html"
+        description: "릴리스 표 템플릿 ({{bomappAosTrs}} 등 4개 플레이스홀더). bomapp/planner div 를 경로(location.pathname)로 분기 표시."
+      - path: "deploy/download-bundles.sh"
+        description: "prod-front EC2(`bomapp@prod-front.bomapp.co.kr:/was/run/apps-prod/archive/`)에서 모든 .apk/.ipa 번들을 로컬 bundles/ 로 rsync DOWN. (번들 source-of-truth 가 prod 서버 파일시스템)"
+      - path: "deploy/deploy.sh"
+        description: "clean+build 후 dist/ 를 동일 prod-front 서버 `/was/run/apps-prod` 로 rsync UP (--delete). 개발자 로컬 머신에서 수동 실행."
+      - path: "deploy/env.sh"
+        description: "배포 대상 호스트/포트/SSH 옵션. HOST=prod-front.bomapp.co.kr, PORT=2203, `~/next_bomapp.pem`, StrictHostKeyChecking=no (보안 스멜)."
+      - path: "history.yaml"
+        description: "앱/OS/버전별 릴리스 노트 단일 소스. 수기 관리."
+    dependencies:
+      - service: "infra"
+        type: "async"
+        interface: "hosting"
+        note: "현재 apps.bomapp.co.kr 는 Route53 CNAME → prod-NLB → ALB rule_29 → prod-front EC2:3001(`/was/run/apps-prod`) 로 서빙. S3+CloudFront 이관 시 infra 의 s3_static_sites.tf/cloudfront_static_sites.tf/iam_deploy_static.tf/route53.tf 변경 필요."
+      - service: "bomapp-ios"
+        type: "async"
+        interface: "package-registry + pipeline-trigger"
+        note: "(이관 후) bomapp-ios CI 가 .ipa 를 GitLab generic registry(`bomapp/<ver>/bomapp-<ver>-<env>.ipa`)에 publish 하면 apps-distribution 파이프라인을 트리거하는 producer."
+      - service: "bomapp-aos"
+        type: "async"
+        interface: "package-registry + pipeline-trigger"
+        note: "(이관 후) bomapp-aos CI 가 .apk 를 GitLab generic registry(`bomapp/<ver>/bomapp-<ver>-<env>.apk`)에 publish 하면 apps-distribution 파이프라인을 트리거하는 producer. flavor stage→stg, product→prod 정규화."
+      - service: "planner-ios"
+        type: "async"
+        interface: "package-registry + pipeline-trigger"
+        note: "(이관 후) planner-ios CI 가 .ipa 를 GitLab generic registry(`planner/<ver>/planner-<ver>-<env>.ipa`)에 publish 하면 apps-distribution 파이프라인을 트리거하는 producer."
+      - service: "planner-aos"
+        type: "async"
+        interface: "package-registry + pipeline-trigger"
+        note: "(이관 후) planner-aos CI 가 .apk 를 GitLab generic registry(`planner/<ver>/planner-<ver>-<env>.apk`)에 publish 하면 apps-distribution 파이프라인을 트리거하는 producer."
+    docs_to_read: []   # CLAUDE.md / AGENTS.md 모두 부재. 리포 자체 도메인 규칙 문서 없음 — Teammate 은 README 부재를 전제로 작업.
+    test_command: null
+    lint_command: null
+    notes:
+      - "**CI/CD 없음.** 전 과정이 개발자 로컬 머신 수동 실행: download-bundles.sh(번들 내려받기) → build.sh(dist 생성) → deploy.sh(rsync 업로드). GitLab 파이프라인 미구성."
+      - "**번들 round-trip 비효율**: 모든 .apk/.ipa(대용량) 를 prod 서버에서 로컬로 내려받고 → dist/archive 로 복사 → 다시 prod 서버로 rsync 업로드. 배포마다 전체 바이너리가 랩탑을 왕복."
+      - "**단일 PROD 사이트가 dev/stg/prod 빌드를 모두 호스팅**: next-frontend 처럼 환경별 버킷/배포로 갈리지 않음. 사이트 표 안에서 환경 컬럼(운영/스테이징/개발)으로 구분. 단일 main 브랜치."
+      - "**번들 파일명 규약**: `<app>-<version>-<env>.<apk|ipa>` (예: `bomapp-4.2.9-prod.apk`, `planner-1.1.5-stg.ipa`). main.js 가 이 규약에 강결합."
+      - "**manifest URL 하드코딩**: index.html/main.js/manifest.plist 안에 `https://apps.bomapp.co.kr/archive/...`, `/manifest/...`, `/img/...` 절대경로 하드코딩. 도메인/경로 구조 변경 시 동반 수정 필요."
+      - "**보안**: env.sh 의 StrictHostKeyChecking=no, prod 직접 rsync(--delete) 권한, PEM 키 로컬 의존. S3+CF 이관 시 IAM deploy-static 키 기반으로 대체 가능."
+      - "**iOS bundleId 규약**: bomapp=`kr.co.bomapp.iOSBomappBeta`(+`.staging`/`.dev`), planner=`kr.co.bomapp.planner`(+`.stg`/`.dev`). main.js getIosBundleId 에 하드코딩."
+      - "**도메인 노출**: apps.bomapp.co.kr (HTTP 캐시 무효화 meta 사용). 이관 후엔 CloudFront no-cache(index/manifest) + immutable(아카이브) 분리 캐시 정책 권장."
+      - "**알려진 버그**: manifest.plist 의 display-image/full-size-image 가 bomapp_57.png/bomapp_512.png 로 고정 — planner 앱 설치 시에도 보맵 아이콘 노출."
+      - "**업스트림 producer (이관 후)**: bomapp-ios / bomapp-aos / planner-ios / planner-aos 4개 네이티브 앱 리포가 빌드 산출물을 GitLab generic registry 에 publish 하고 apps-distribution 파이프라인을 트리거한다. 번들 파일명 env 토큰은 dev/stg/prod 로 정규화(bomapp-ios `.staging`→stg, bomapp-aos `stage`→stg/`product`→prod)."
+
+  # ─────────────────────────────────────────────
+  # Native Mobile App Projects (앱 빌드 소스)
+  # 보맵/플래너 × iOS/Android. 빌드 산출물(.ipa/.apk)을 GitLab Package
+  # Registry 에 publish → apps-distribution OTA 포털 파이프라인 트리거.
+  # 4개 모두 현재 CI 부재(개발자 로컬 수동 빌드) — GitLab CI 신설 대상.
+  # ─────────────────────────────────────────────
+  - name: "bomapp-ios"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/bomapp-ios"
+    path: "../bomapp-ios"
+    feature_base_branch: "main"
+    description: "보맵(BOMAPP) iOS 네이티브 앱. Xcode 워크스페이스(CocoaPods) 기반, 메인 타깃 `Bomapp` + 푸시 확장 `NotificationService`. dev/stg/prod 3환경 scheme 으로 ad-hoc/App Store .ipa 산출. fastlane match 로 코드사이닝 인증서/프로파일 관리."
+    tech_stack: ["swift", "xcode", "cocoapods", "fastlane-match", "rxswift", "moya", "amplitude", "braze", "ios-app"]
+    critical_paths:
+      - path: "Bomapp.xcworkspace"
+        description: "CocoaPods 워크스페이스 진입점 (Bomapp + BDM + NotificationService)."
+      - path: "Bomapp.xcodeproj/project.pbxproj"
+        description: "타깃/빌드 컨피그(Development/Staging/Production Debug·Release), MARKETING_VERSION(현 4.2.x), CURRENT_PROJECT_VERSION."
+      - path: "Bomapp/Resources/Config/{Development,Staging,Production}.xcconfig"
+        description: "환경별 IS_APP_BUNDLE_ID — dev=`kr.co.bomapp.iOSBomappBeta.dev`, stg=`.staging`, prod=`kr.co.bomapp.iOSBomappBeta`. (포털 env 토큰: .staging→stg 정규화 필요)"
+      - path: "Bomapp.xcodeproj/xcshareddata/xcschemes/Bomapp{Dev,Staging,Production}.xcscheme"
+        description: "환경별 Archive scheme (ArchiveAction buildConfiguration = DevelopmentRelease/StagingRelease/ProductionRelease)."
+      - path: "{Development,Staging,Appstore}ExportOptions.plist"
+        description: "export 설정. dev/stg=ad-hoc(manual signing, OTA 가능), prod=app-store(OTA 불가 — 포털 prod OTA 용은 ad-hoc prod 빌드 별도 필요)."
+      - path: "certs/, profiles/, match_version.txt"
+        description: "fastlane match v2.111.0 인증서/프로비저닝 프로파일(리포 체크인). Apple Team R5RFEZ8DV2."
+      - path: "BuildScript.sh"
+        description: "Xcode Build Phase 빌드넘버 자동증가(YYYYMMDD.HHMM.count). 로컬 전용 — CI 에선 대체 로직 필요."
+    dependencies:
+      - service: "apps-distribution"
+        type: "async"
+        interface: "package-registry + pipeline-trigger"
+        note: "CI 신설 후 .ipa 를 generic registry 에 publish → apps-distribution 트리거. 현재는 개발자 로컬 빌드 후 prod 서버로 수동 반영."
+    docs_to_read: []   # CLAUDE.md/AGENTS.md 부재.
+    test_command: null   # xcodebuild test 가능하나 CI 미구성.
+    lint_command: null
+    notes:
+      - "**CI 부재.** .gitlab-ci.yml/.github/bitrise/Jenkins/codemagic 전무. iOS 빌드는 **macOS 러너 + Xcode** 필수가 핵심 과제."
+      - "**코드사이닝**: manual + fastlane match(readonly). CI 에서 match git 저장소 접근 토큰 + 키체인 셋업 필요. dev/stg 는 ad-hoc, prod OTA 는 별도 ad-hoc export(`ProductionAdHocExportOptions.plist`) 신설 검토."
+      - "**버전 소스**: project.pbxproj MARKETING_VERSION. 포털 파일명 `bomapp-<version>-<env>.ipa` 로 매핑."
+      - "**bundle id**: `kr.co.bomapp.iOSBomappBeta`(+`.staging`/`.dev`). apps-distribution `getIosBundleId('bomapp', env)` 와 정확히 일치."
+
+  - name: "bomapp-aos"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/bomapp-aos"
+    path: "../bomapp-aos"
+    feature_base_branch: "prod"   # 기본 브랜치 prod (README 의 dev/stage/master 와 불일치 — prod 중심으로 운영).
+    description: "보맵(BOMAPP) Android 네이티브 앱. Gradle 8.9 / AGP 8.2.0 / Kotlin 1.9.21 멀티모듈(app + design + baseview + mtranskey[라온 mTranskey 보안키패드]). dev/stage/product 3 flavor 로 서명 release APK 산출."
+    tech_stack: ["kotlin", "java-8", "gradle-8.9", "agp-8.2", "android-multimodule", "realm", "koin", "retrofit2", "rxjava3", "firebase", "braze", "airbridge", "android-app"]
+    critical_paths:
+      - path: "app/build.gradle"
+        description: "productFlavors dev(.dev)/stage(.stage)/product(applicationId `com.rv2.bomapp`), signingConfigs.release, versionCode 43002/versionName 4.3.0, archivesBaseName=`user_v`+versionName, buildNum 프로퍼티 기반 versionCode 가산."
+      - path: "settings.gradle"
+        description: "include ':app', ':mtranskey', ':design', ':baseview' (4모듈)."
+      - path: "dependencies.gradle"
+        description: "AGP 8.2.0 / Kotlin 1.9.21 / compileSdk·targetSdk 35 / minSdk 26 / Java 1.8."
+      - path: "keystore/signingconfig.properties"
+        description: "⚠️ storePassword/keyPassword **평문** (`jhkstl35#`), storeFile=../keystore/keystore.jks, keyAlias=upload. CI 이관 시 환경변수/시크릿 주입 + 평문 제거 필요."
+      - path: "gradle/wrapper/gradle-wrapper.properties"
+        description: "Gradle 8.9 wrapper."
+    dependencies:
+      - service: "apps-distribution"
+        type: "async"
+        interface: "package-registry + pipeline-trigger"
+        note: "CI 신설 후 release .apk 를 generic registry 에 publish → apps-distribution 트리거. flavor 명을 포털 env 토큰으로 정규화(stage→stg, product→prod)."
+    docs_to_read: []
+    test_command: "./gradlew test"   # 가능하나 CI 미구성.
+    lint_command: null
+    notes:
+      - "**CI 부재.** GitLab CI 신설 대상. JDK + Android SDK 35 도커 이미지 + Gradle 캐시가 핵심."
+      - "**서명 보안 이슈**: signingconfig.properties 평문 비밀번호. CI 에서 keystore base64 시크릿 + 비번 변수 주입으로 대체, 가능하면 키 로테이션 검토."
+      - "**flavor↔env 정규화 주의**: dev/stage/product → 포털 dev/stg/prod. 파일명 `bomapp-<version>-<env>.apk` 생성 시 매핑 필수."
+      - "**버전 소스**: app/build.gradle defaultConfig versionName(4.3.0). APK 산출 경로 `app/build/outputs/apk/<flavor>Release/`."
+      - "**APK vs AAB**: 최근 커밋에 AAB 빌드 흔적. 포털 OTA 는 .apk 필요(AAB 는 Play 전용)."
+
+  - name: "planner-ios"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/planner-ios"
+    path: "../planner-ios"
+    feature_base_branch: "main"
+    description: "보맵플래너(설계사용) iOS 네이티브 앱. Xcode + **SPM**(CocoaPods 미사용) 기반 SwiftUI 앱. dev/stg/prod 3 build configuration + scheme 으로 .ipa 산출. 현재 자동 서명(app-store-connect) — bomapp-ios 의 match 방식과 상이."
+    tech_stack: ["swift", "swiftui", "xcode", "spm", "braze", "amplitude", "airbridge", "lottie", "ios-app"]
+    critical_paths:
+      - path: "planner.xcodeproj/project.pbxproj"
+        description: "단일 타깃 `planner`, 3 build configuration(DEV/STG/PROD), MARKETING_VERSION 1.1.5, CURRENT_PROJECT_VERSION 1, GENERATE_INFOPLIST_FILE=YES."
+      - path: "planner/Config/{dev,stg,prod}.xcconfig"
+        description: "환경별 Bundle ID(dev=`kr.co.bomapp.planner.dev`, stg=`.stg`, prod=`kr.co.bomapp.planner`) + WEBVIEW_BASE + 트래커 키. 포털 `getIosBundleId('planner', env)` 와 정확히 일치."
+      - path: "planner.xcodeproj/xcshareddata/xcschemes/planner-{dev,stg,prod}.xcscheme"
+        description: "환경별 scheme (buildConfiguration DEV/STG/PROD)."
+      - path: "planner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+        description: "SPM 의존성 락(Braze 4.7.0, Amplitude 8.22.0, Airbridge 1.40.1, Lottie 4.5.1)."
+      - path: "planner/planner.entitlements"
+        description: "Push notification(aps-environment) 권한."
+    dependencies:
+      - service: "apps-distribution"
+        type: "async"
+        interface: "package-registry + pipeline-trigger"
+        note: "CI 신설 후 .ipa 를 generic registry 에 publish → apps-distribution 트리거."
+    docs_to_read: []
+    test_command: null
+    lint_command: null
+    notes:
+      - "**CI 부재.** macOS 러너 + Xcode 필수. SPM 이라 `xcodebuild -resolvePackageDependencies` 로 의존성 해결(CocoaPods 불필요)."
+      - "**코드사이닝**: 현재 automatic + app-store-connect(`manageAppVersionAndBuildNumber=true`). OTA(ad-hoc) 배포를 위해 환경별 ExportOptions(ad-hoc) + (fastlane match 도입 또는 수동 프로파일) 셋업 필요 — bomapp-ios 대비 추가 과제."
+      - "**버전 소스**: project.pbxproj MARKETING_VERSION(1.1.5). 포털 파일명 `planner-<version>-<env>.ipa` 로 매핑. history.yaml planner ios 1.x 대와 정합."
+      - "**Apple Team**: R5RFEZ8DV2 (bomapp-ios 와 동일)."
+
+  - name: "planner-aos"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/planner-aos"
+    path: "../planner-aos"
+    feature_base_branch: "main"
+    description: "보맵플래너(설계사용) Android 네이티브 앱. Gradle 8.9 / AGP 8.6.0 / Kotlin 2.1.0, **단일 모듈(:app)** — bomapp-aos 보다 단순. dev/stg/prod 3 flavor 로 서명 release APK 산출."
+    tech_stack: ["kotlin", "gradle-8.9", "agp-8.6", "kotlin-2.1", "android-single-module", "firebase-fcm", "braze", "airbridge", "amplitude", "android-app"]
+    critical_paths:
+      - path: "app/build.gradle"
+        description: "productFlavors dev(.dev)/stg(.stg)/prod(applicationId `kr.co.bomapp.planner`), signingConfigs.release, versionCode 11701/versionName 1.1.7. archivesBaseName 미설정(기본 `app-<flavor>-release.apk`)."
+      - path: "settings.gradle"
+        description: "include ':app' (단일 모듈)."
+      - path: "keystore/signingconfig.properties"
+        description: "⚠️ storePassword/keyPassword **평문** (`Wings0405!!`), storeFile=../keystore/planner_aos_keystore.p12(PKCS#12), keyAlias=planner_playstore_upload_key. CI 이관 시 시크릿 주입 + 평문 제거 필요."
+      - path: "gradle/wrapper/gradle-wrapper.properties"
+        description: "Gradle 8.9 wrapper. AGP 8.6.0 / Kotlin 2.1.0 (bomapp-aos 보다 최신)."
+    dependencies:
+      - service: "apps-distribution"
+        type: "async"
+        interface: "package-registry + pipeline-trigger"
+        note: "CI 신설 후 release .apk 를 generic registry 에 publish → apps-distribution 트리거. flavor 가 이미 dev/stg/prod 라 정규화 단순."
+    docs_to_read: []
+    test_command: "./gradlew test"
+    lint_command: null
+    notes:
+      - "**CI 부재.** GitLab CI 신설 대상. JDK + Android SDK 35 이미지 + Gradle 캐시."
+      - "**서명 보안 이슈**: signingconfig.properties 평문 비밀번호(`Wings0405!!`). CI 시크릿 주입으로 대체 + 평문 제거 필요. keystore 는 .p12(PKCS#12)."
+      - "**flavor↔env**: dev/stg/prod 이미 포털 토큰과 일치 — bomapp-aos(stage/product) 대비 매핑 단순."
+      - "**버전 소스**: app/build.gradle versionName(1.1.7). 산출물 기본명 `app-<flavor>-release.apk` → 포털 `planner-<version>-<env>.apk` 로 rename 필요. history.yaml planner aos 1.x 대와 정합."
+      - "**APK vs AAB**: 최근 prod 산출은 AAB(Play). 포털 OTA 는 .apk 빌드 필요."

@@ -168,11 +168,11 @@ ExE2EKey_bomapp = /Users/zard21/development/IdeaProjects/secure_servlet/web/WEB-
 
 ---
 
-## 3. 관련 PoC 리포: `transkey_springboot`
+## 3. 관련 PoC 리포: `bomapp-vkey`
 
 | 항목 | 값 |
 |------|----|
-| URL | https://github.com/bomapp-inc/transkey_springboot |
+| URL | https://github.com/bomapp-inc/bomapp-vkey |
 | 첫 커밋 | 2020-06-04 11:31 KST (`transkey_servlet` 의 4분 뒤) |
 | 커밋 수 | 1 |
 | 작성자 | 동일 (zard21) |
@@ -183,7 +183,7 @@ ExE2EKey_bomapp = /Users/zard21/development/IdeaProjects/secure_servlet/web/WEB-
 ### 3.1 구조
 
 ```
-transkey_springboot/
+bomapp-vkey/
 ├── pom.xml                            # spring-boot-starter-parent 2.2.1.RELEASE
 ├── mvnw, mvnw.cmd, .mvn/              # Maven wrapper
 └── src/
@@ -198,7 +198,7 @@ transkey_springboot/
 
 ### 3.2 transkey_servlet 과의 차이
 
-| 측면 | transkey_servlet | transkey_springboot |
+| 측면 | transkey_servlet | bomapp-vkey |
 |------|------------------|----------------------|
 | 빌드 | IntelliJ artifact, 의존성 jar 직접 포함 | Maven, `com.raonsecure:transkey:1.0.0` Maven 좌표 (사설 저장소 필요) |
 | 진입점 | Tomcat 의 `/transkeyServlet` (web.xml) | Spring Boot 의 `ServletRegistrationBean` 으로 동일 `/transkeyServlet` + REST `POST /securekey` 추가 |
@@ -208,7 +208,7 @@ transkey_springboot/
 
 ### 3.3 결론: 미완성 PoC
 
-`transkey_springboot` 는 **같은 날 4분 차이로 만든 Spring Boot 포팅 시도**이며 다음 이유로 **미완성 / 미배포** 로 판단:
+`bomapp-vkey` 는 **같은 날 4분 차이로 만든 Spring Boot 포팅 시도**이며 다음 이유로 **미완성 / 미배포** 로 판단:
 
 1. 초기 커밋 후 추가 커밋이 없다 (5년+ 무변경).
 2. `SecureKeyController.java:21-22` 에 개발자 로컬 절대경로가 그대로 남아 있다.
@@ -313,7 +313,7 @@ transkey_springboot/
 6. **CI 화**: `bomapp-inc/transkey_servlet` 리포에 GitHub Actions 추가. WAR 빌드 → Docker 이미지 빌드 → ECR push → ECS 배포. IntelliJ artifact 의존 제거.
 
 **장기 (Modernization — 분기 단위)**
-7. **Spring Boot 화 재검토**: 기존 `transkey_springboot` PoC 를 베이스로 Spring Boot 2.7.x WAR (라온 jar 가 `javax.servlet` 이라 SB 3.x jakarta 호환 불가). 라온 jar 는 `transkey_servlet/web/WEB-INF/lib/` 의 두 jar 를 system scope 또는 사내 Nexus install. `ServletRegistrationBean` 으로 같은 `/transkeyServlet` 매핑.
+7. **Spring Boot 화 재검토**: 기존 `bomapp-vkey` PoC 를 베이스로 Spring Boot 2.7.x WAR (라온 jar 가 `javax.servlet` 이라 SB 3.x jakarta 호환 불가). 라온 jar 는 `transkey_servlet/web/WEB-INF/lib/` 의 두 jar 를 system scope 또는 사내 Nexus install. `ServletRegistrationBean` 으로 같은 `/transkeyServlet` 매핑.
 8. **next-backend 의 별도 모듈로 흡수 검토**: CLAUDE.md 의 "레거시에 신규 기능 추가 지양" 원칙. 다만 라온 라이브러리 라이선스/배포 모델 때문에 next-backend Gradle 빌드에 흡수 가능 여부는 별도 검증 필요. (라온 jar 가 사설 저장소에 등록되어 있다면 가능.)
 9. **CORS 좁히기**: `*` → `*.bomapp.co.kr` 등 도메인 화이트리스트.
 
@@ -350,7 +350,7 @@ transkey_springboot/
 
 | 구분 | 설명 |
 |------|------|
-| 로컬 가동본 | `/Users/justin/Projects/transkey_springboot` main 브랜치 (BV-1 머지 상태). `securekey-0.0.1-SNAPSHOT.jar` (Spring Boot 2.7.18 / Java 21 / embedded Tomcat 9.0.83). |
+| 로컬 가동본 | `/Users/justin/Projects/bomapp-vkey` main 브랜치 (BV-1 머지 상태). `securekey-0.0.1-SNAPSHOT.jar` (Spring Boot 2.7.18 / Java 21 / embedded Tomcat 9.0.83). |
 | PROD | `vkey.bomapp.co.kr` / `i-03f0178089f760c6f` 컨테이너 내 `/was/run/bomapp-vkey` (Tomcat 9.0.45 WAR). SSM Run Command 로 응답 캡쳐. |
 
 **빌드 환경**
@@ -432,15 +432,15 @@ TldScanner 로그에서 해당 경로들이 모두 스캔됨 확인 (keyboard/qw
 ### 9.3 C — iniFilePath / licenseIniPath getRealPath() 동작
 
 ```
-Document root: /Users/justin/Projects/transkey_springboot/src/main/webapp
+Document root: /Users/justin/Projects/bomapp-vkey/src/main/webapp
 ```
 
 embedded Tomcat 이 `src/main/webapp` 을 webapp base 로 인식하여, TranskeyServlet 의 `ServletContext.getRealPath("/WEB-INF/raon_config/config.ini")` 가 아래 실존 경로로 해소됨:
 
 ```
-/Users/justin/Projects/transkey_springboot/src/main/webapp/WEB-INF/raon_config/config.ini
-/Users/justin/Projects/transkey_springboot/src/main/webapp/WEB-INF/raon_config/transkey_license.ini
-/Users/justin/Projects/transkey_springboot/src/main/webapp/WEB-INF/raon_config/transkey__P_license/  (8개 파일)
+/Users/justin/Projects/bomapp-vkey/src/main/webapp/WEB-INF/raon_config/config.ini
+/Users/justin/Projects/bomapp-vkey/src/main/webapp/WEB-INF/raon_config/transkey_license.ini
+/Users/justin/Projects/bomapp-vkey/src/main/webapp/WEB-INF/raon_config/transkey__P_license/  (8개 파일)
 ```
 
 TranskeyServlet init 성공 (`TranskeyServlet init...` + `Transkey setConfigMap.` 로그) 으로 getRealPath() null 반환 없음이 간접 확인됨.
