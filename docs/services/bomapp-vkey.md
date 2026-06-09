@@ -1,24 +1,29 @@
-# bomapp-vkey (transkey_servlet)
+# bomapp-vkey
 
-> 라온시큐어 **TouchEn 가상키보드(transkey)** 의 서버측 복호화 서블릿. `vkey.bomapp.co.kr` 도메인으로 노출되며, 보험금 청구 플로우에서 사용자가 주민번호를 가상키보드로 입력하면 클라이언트가 암호화한 페이로드를 이 서버가 복호화·검증한다.
+> 라온시큐어 **TouchEn 가상키보드(transkey)** 의 서버측 복호화 서버. `vkey.bomapp.co.kr` 도메인으로 노출되며, 보험금 청구 플로우에서 사용자가 주민번호를 가상키보드로 입력하면 클라이언트가 암호화한 페이로드를 이 서버가 복호화·검증한다.
 
 | 항목 | 값 |
 |------|----|
 | 운영 도메인 | `https://vkey.bomapp.co.kr` |
-| 현재 위치 | PROD-BACK 공용 WAS 컨테이너 (`next-backend-was:1.1`) 내부 `/was/run/bomapp-vkey`, PID 1205 |
-| 인스턴스 | `i-03f0178089f760c6f` (= `api-was2` = `10.1.1.20`) |
-| 컨테이너 포트 | **8080** (HTTP connector), 8005 (shutdown), 65355 (JMX) |
-| ALB 라우팅 | PROD-ALB:443 priority 10 → TG `prod-back-ecs-host-http-8080` |
-| 런타임 | **Tomcat 9.0.45** + Java 1.8 (Spring Boot 아님) |
-| 빌드 시스템 | **IntelliJ artifact** (Maven/Gradle 없음) |
-| 패키징 | WAR (`secure_servlet_war`) |
-| 소스 리포 | [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) (GitHub) |
+| 현재 위치 | **ECS `PROD-Cluster` / service `SVC-ECS-PROD-bomapp-vkey`** (EC2 launch type, Graviton 3 m7g, arm64). desired=2, multi-AZ. |
+| ALB 라우팅 | PROD-ALB:443 priority 10 → **TG `prod-bomapp-vkey-ip-8080` (100%)** + 옛 `prod-back-ecs-host-http-8080` (weight 0, drain 대기). priority 4 (X-Canary=office) / priority 5 (사무실 source-ip) 도 동일 새 TG. |
+| 컨테이너 포트 | 8080 |
+| 런타임 | **Spring Boot 2.7.18 + embedded Tomcat 9.x**, Java 17, Gradle |
+| 빌드 시스템 | Gradle + Jib (containerizingMode=packaged) — Docker daemon 미사용, ECR direct push |
+| 패키징 | OCI image (arm64) |
+| 소스 리포 | [`bomapp-inc/bomapp-vkey`](https://github.com/bomapp-inc/bomapp-vkey) (GitHub) — 옛 PoC repo [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) 는 deprecated |
+| BV 마이그레이션 | **2026-05-19 ~ 2026-06-08 완료**. 옛 PROD-BACK 공용 Tomcat WAR (next-backend-was:1.1, `i-03f0178089f760c6f`, PID 1205) → 독립 ECS service. 2026-06-08 17:28 KST priority 10 의 100% 트래픽 전환. BV-7 silent decode fail 회고: [infra runbook](../../../infra/docs/runbooks/bv-7-silent-decode-failure.md), [PR #13](https://github.com/bomapp-inc/bomapp-vkey/pull/13) |
 
 ---
 
 ## 1. 개요
 
-보맵은 사용자의 민감 정보(주민번호/인증서 비밀번호/카드번호 등) 입력 시 **라온시큐어 TouchEn mTranskey** 가상키보드를 띄운다. 가상키보드는 키 입력을 클라이언트에서 RSA(E2E) 로 암호화한 페이로드로 전환하고, 폼 제출 시 이 페이로드가 `bomapp-vkey` 의 `/transkeyServlet` 또는 `/transkeyServlet/decode` 로 전달된다. `TransKey.decode(...)` 가 서버측에서 복호화하여 평문을 호출자에게 반환한다.
+보맵은 사용자의 민감 정보(주민번호/인증서 비밀번호/카드번호 등) 입력 시 **라온시큐어 TouchEn mTranskey** 가상키보드를 띄운다. 가상키보드는 키 입력을 클라이언트에서 RSA(E2E) 로 암호화한 페이로드로 전환하고, 폼 제출 시 이 페이로드가 `bomapp-vkey` 로 전달된다. 호출 경로는 두 가지:
+
+- **Frontend (transkey.js)** → `GET/POST /transkeyServlet?op=...` — 라온 SDK 의 `TranskeyServlet` 이 처리 (getInitTime, getToken, getKeyInfo, getKey, getDummy 등). 가상키보드 init 흐름.
+- **bapi (Feign)** → `POST /transkeyServlet/decode?inputPrefix=...` — **`TranskeyDecodeController`** 가 처리. `TransKey.withoutSessionDecode(prefix, request)` 1단계 stateless decode. 7자리 평문 응답 (Feign String decoder 호환).
+
+(BV-7 silent fail 회고: 옛 운영의 decode 처리가 `TranskeyServlet.service()` 가 아닌 별도 controller 였는데 새 image 가 그 controller 를 누락하여 silent return 발생했음. PR #13 에서 `TranskeyDecodeController` 추가 + `/transkeyServlet/*` prefix mapping 제거로 해결.)
 
 **실제 사용 범위** (노션 "[보안키보드 사용 현황](https://www.notion.so/52904c5a70374c1a8e58d4d1aeeb0224)" 2020-09-07 기준):
 

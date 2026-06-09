@@ -234,36 +234,37 @@ services:
   # Standalone Security Component
   # ─────────────────────────────────────────────
   - name: "bomapp-vkey"
-    repo_url: "github.com/bomapp-inc/transkey_servlet"
-    path: "../transkey_servlet"
-    feature_base_branch: "main"
-    description: "라온시큐어 TouchEn 가상키보드(transkey) 서버측 복호화 서블릿. 신용정보원 회원가입/비번재설정 주민번호, 연동(자동차·진료·건강검진·공인인증서) 인증서 비번 및 주민번호, 청구 주민번호, 마켓 카드번호 등 민감 정보 입력 플로우에서 클라이언트 가상키보드 페이로드를 복호화한다. `vkey.bomapp.co.kr` 도메인으로 노출. 벤더 1차 컨택: 장지수(라온 Technical Support Team II, jsjang@raoncorp.com, 2021 기록)."
-    tech_stack: ["java-1.8", "jakarta-servlet-4.0", "tomcat-9.0.45", "war-packaging", "raonsecure-transkey-4.6", "raonsecure-transkey-decrypt-etoe-1.5"]
+    repo_url: "github.com/bomapp-inc/bomapp-vkey"
+    path: "../bomapp-vkey"
+    feature_base_branch: "master"
+    description: "라온시큐어 TouchEn 가상키보드(transkey) 서버측 복호화 서버. 신용정보원 회원가입/비번재설정 주민번호, 연동(자동차·진료·건강검진·공인인증서) 인증서 비번 및 주민번호, 청구 주민번호, 마켓 카드번호 등 민감 정보 입력 플로우에서 클라이언트 가상키보드 페이로드를 복호화한다. `vkey.bomapp.co.kr` 도메인으로 노출. 벤더 1차 컨택: 장지수(라온 Technical Support Team II, jsjang@raoncorp.com, 2021 기록)."
+    tech_stack: ["java-17", "spring-boot-2.7", "embedded-tomcat-9", "gradle", "jib", "raonsecure-transkey-4.6", "raonsecure-transkey-decrypt-etoe-1.5"]
     critical_paths:
-      - path: "web/WEB-INF/web.xml"
-        description: "Raon TranskeyServlet 매핑 (`/transkeyServlet`) 및 전역 CORS 필터 정의"
-      - path: "web/WEB-INF/raon_config/config.ini"
-        description: "Raon 라이브러리 설정 (세션, 키보드 종류 경로, ExE2E_algorithm_bomapp 등). 운영 환경에는 zard21 의 절대경로 하드코딩이 남아 있어 주입/오버라이드 필요."
-      - path: "web/WEB-INF/raon_config/transkey_license.ini"
-        description: "라이선스 메타 (type, path). 실제 라이선스 파일은 `transkey__T_license/` (temporary) 와 `transkey__P_license/` (permanent) 하위에 위치. 리포 포함 라이선스는 `*.raonsecure.com` 도메인 데모용 — 운영용 라이선스 별도 주입 여부 미확인."
-      - path: "web/WEB-INF/lib"
-        description: "라온 라이브러리 jar 직접 포함 (`transkey-4-6-12_18_20190703_X.jar`, `TranskeyDecryptEtoE1.5_14.jar`). Maven 사용 안 함."
-      - path: "web/TouchEn"
-        description: "클라이언트 가상키보드 자산 (transkey.js / .css / 이미지, 데스크톱·모바일 별도)"
+      - path: "src/main/java/kr/co/bomapp/securekey/controller/TranskeyDecodeController.java"
+        description: "bapi 의 `POST /transkeyServlet/decode` 호출을 처리하는 controller. `TransKey.withoutSessionDecode(prefix, request)` 1단계 stateless decode. BV-7 fix 의 핵심."
+      - path: "src/main/java/kr/co/bomapp/securekey/config/ServletRegistrationConfig.java"
+        description: "Raon `TranskeyServlet` 등록. URL pattern: `/transkeyServlet`, `/secure_servlet/transkeyServlet` (exact only). `/transkeyServlet/*` prefix 는 controller 우선순위 위해 등록 X."
+      - path: "src/main/java/kr/co/bomapp/securekey/SecureKeyApplication.java"
+        description: "Spring Boot main. `extractLicenseFromEnvIfConfigured()` 가 ECS env `RAON_LICENSE_ZIP_BASE64` (SM 주입) → webapp `transkey__P_license/` 에 unzip."
+      - path: "src/main/webapp/WEB-INF/raon_config/config.ini"
+        description: "Raon 라이브러리 설정 (세션, 키보드 종류 경로 등). `useSession=false`, `useCORS=false` (Spring `CorsConfig` 가 CORS 처리)."
+      - path: "src/main/resources/lib"
+        description: "라온 라이브러리 jar (`transkey-4-6-12_18_20190703_X.jar`, `TranskeyDecryptEtoE1.5_14.jar`). 옛 transkey_servlet 의 jar 와 SHA 동일."
+      - path: "ops/ecs/bomapp-vkey/overlays/{dev,stg,prod}/.env"
+        description: "환경별 ECS overlay — cluster/service/secret arn 등. CI 의 envsubst 가 task-definition.json 에 주입."
+      - path: ".github/workflows/build-and-deploy.yml"
+        description: "workflow_dispatch only. build-and-test → build-and-push (Jib + ECR direct push, IMMUTABLE tag 충돌 skip 로직 포함) → deploy (ECS register/update/wait)."
     dependencies: []
-    test_command: null
+    test_command: "./gradlew test"
     lint_command: null
     notes:
-      - "**Maven/Gradle 빌드 시스템 없음.** IntelliJ artifact (`secure_servlet.iml`) 기반으로 WAR 산출. 노션 인프라 페이지의 \"바이너리 파일 통으로 가지고 있어서 실행만 하면 됨\" 설명과 일치."
-      - "**현재 운영 형태**: PROD-BACK 공용 WAS 컨테이너 (`next-backend-was:1.1`, `i-03f0178089f760c6f` = 10.1.1.20 = api-was2) 내부 PID 1205, Tomcat 9.0.45, 컨테이너 디렉토리 `/was/run/bomapp-vkey`, listening 포트 8080. **호스트 마운트는 `/was/data/bomapp-vkey/vkey.tar` (126MB) + `restart.sh` 만 — 2023-04-04 이후 갱신 없음.**"
-      - "**SPOF**: vkey 가 단일 인스턴스 `i-03f0178089f760c6f` 에서만 가동. PROD-BACK 의 두 번째 인스턴스 `i-09e36b30bad90990d` 에는 vkey 부재 (2026-05-19 SSM 확인). 새 ECS service 신설 시 desired_count ≥ 2 + multi-AZ 필수."
-      - "**ALB 라우팅**: PROD-ALB:443 priority 10, host `vkey.bomapp.co.kr` → TG `prod-back-ecs-host-http-8080`. Tomcat 의 webapps 에 `ROOT/` 와 `secure_servlet/` 두 컨텍스트가 동일 WAR 로 deploy되어 있음 (`/transkeyServlet` 와 `/secure_servlet/transkeyServlet` 둘 다 응답)."
-      - "**운영 라이선스 확정 (2026-05-19 SSM 추출)**: `transkey_license.ini` 의 `license.type=p` 활성. P 라이선스 X.509 Subject = `O=bomapp, CN=T=P&D=[*.bomapp.co.kr]`, 유효 2019-08-19 ~ **2049-08-11 (30년 영구)**, RaonSecure CA 발급. 인증서 체인 / 개인키 modulus 검증 통과. 와일드카드라 DEV/STG/PROD 도메인 모두 커버. 추출본은 `~/Downloads/bomapp-vkey-license-prod/P/` (권한 0600) — Spring Boot 부활 시 AWS Secrets Manager 로 이관."
-      - "**T 라이선스 잔재**: `transkey__T_license/` 에 다른 회사(`O=HahaSavings`) 라이선스가 잘못 들어 있음. `license.type=p` 모드라 미사용이나 새 빌드 시 T 디렉토리 제외 권장."
-      - "**관련 abandoned PoC**: [`github.com/bomapp-inc/bomapp-vkey`](https://github.com/bomapp-inc/bomapp-vkey) — 동일 개발자(zard21)가 2020-06-04 같은 날 만든 Spring Boot 포팅 시도. `kr.co.bomapp:securekey:0.0.1-SNAPSHOT`, `POST /securekey` REST endpoint 추가 시도. 초기 커밋 1개 후 작업 없음. 운영 배포 안 됨. 라온 jar 가 `javax.servlet` 기반이라 Spring Boot 3.x(jakarta) 불가 — 2.7.x 가 천장."
-      - "**비표준 위치**: GitLab 셀프호스트(`gitlab.bomapp.co.kr`) 가 아닌 GitHub `bomapp-inc` 조직에 위치. BOMAPP 의 다른 서비스 호스팅 컨벤션 예외."
-      - "이력: 2020-06-04 최초 작성 → 2024-02-20 \"PROD-ETC-API WAS로 통합\" 작업으로 별도 서버(10.10.10.51/52) → api-was2 통합 완료 → 2023-04-04 vkey.tar 마지막 갱신 (이후 frozen)."
-      - "**테스트 명령 없음.** WAR 배포 후 `curl http://127.0.0.1:8080/` 응답에 `/TouchEn/transkey/transkey.js` 와 `/transkeyServlet/decode` form 포함 여부로 헬스 체크."
+      - "**현재 운영 형태 (2026-06-08 cutover 완료)**: ECS `PROD-Cluster` / service `SVC-ECS-PROD-bomapp-vkey`, EC2 launch type (m7g Graviton 3, arm64), desired=2 multi-AZ. ALB priority 10 가 새 TG `prod-bomapp-vkey-ip-8080` 100% 처리 (옛 `prod-back-ecs-host-http-8080` weight 0, drain 대기). priority 4 (X-Canary=office) / priority 5 (사무실 source-ip) 도 동일 새 TG."
+      - "**BV 마이그레이션 (2026-05-19 ~ 2026-06-08)**: 옛 PROD-BACK 공용 WAS 컨테이너 (`next-backend-was:1.1`, `i-03f0178089f760c6f` 내부 PID 1205, Tomcat 9.0.45 WAR) → 독립 Spring Boot ECS service. BV-1 부활, BV-2 동등성 검증, BV-3 Dockerfile/Jib, BV-4 IAM/ECR/SM 프로비저닝, BV-5 GitHub Actions, BV-6 STG, BV-7 PROD cutover + silent decode fail fix (PR #13)."
+      - "**BV-7 silent decode fail 회고**: 옛 운영의 decode 처리가 `TranskeyServlet.service()` 가 아닌 별도 controller (next-backend-was image 안에 존재, 정확한 source repo 미확정) 였는데 새 image 가 그 controller 누락 → bapi 호출이 그냥 servlet 으로 가서 SDK 가 op=\"decode\" 분기 진입 전 silent return. `TranskeyDecodeController` + `TransKey.withoutSessionDecode` 1단계로 해결. 자세히 [infra runbook](../../../infra/docs/runbooks/bv-7-silent-decode-failure.md)."
+      - "**운영 라이선스 (2026-05-19 SSM 추출 + 2026-05-26 SM 이관)**: `transkey_license.ini` 의 `license.type=p` 활성. P 라이선스 X.509 Subject = `O=bomapp, CN=T=P&D=[*.bomapp.co.kr]`, 유효 2019-08-19 ~ **2049-08-11 (30년 영구)**. AWS Secrets Manager `bomapp/{dev,stg,prod}/raon_license` 에 SecretString (base64 zip) 으로 저장 → ECS env `RAON_LICENSE_ZIP_BASE64` 로 주입."
+      - "**옛 PoC repo**: [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) — DEPRECATED. README 에 명시. BV-7 진단의 결정적 단서 (옛 jar SHA 비교, decoder_sample.jsp 패턴) 가치만 보존."
+      - "**비표준 위치**: GitLab 셀프호스트(`gitlab.bomapp.co.kr`) 가 아닌 GitHub `bomapp-inc` 조직에 위치. BOMAPP 의 다른 서비스 호스팅 컨벤션 예외. CI: GitHub Actions OIDC + IAM Role `github-actions-bomapp-vkey-role` (trust condition: `repo:bomapp-inc/bomapp-vkey:*`)."
+      - "**bapi 측 호출**: `next-backend` 의 `bomapp-external/raon/SecureServletExternalClient` 가 Feign `@PostMapping(\"/transkeyServlet/decode\")` 로 호출. 사무실 IP 사용자의 청구 흐름 진단 위해 `OfficeCanaryRequestInterceptor` 가 X-Canary=office 헤더 부착 (BOMAPP_CANARY_ENABLED=true 시). BV cutover 완료 후 X-Canary 라우팅의 본래 목적은 사라지고 priority 10 만으로 처리."
 
   # ─────────────────────────────────────────────
   # Legacy Monolith

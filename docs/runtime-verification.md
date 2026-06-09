@@ -96,6 +96,8 @@ volume:    /was/data (host volume)  →  컨테이너 /was/data
 
 ### 2.6 vkey (bomapp-vkey) 상세 (2026-05-19 추가)
 
+> **⚠️ 2026-06-08 BV cutover 완료**: 본 섹션은 옛 PROD-BACK Tomcat WAR 운영 시점 (2026-05-19 SSM 검증) 의 기록. 현재는 독립 ECS service (`SVC-ECS-PROD-bomapp-vkey`, Spring Boot 2.7 + Java 17, m7g Graviton 3) 로 이전 완료. ALB priority 10 의 100% 트래픽이 새 TG `prod-bomapp-vkey-ip-8080` 로 전환됨. 옛 PID 1205 Tomcat WAR 은 옛 PROD-BACK 컨테이너 안에서 여전히 살아있으나 ALB 가 트래픽을 보내지 않음 (drain 후 비활성 예정). 현재 운영 정보는 [`docs/services/bomapp-vkey.md`](./services/bomapp-vkey.md) 참조.
+
 PID 1205 (UID `bomapp`) 의 정체를 SSM 으로 추가 검증한 결과:
 
 | 항목 | 값 |
@@ -133,7 +135,7 @@ PID 1205 (UID `bomapp`) 의 정체를 SSM 으로 추가 검증한 결과:
 | `web.bomapp.co.kr` | ALB:443 priority 260 | prod-back-ecs-host-http-7778 | **7778** | `bomapp_webview_server-0.1.0.jar` (PID 1428) | legacy-backend / bomapp_webview_server |
 | `wapi.bomapp.co.kr` | ALB:443 (priority 미기재, 별도 rule) | (8102 TG) | **8102** | `bomapp-server-wings-api.jar` (PID 19422) | next-backend / wings-api |
 | `oapi.bomapp.co.kr` 외 | (priority 별도) | (8105 TG로 추정) | **8105** | `bomapp-server-open-api.jar` (PID 5953) | next-backend / open-api |
-| `vkey.bomapp.co.kr` | ALB:443 priority 10 | prod-back-ecs-host-http-8080 | **8080 ✓** (PID 1205 Tomcat catalina HTTP connector) | **bomapp-vkey (Tomcat 9.0.45 WAR, `bm.service=bomapp_key`, `/was/run/bomapp-vkey`)** — TouchEn transkeyServlet (라온시큐어 가상키보드 복호화) | **별개 프로젝트** [`Bomapp/transkey_servlet`](https://github.com/Bomapp/transkey_servlet) — 보험금 청구 플로우의 주민번호 입력용 |
+| `vkey.bomapp.co.kr` | ALB:443 priority 10 | **prod-bomapp-vkey-ip-8080 (100%, 2026-06-08 cutover)**. 옛 prod-back-ecs-host-http-8080 은 weight 0 drain. priority 4 (X-Canary=office) / 5 (사무실 IP) 도 같은 새 TG. | **8080** | **`bomapp-vkey` Spring Boot 2.7 + embedded Tomcat 9 (Java 17, m7g Graviton arm64)** — `TranskeyDecodeController` + Raon `TranskeyServlet`. | [`bomapp-inc/bomapp-vkey`](https://github.com/bomapp-inc/bomapp-vkey) — 보험금 청구 플로우의 주민번호 입력용 |
 | `api.bomapp.co.kr` (✱ 정리됨) | ALB:443 priority 160 | (정리 전: 8107) | — (현재 410 fixed-response) | — | — |
 | `my-data-cbt.bomapp.co.kr` (✱ 정리됨) | 동일 priority 160 host header | — (현재 410 fixed-response) | — | — | — |
 
