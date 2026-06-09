@@ -127,7 +127,7 @@ next-backend/
 |------|-----------|------------|
 | DEV | `dev-mapi.bomapp.co.kr` | `dev-int-mapi.bomapp.co.kr` |
 | STG | `stg-mapi.bomapp.co.kr` | `stg-int-mapi.bomapp.co.kr` (현재 레거시 호스트 `10.1.1.194` 가리킴 — 이전 미완) |
-| PROD | `mapi.bomapp.co.kr`, `mapi1.bomapp.co.kr`, `mapi2.bomapp.co.kr` | `int-mapi.bomapp.co.kr` |
+| PROD | ~~`mapi.bomapp.co.kr`, `mapi1.bomapp.co.kr`, `mapi2.bomapp.co.kr`~~ (2026-06-01 정리·삭제 — BOM-99, 외부 0건/30일·빈 TG) | `int-mapi.bomapp.co.kr` (실 트래픽 4.56M/30일 — **유지**) |
 
 **주요 엔드포인트**
 
@@ -139,7 +139,7 @@ next-backend/
 | POST | `/api/mydata/v1/*-information` | 보험 정보 수집 |
 | POST | `/v3/mgmts/signup/*` | 마이데이터 가입/통계 |
 
-**의존**: `mydata-agent` (외부 마이데이터 기관 mTLS 통신용 게이트웨이) + `bomapp_my_data` (레거시 인증/동의, 이관 진행 중)
+**의존**: `mydata-agent` (외부 마이데이터 기관 mTLS 통신용 게이트웨이) + `mydata-mgmts-api` (레거시 인증/동의, 이관 진행 중)
 
 > 노션 "마이데이터 정책 정의서": 인증 Flow(보험사 선택→인증서 선택→통합 동의→조회), 타임아웃 20초(목록 10s + 상세 10s), 가입 유효기간 1~5년, 1년 평균 연동률 82% (95,185/116,121).
 
@@ -185,7 +185,7 @@ next-backend/
 |------|--------|
 | DEV | `dev-wapi.bomapp.co.kr` |
 | STG | `stg-wings-api.bomapp.co.kr` |
-| PROD | `wapi.bomapp.co.kr` |
+| PROD | `wapi.bomapp.co.kr` (구 per-instance 별칭 ~~`wapi1`~~/~~`wapi2`~~ 는 2026-06-01 정리·삭제 — BOM-99. 인스턴스별 재기동 훅이었으며 IP-target TG 이관으로 폐기) |
 
 **주요 엔드포인트**
 
@@ -260,7 +260,7 @@ graph LR
   mydata_api --> Aurora
   mydata_api --> Redis
   mydata_api --> mydata_agent[mydata-agent]
-  mydata_api --> bomapp_my_data[bomapp_my_data 레거시]
+  mydata_api --> mydata-mgmts-api[mydata-mgmts-api 레거시]
   open_api --> Aurora
   wings_api --> Aurora
   alimtalk_cb[alimtalk-callback] --> Aurora
@@ -345,7 +345,7 @@ graph LR
 
 ## 9. 알려진 이슈 / 마이그레이션 상태
 
-- **bomapp-api / wings-api / open-api PROD 가 PROD-BACK 공용 WAS 컨테이너의 jar 형태로 운영** (각각 :8107 / :8102 / :8105). 단일 컨테이너에 next-backend, legacy-backend, bomapp_my_data, oauth, vkey 등 다중 프로젝트 jar 가 공존하는 패턴. ECS 의 표준 마이크로서비스 분리 안 됨. SSM 검증 ([상세](../runtime-verification.md#2-prod-back-클러스터-운영-실체-ssm-검증))
+- **bomapp-api / wings-api / open-api PROD 가 PROD-BACK 공용 WAS 컨테이너의 jar 형태로 운영** (각각 :8107 / :8102 / :8105). 단일 컨테이너에 next-backend, legacy-backend, mydata-mgmts-api, oauth, vkey 등 다중 프로젝트 jar 가 공존하는 패턴. ECS 의 표준 마이크로서비스 분리 안 됨. SSM 검증 ([상세](../runtime-verification.md#2-prod-back-클러스터-운영-실체-ssm-검증))
 - **alimtalk-callback** 모든 환경에서 ALB 연결 미구성 (운영 가능 여부 불명)
 - **STG mydata-api** 내부 도메인이 레거시 호스트(10.1.1.194)를 가리킴 — next-backend 전환 미완
 - **chat-api** 이미지 태그 `latest` (롤백 불가) — 시맨틱 태그 적용 필요

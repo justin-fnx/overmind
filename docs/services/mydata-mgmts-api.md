@@ -1,157 +1,136 @@
-# bomapp_my_data (레거시)
+# mydata-mgmts-api
 
-> 레거시 마이데이터 인증/동의 관리 서비스. 사용자의 마이데이터 토큰 발급/갱신/폐기 및 동의 정보를 관리한다. 차세대 `next-backend / mydata-api` 로 단계적 이관 진행 중.
+> 금융 마이데이터 표준 **'지원 API(mgmts)' 수신 서버**. 보맵이 마이데이터사업자(정보수신자)로서 `auth.bomapp.co.kr` 에 노출하며, 종합포털(`api.mydatacenter.or.kr`)이 동의·전송요구(`/v2/mgmts/*`) 표준 API를 호출한다. 마이데이터 OAuth 토큰(RS512) 발급·동의 관리를 표준 스펙대로 자체 구현. **규제필수.**
+>
+> **구 이름 `bomapp_my_data`** (BOM-121, 2026-06 리네임). **BOM-113 현대화 완료**(SB 3.4.5 / Java 21 / jakarta / jjwt 0.12) — 단 PROD 는 아직 구 jar(미컷오버).
 
 | 항목 | 값 |
 |------|----|
-| 경로 | `../bomapp_my_data` |
-| 리포 | `github.com/bomapp/bomapp_my_data` (추정) |
-| 언어/플랫폼 | Java 11 / Spring Boot 2.3.4 / Spring Cloud Hoxton.SR8 |
-| 빌드 | Maven |
-| 첫 커밋 | 2021-11-26 |
-| 최신 커밋 | 2025-10-22 |
-| 총 커밋 수 | 80 |
-| 최근 6개월 | 0 커밋 |
-| 활동 상태 | **유지보수 (이관 중)** |
-| 주요 브랜치 | `master`(HEAD), `develop`, `feat/whee/mydata/statistics`, `feat/hyoj/제휴고객-분리작업` |
+| 경로 | `../mydata-mgmts-api` |
+| 리포 | `github.com/bomapp-inc/mydata-mgmts-api` (구 `bomapp_my_data`, GitHub 구 URL 리디렉션) |
+| 언어/플랫폼 | **Java 21 / Spring Boot 3.4.5 / Spring Cloud 2024.0** (BOM-115; 구 Java 11 / SB 2.3.4 / Hoxton) |
+| Java 패키지 | `kr.co.bomapp.mydata.mgmts` (구 `kr.co.bomapp.auth.bomappmydata`) |
+| artifact | `mydata-mgmts-api` (구 `bomappmydata`) |
+| 빌드 | Maven (+ Dockerfile temurin-21) |
+| feature_base_branch | `master` |
+| 활동 상태 | **현대화 완료(코드) · ECS 컨테이너화 산출물 준비 · PROD 미컷오버** |
 
 ---
 
 ## 1. 책임
 
-- **마이데이터 종합포털 ↔ 보맵** 간 정보 동의 및 조회
-- **마이데이터 OAuth 토큰** 발급/갱신/폐기
-- **동의(Consent) / 약정(Agreement) / 관리(Management)** 데이터 관리
-- **제휴 고객 분리** (기업 고객 vs 개인 고객 — `feat/hyoj/제휴고객-분리작업` 브랜치)
-- 마이데이터 통계 (`feat/whee/mydata/statistics`)
+- 마이데이터 **종합포털 ↔ 보맵** 표준 동의·전송요구 수신 (`/v2/mgmts/consents`·`/agreements`)
+- 마이데이터 **OAuth 토큰**(RS512 자체 서명) 발급
+- 동의(Consent) / 약정(Agreement) / 관리(Management) 데이터 관리
+- 일부 경로는 `next-backend/mydata-api` 로 위임 (OpenFeign `NextMyDataApiClient`)
 
-> 노션 정책 문서에 따르면 **레드민(legacy-backend)은 여전히 이 서비스를 호출**하지만, 보맵 앱은 이미 `next-backend / mydata-api` 를 호출. 두 경로의 데이터가 일치하지 않는 백로그 존재.
+> legacy-backend(redmin) 이 이 서비스를 직접 호출하는 백로그 존재 — next-backend 경로와 데이터 정합 확인 필요.
 
 ---
 
 ## 2. 배포 / 환경
 
-### 2.1 ECS
+### 2.1 현재 PROD (구 jar, 미컷오버)
 
-**검증된 운영 형태** ([SSM 결과](../runtime-verification.md#24-활성-java-프로세스--포트-매핑-검증)):
-- `PROD-BACK` 클러스터의 공용 WAS 컨테이너(`next-backend-was:1.1`) 안에 jar 형태로 수동 배포되어 운영
-- 디렉토리: `/was/data/bomapp-mydata-prod/`
-- jar: `bomappmydata-0.0.1-SNAPSHOT.jar`
-- 활성 PID: 15890 (UID `bomapp`, `--spring.profiles.active=prod`)
-- 시작 옵션: `--spring.config.location=/was/run/bomapp-mydata-prod/data/application-prod.properties`
+검증: [runtime-verification.md §10](../runtime-verification.md)
+- 라우팅: `auth.bomapp.co.kr` → prod-nlb:5443 → prod-alb:5443 **default** → TG `prod-back-ecs-host-2-http-11000` → `i-03f0178089f760c6f:11000`
+- `PROD-BACK` 공용 WAS 컨테이너(`next-backend-was:1.1`) 내 **수동 기동 jar**: PID 15890 `bomappmydata-0.0.1-SNAPSHOT.jar`(구 코드, UID `bomapp`)
+- 호스트 디렉토리: `/was/data/bomapp-mydata-prod/`, 시작: `--spring.profiles.active=prod --spring.config.location=/was/run/bomapp-mydata-prod/data/application-prod.properties`
+- ~150 req/일(2026-06). **규제필수 — 임의 중단 금지.**
 
-Terraform 의 `aws_ecs_service` / `aws_ecs_task_definition` 에 `bomapp_my_data` 별도 정의는 **없음**. PROD-BACK 컨테이너 안에서 사람이 jar 를 띄운 상태.
+### 2.2 신규 ECS (BOM-114 산출물, 미배포)
 
-### 2.2 도메인 / 포트
-
-| 환경 | 포트 (코드 기본) |
-|------|------|
-| develop / product | 11000 |
-| staging | 15000 |
-
-PROD 컨테이너 내부 listening: PID 15890 활성 + 호스트 docker-proxy 11000 존재. 단 컨테이너 내부 netstat 결과에서 11000 의 PID 매핑은 직접 표시되지 않음 — 11000 listening 의 주체가 bomapp_my_data 일 가능성이 높지만 **컨테이너 내부 netstat 출력으로는 단정 어려움** (검증 한계).
-
-도메인 매핑은 PROD-ALB listener 5443 → backend-was-v2 (port 11000) 단서가 있으나 **5443 으로 가는 host header rule 매칭은 별도 확인 필요**.
+- `Dockerfile`(temurin-21 멀티스테이지, ARM64, nonroot), `.github/workflows`(build→ECR→ECS, `workflow_dispatch`), `ops/ecs/mydata-mgmts-api/overlays/{dev,stg,prod}`
+- 컨테이너 포트 **8080**(전 환경), 프로파일 **dev/stg/prod**, prod `DESIRED_COUNT=2`·`CPU_RESERVATION` soft(TASK_CPU 하드캡 금지)
+- 실제 ECR/ECS/TG/ALB 5443 컷오버(weighted/blue-green)는 **별도 infra 티켓**(미완)
 
 ---
 
-## 3. 엔드포인트
+## 3. 엔드포인트 (표준 mgmts)
 
 | Method | Path | 설명 |
 |--------|------|------|
 | GET | `/healthy` | 헬스 체크 |
-| POST | `/v2/mgmts/consents` | 동의 정보 조회 |
+| POST | `/v2/mgmts/consents` | 동의 정보(지원-103) |
 | POST | `/v2/mgmts/consents/revoke` | 동의 철회 |
-| POST | `/v2/mgmts/agreements` | 약정 정보 조회 |
-| POST | `/v2/mgmts/agreements/detail` | 약정 상세 조회 |
+| POST | `/v2/mgmts/agreements` | 전송요구/약정(지원-105) |
+| POST | `/v2/mgmts/agreements/detail` | 약정 상세 |
+| GET | `/v2/mgmts/req-statistics` | 통계(지원-104) |
 | POST | `/mgmts/oauth/2.0/token` | OAuth 토큰 발급 |
-| GET | `/v2/mgmts/req-statistics` | 통계 조회 |
 
-API 패턴: `/v2/mgmts/*` (mgmts = 종합포털 인터페이스 추정), `/mgmts/oauth/2.0/*`.
+> **계약 불변**: 표준 요청·응답 JSON·RS512 토큰은 외부 종합포털 연동 계약 → 변경 금지. (BOM-116 에서 deprecated `/v1/mgmts/*` 및 이관완료 `OpenApiController`(`/api/external/v1/*`) 제거.)
 
 ---
 
-## 4. 기술 스택
+## 4. 기술 스택 (BOM-115 후)
 
 | 영역 | 라이브러리 | 버전 |
 |------|----------|------|
-| 프레임워크 | Spring Boot | 2.3.4 |
-| 클라우드 | Spring Cloud | Hoxton.SR8 |
-| 언어 | Java | 11 |
-| ORM | Spring Data JPA | (Boot 관리) |
-| 캐시 | Spring Data Redis (Jedis) | — |
-| HTTP 클라이언트 | OpenFeign | (Hoxton) |
-| 인증 | jjwt | 0.11.2 |
-| DB | MySQL (JDBC) | — |
-| 템플릿 | Thymeleaf | — |
-| 빌드 | Maven (`pom.xml`) | — |
-
-> **EOL 임박**: Spring Boot 2.3 / Java 11 모두 OSS 지원 종료. 보안 패치 부재 — 이관이 늦어질수록 위험 증가.
+| 프레임워크 | Spring Boot | **3.4.5** |
+| 클라우드 | Spring Cloud | **2024.0** |
+| 언어 | Java | **21** |
+| ORM | Spring Data JPA (jakarta.persistence) | (Boot 관리) |
+| 캐시 | Spring Data Redis (Jedis) | (Boot 관리, `spring.data.redis.*`) |
+| HTTP 클라이언트 | OpenFeign | (2024.0) |
+| 인증 | jjwt | **0.12.6** (RS512) |
+| DB | MySQL (`mysql-connector-j`) | (Boot 관리) |
+| 템플릿 | Thymeleaf | (Boot 관리) |
+| 빌드/이미지 | Maven / Dockerfile(temurin-21) | — |
 
 ---
 
 ## 5. 의존 관계
 
 ```
-보맵 앱  ──▶ next-backend / mydata-api  ──▶ bomapp_my_data (현재)
-                                       └──▶ mydata-agent (마이데이터 기관 통신)
+보맵 앱 ──▶ next-backend/mydata-api ──▶ mydata-mgmts-api
+                                    └──▶ mydata-agent (마이데이터 기관 통신)
 
-legacy-backend / redmin  ──▶ bomapp_my_data (직접, 이관 안 됨)
+종합포털(api.mydatacenter.or.kr:7443) ──▶ mydata-mgmts-api (/v2/mgmts/*, 표준 수신)
+legacy-backend(redmin) ──▶ mydata-mgmts-api (직접, 미이관)
 
-bomapp_my_data ──▶ 마이데이터 종합포털 (OpenFeign)
-                ──▶ Aurora MySQL
-                ──▶ Redis
+mydata-mgmts-api ──▶ 종합포털(OpenFeign) / next-backend(NextMyDataApiClient) / MySQL / Redis(10.10.10.71)
 ```
 
 ---
 
-## 6. 외부 연동
-
-- **마이데이터 종합포털** — 동의/조회 (OpenFeign HTTP)
-- **next-backend / mydata-api** — 결과 전달 / 의존 호출
-
----
-
-## 7. 운영
+## 6. 운영
 
 | 항목 | 내용 |
 |------|------|
-| Dockerfile | 없음 — 추정: jar 직접 배포 또는 ECS 별도 빌드 |
-| CI/CD | 수동 배포 (GitHub Actions/GitLab CI 폴더 미확인, 활동 부족) |
-| 빌드 산출물 | `pom.xml` 기반 Maven jar |
-| 로깅 | (확인 필요) |
+| Dockerfile | ✅ BOM-114 (temurin-21 멀티스테이지, ARM64, nonroot) |
+| CI/CD | ✅ GitHub Actions build→ECR→ECS (BOM-114). 레거시 `deploy/*`(수동 SSH/S3) = DEPRECATED |
+| 테스트 | `mvn test` 4통과/1스킵(`SlackApiClientTest` @Disabled 실 웹훅). 로컬 JDK 없음 → docker `maven:3.9-eclipse-temurin-21` |
+| 관측성 | ES 로그(`logs-{env}-mydata-mgmts-api`) + Elastic APM = **BOM-119** (미완) |
 | 헬스체크 | `GET /healthy` |
-| 환경 설정 | `application.properties` 환경별 분리 |
-| Thymeleaf 템플릿 | OAuth 동의 화면 등에 사용 추정 |
+| 보안 | clientSecret/토큰 로그 마스킹(BOM-116), nonroot 컨테이너 |
 
 ---
 
-## 8. 히스토리 마일스톤
+## 7. 모더나이제이션 이력 (BOM-113)
 
-| 시기 | 변경 |
-|------|------|
-| 2021-11 | 마이데이터 관리 서비스 초기 구축 |
-| 2023~2024 | 동의/조회/통계 기능 개발 |
-| 2024~2025 | 종합포털 API URL 변경 (stg ↔ prod 전환), 제휴 고객 분리 작업 |
-| 2025-10-22 | (마지막) 지원 API 마이데이터 url 변경 |
-| 2025-10 이후 | 활동 없음 (이관 진행 — `next-backend/mydata-api` 가 신규 진입점) |
-
----
-
-## 9. 알려진 이슈 / 마이그레이션 상태
-
-- **EOL 의존성**: SB 2.3 / Java 11 — 이관 우선순위 높음
-- **이중 운영**: legacy-backend redmin 이 이 서비스를 직접 호출 → 보맵 앱(next-backend) 경로와 데이터 불일치 가능
-- **신규 기능 금지**: 이관 대상이므로 신규 기능 추가는 `next-backend/mydata-api` 에서 수행
-- **Terraform 미관리**: ECS 정의가 코드에 없음
-- **도메인 매핑 명확하지 않음**: PROD-ALB listener 5443 의 backend-was-v2 와의 연관 검증 필요
+| 티켓 | 내용 | 상태 |
+|------|------|------|
+| BOM-116 | 죽은코드 제거 + 보안(clientSecret 마스킹, OpenApiController/v1 제거, servicese→services) | ✅ 머지 |
+| BOM-115 | SB 2.3→3.4.5 / Java 11→21 / jakarta / jjwt 0.12 (RS512 토큰 바이트 동등 검증) | ✅ 머지 |
+| BOM-114 | 컨테이너화(Dockerfile/CI/ops overlays, 8080, dev/stg/prod) — 앱 산출물 | ✅ 머지 (infra 컷오버 미완) |
+| BOM-121 | 풀 리네임(repo/패키지/artifact → mydata-mgmts-api) | ✅ Phase 1 머지 · Phase 2 repo 리네임 완료 |
+| BOM-119 | ES 로깅 + Elastic APM | ⏸ Backlog |
 
 ---
 
-## 10. 관련 문서
+## 8. 알려진 이슈 / 남은 작업
 
+- **PROD 미컷오버**: 코드는 현대화·컨테이너화됐으나 PROD 는 구 jar(11000)로 가동. 실제 ECS 전환 = infra 티켓(ECR/ECS/TG/ALB 5443 weighted/blue-green, EV 인증서 구간 유지).
+- **이중 운영**: legacy-backend(redmin) 직접 호출 ↔ next-backend 경로 데이터 정합.
+- **테스트 얕음**: 표준 mgmts 계약(consents/agreements) 단위/회귀 테스트 부재.
+
+---
+
+## 9. 관련 문서
+
+- [`../runtime-verification.md`](../runtime-verification.md) §10 — `auth.bomapp.co.kr` 라우팅/트래픽 검증
 - [`../architecture.md`](../architecture.md)
-- [`./next-backend.md`](./next-backend.md) — 이관 대상(mydata-api)
-- [`./mydata-agent.md`](./mydata-agent.md) — 함께 마이데이터 계층 구성
-- [`./legacy-backend.md`](./legacy-backend.md) — redmin 이 이 서비스를 직접 호출
-- 노션: `마이데이터 정책 정의서`, `[마이데이터] 2.0`, `API 설계 (마데 알림톡)`
+- [`./next-backend.md`](./next-backend.md) — mydata-api(위임/호출 대상)
+- [`./mydata-agent.md`](./mydata-agent.md) — 마이데이터 수집 게이트웨이
+- [`./legacy-backend.md`](./legacy-backend.md) — redmin 직접 호출
+- 노션: 마이데이터 정책 정의서, [마이데이터] 2.0

@@ -7,6 +7,7 @@
 |------|----|
 | 1차 검증 일자 | 2026-05-07 |
 | 2차 검증 일자 | 2026-05-19 (vkey 8080 connector / transkeyServlet 확정) |
+| 3차 검증 일자 | 2026-06-04 (az-was RDS/SG 토폴로지 · 공유-DB 방향) |
 | 검증자 IAM | `arn:aws:iam::044488971141:user/justin` |
 | 사용 도구 | aws CLI, SSM Run Command, gunzip+grep+awk on ALB access log |
 
@@ -324,3 +325,38 @@ done
 ### 10.4 'oauth' 네이밍 함정 (주의)
 
 `bomapp_oauth` 라는 이름 때문에 `auth.bomapp.co.kr` 의 백엔드로 오인하기 쉬우나 **아님**. auth 도메인은 `bomapp_my_data` 가 서빙하고, `bomapp_my_data` 의 OAuth 는 마이데이터 표준 토큰 엔드포인트를 자체 구현한 별개 코드다. `bomapp_oauth` 는 그 어디에도 연결돼 있지 않다.
+
+---
+
+## 11. az-was ↔ 보맵 공유-DB 방향 (2026-06-04 검증)
+
+> 배경: az-was(에즈 WAS, `az.bomapp.co.kr`)와 보맵 wings-api 가 "DB 를 가운데 두고" 데이터를 교환한다는 운영 사실(개발팀 확인). 앱 코드(az-was + next-backend)에는 크로스-DB 접근 코드가 없어 — 전부 HTTP(Feign) — 인프라/네트워크 레벨에서 검증.
+
+### 11.1 RDS 클러스터 (`aws rds describe-db-clusters`)
+
+| 클러스터 | 엔드포인트 접미사 | SG |
+|----------|------------------|-----|
+| `bomapp-prod` (보맵 메인) | `bomapp-prod.cluster-cevzb8eynsam...` | `sg-07cc276ce34b5bb16`(prod-db), `sg-05a542b853bca32e7`(rds-ec2-3) |
+| `prod-az-db` (에즈) | `prod-az-db.cluster-cevzb8eynsam...` | `sg-02fc02ff89be2634a`(SG-PROD-AZ-DB), `sg-06392dae27d1c7e14`(SG-PROD-Common) |
+| `prod-az-db-restore-250828-cluster` | (= `prod-az-db.bomapp.co.kr` CNAME 대상) | 동일 |
+| `dev-az-db-250716-cluster` / `stg-az-db` | dev/stg 에즈 | — |
+
+→ 보맵 메인과 에즈는 **같은 계정(044488971141)·같은 VPC(`vpc-prod` 10.1.0.0/16) 의 별개 Aurora 클러스터.** `cevzb8eynsam` 은 계정 공통 RDS DNS 접미사일 뿐 동일 클러스터 아님.
+
+### 11.2 3306 ingress (`aws ec2 describe-security-groups`)
+
+| DB SG | 3306 허용 소스 | 함의 |
+|-------|---------------|------|
+| 보맵 `prod-db`(sg-07cc…) | `10.1.0.0/16` (prod VPC 전체) + 172.16.100.241/248 | **az-was EC2(10.1.13.11/14.11) 포함 → az-was 가 보맵 DB 접근 가능** |
+| 에즈 `SG-PROD-AZ-DB`(sg-02fc…) | `10.1.13.11/32`,`10.1.14.11/32`,`10.1.13.10/32`(=az-was 호스트) + 192.168.100.0/24, 10.0.77.0/24(사무실/peer, prod/dev VPC 아님) | **az-was 전용. 보맵 앱 서브넷 불허 → 보맵→에즈 DB 차단** |
+
+### 11.3 결론
+
+- **열린 크로스-DB 방향 = `az-was → 보맵 DB`(write) 하나.** 역방향(보맵 앱 → 에즈 DB)은 SG 차단. → 운영상 공유는 **az-was 가 보맵 DB 에 직접 기록**하는 형태로 확정(개발팀 진술과 일치).
+- 전용 에즈 DB(`prod-az-db` 2025-08 / `dev-az-db` 2025-07 신설)는 az-was 를 보맵 DB 에서 떼어내는 **이전 대상**으로 판단.
+- **az-was-batch**(ECS `TD-ECS-PROD-az-was-batch`)는 DB 없음 — `AZ_WAS_INTERNAL_BASE_URL=https://az.bomapp.co.kr` HTTP cron 트리거. ETL 아님.
+- az-was EC2: `prod-az-was-a`(`i-0db1ee1ae31b04124`/10.1.13.11), `prod-az-was-b`(`i-0019f8f67cd16e4f4`/10.1.14.11), **둘 다 SSM Online**.
+
+### 11.4 미해결 (1스텝)
+
+az-was 가 *현재* `DB_HOST` 로 보맵-prod 를 쓰는지 vs 이미 `prod-az-db` 로 이전했는지 = prod 호스트 datasource 직접 확인 필요. SSM Run Command(읽기) 가 자동 권한 분류기에 차단됨 → 명시 승인 또는 DBA `SHOW GRANTS` 필요. 서비스 상세는 [`services/az-was.md §7`](./services/az-was.md).

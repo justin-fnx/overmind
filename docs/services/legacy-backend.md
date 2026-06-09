@@ -55,7 +55,6 @@ legacy-backend/
 | `web.bomapp.co.kr` | PROD | 7778 | **`bomapp_webview_server-0.1.0.jar` 활성 (PID 1428)** ✓ — 보맵 앱 인앱 웹뷰 정상 호출 |
 | `redmin.bomapp.co.kr` | PROD | 7575 | `bomapp-redmin-prod` 디렉토리 존재. 검증 인스턴스에서 ps 비활성 |
 | `dev-rapi.bomapp.co.kr` | DEV | — | redmin (DEV) |
-| `sapi.bomapp.co.kr` | PROD | 8103 | **dead routing (SSM 검증)** — 8103 listening 프로세스 없음, 7일 ALB log 0건 |
 | `vkey.bomapp.co.kr` | PROD | 8080 | **별개 프로젝트** [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) (Tomcat 9.0.45 WAR, `bm.service=bomapp_key`, PID 1205) ✓ — legacy-backend 가 아님. 라온시큐어 TouchEn 가상키보드 복호화 서블릿, 청구 플로우 주민번호 입력용. PROD-BACK 공용 WAS 컨테이너에 같이 떠 있어서 표에 함께 기재. [상세 서비스 문서](./bomapp-vkey.md) |
 | `f.bomapp.co.kr` | PROD | — | webview_server / 정적 파일 (CloudFront 경유 추정) |
 | `az.bomappworks.com` | PROD | 3001 (frontend ALB) | legacy az frontend |
@@ -104,7 +103,7 @@ legacy-backend/
                                        │
                                        ├──▶ Aurora MySQL
                                        ├──▶ Redis
-                                       └──▶ bomapp_my_data (legacy mydata 호출)
+                                       └──▶ mydata-mgmts-api (legacy mydata 호출)
 
 보맵 앱 (인앱 웹뷰) ──▶ f.bomapp.co.kr ──▶ webview_server (정적 약관)
 ```
@@ -165,5 +164,5 @@ legacy-backend/
 
 - [`../architecture.md`](../architecture.md)
 - [`./next-backend.md`](./next-backend.md) — 이관 완료 대상
-- [`./bomapp_my_data.md`](./bomapp_my_data.md) — redmin 이 직접 호출하는 레거시 마이데이터
+- [`./mydata-mgmts-api.md`](./mydata-mgmts-api.md) — redmin 이 직접 호출하는 레거시 마이데이터
 - 노션: `legacy-backend`, `BOMAPP 인프라 구조(HQ/AWS)`

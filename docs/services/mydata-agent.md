@@ -144,5 +144,5 @@ next-backend / mydata-api
 
 - [`../architecture.md`](../architecture.md)
 - [`./next-backend.md`](./next-backend.md) — 호출자(mydata-api)
-- [`./bomapp_my_data.md`](./bomapp_my_data.md) — 함께 마이데이터 계층 구성
+- [`./mydata-mgmts-api.md`](./mydata-mgmts-api.md) — 함께 마이데이터 계층 구성
 - 노션: `마이데이터 정책 정의서`, `[마이데이터] 2.0`, `API 설계 (마데 알림톡)`
