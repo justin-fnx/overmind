@@ -145,7 +145,9 @@ legacy-backend/
 | `bomapp_api_server` → `next-backend / bomapp-api` | 노션상 "완료" 진술. 단 `/was/data/legacy-bomapp-api-prod` 디렉토리 잔존(ps 비활성), 완전 제거 미확정 |
 | `bomapp_redmin` 이전 | **✅ 완료 — 2026-06-10 신규 ECS 컷오버** (BOM-157). **`prod-internal-alb` :443 prio 20**(redmin 은 internal ALB 가 실경로) → `prod-bomapp-redmin-ip-8080`. NEWTG RequestCount 양수로 라우팅 확정. 계정 시드(2FA)·로그인 기능 테스트는 사용자 진행. 구 default→:7575 롤백용. (최초 prod-alb 오설정 교정) |
 | **`bomapp_webview_server` 이전** | **✅ 완료 — 2026-06-10 신규 ECS 전면 컷오버** (BOM-137/138/139/154). `web.bomapp.co.kr` → `prod-bomapp-webview-ip-8080`. 사무실 카나리가 공지 상세 네이티브 브릿지 버그(`window.bomapp.webNoticeDetail`↔`androidNative.openWithNaviBar`, BOM-154) 잡아 수정. 정적 자산 S3+CloudFront 분리는 미적용(이미지 베이킹 유지). 구 :7778 롤백용 잔존 ([근거](../runtime-verification.md#5-legacy-backend--bomapp_webview_server-코드상-endpoint-검증)) |
-| 직접 호스트(`api-was1/2`, `mapi-was1/2`, `batch-was`, `front-was`, `next-stg-back`) | 정리(폐기) 대상 |
+| **PROD-BACK 자가구동 프로세스** | **✅ 2026-06-11 라이브 read-only SSM 감사 — 없음.** 실행 java 앱 전부 `spring.profiles.active=prod`(`cron`/`my-data-cron`/`open-api-cron` 0, `bomapp_api_server` 미실행). 실행 = 롤백 stub(redmin/webview/open-api/bomapp-api/wings/구mydata jar) + dead `bomapp_oauth`(8888 좀비)뿐, 이들 `@Scheduled`=0 → **인바운드 없이 도는 배치 없음** |
+| **`mydata-mgmts-api`(auth:11000) 이관** | **✅ 완료 — 2026-06-11 신규 ECS 100% 컷오버** (별도 서비스, [mydata-mgmts-api.md](./mydata-mgmts-api.md)). 구 PROD-BACK 11000 jar 는 롤백 stub |
+| 직접 호스트(`api-was1/2`, `mapi-was1/2`, `batch-was`, `front-was`, `next-stg-back`) | 정리(폐기) 대상. ⚠ **`batch-was`(10.1.1.116)** = 레거시 `@Scheduled` 배치(규제 mydata 지원004 주간전송·휴면 알림톡·토큰재발급 1s)의 거처 추정 — decommission 시 라이브 여부 + next-backend 중복실행 별도 검증 |
 | Spring Boot 1.5 / Java 1.8 보안 | **EOL** — 잔존 모듈도 결국 이관 또는 재작성 필요 |
 | awslogs / SSH 22 / Circuit Breaker | ECS 감사 P0~P1 (PROD-BACK 대상) |
 

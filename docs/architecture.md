@@ -265,7 +265,7 @@ graph LR
 | `oapi.bomapp.co.kr` / `openapi.bomapp.co.kr` | `dev-oapi`/`dev-openapi` | `stg-oapi.bomapp.co.kr` | 8105 | **next-backend / open-api** (`bomapp-server-open-api.jar`, PID 5953) ✓ |
 | ~~`mapi.bomapp.co.kr` (`mapi1`, `mapi2`)~~ | `dev-mapi.bomapp.co.kr` | `stg-mapi.bomapp.co.kr` | — | **2026-06-01 정리 — PROD `mapi`/`mapi1`/`mapi2` 룰+TG+DNS 완전 삭제 (BOM-99)**. 근거: 30일(05-02~06-01) 외부 요청 0건 + 대상 TG 등록 타깃 0개(이미 비기능). 실 마이데이터 트래픽은 내부 `int-mapi.bomapp.co.kr`(4,563,564건/30일)로 정상 — **외부 진입 경로만 폐기, mydata-api 서비스는 운영 중**. dev/stg는 유지 |
 | `vkey.bomapp.co.kr` | — | — | 8080 | **bomapp-vkey** (Tomcat 9.0.45 WAR, `bm.service=bomapp_key`, PID 1205) ✓ — TouchEn transkeyServlet (라온시큐어 가상키보드 복호화, 청구 플로우 주민번호 입력용). 별개 프로젝트 [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet). [상세 서비스 문서](./services/bomapp-vkey.md) |
-| `redmin.bomapp.co.kr` | `dev-rapi.bomapp.co.kr` | — | 7575 | (`bomapp-redmin-prod` 디렉토리 존재하나 ps 비활성, 다른 인스턴스 미검증) |
+| `redmin.bomapp.co.kr` (내부) | `dev-rapi.bomapp.co.kr` | — | 7575 | **legacy-backend / bomapp_redmin — 신규 ECS 컷오버(2026-06-10)**: 실경로는 **prod-internal-alb** :443 prio20 → `prod-bomapp-redmin-ip-8080`. 구 PROD-BACK :7575(PID 16022, 가동중)은 default→롤백 stub ✓ |
 | (chat) | `dev-chat.bomapp.co.kr`, `dev-chat-api.bomapp.co.kr` | `stg-chat.bomapp.co.kr` | — | **chat-api** (DEV/STG/PROD-Cluster 내 service `SVC-ECS-{ENV}-chat-api`; 과거 별도 `PROD-Chat` 클러스터에서 통합됨) |
 | `az.bomappworks.com` | — | — | 3001 (frontend ALB) | legacy az frontend |
 | ~~`api.bomapp.co.kr`~~ | — | — | — | **2026-05-07 정리 — fixed-response 410** (이전 8107 forward) |
@@ -329,10 +329,10 @@ graph LR
 | `PROD-BACK` | PROD | t3.xlarge × 2 | (capacity provider 없음, EC2 직접) | 2 | **공용 WAS 컨테이너** (`next-backend-was:1.1` 이미지, `/was/data` 마운트) — 12개 디렉토리 / 7개 활성 jar 수동 운영. ECS service: `prod-next-backend-was-v5/v6`. **bomapp-vkey 등 레거시 jar 가 단일 컨테이너에 공존** ([상세](./runtime-verification.md#2-prod-back-클러스터-운영-실체-ssm-검증)) |
 | `PROD-FRONT-NEXT` | PROD | 1 instance | (EC2 직접) | 1 | next-frontend WAS |
 | `PROD-MYDATA-API-240522-ARM` | PROD | m7g.xlarge × 2 (추정 — ARM Graviton) | `Infra-ECS-Cluster-PROD-MYDATA-API-240522-ARM-...-EC2CapacityProvider` | 2 | mydata-api 전용 (PROD 만) |
-| `PROD-MYDATA-AGENT-240523-ARM` | PROD | — | FARGATE + FARGATE_SPOT | 2 | mydata-agent 전용 (PROD 만, Fargate 만) |
+| ~~`PROD-MYDATA-AGENT-240523-ARM`~~ | PROD | — | — | — | **2026-06-11 폐기**. mydata-agent 가 PROD-Cluster 로 컷오버(2026-06-09, prod-internal-alb→`prod-mydata-agent-ip-8080` TG) 완료된 뒤 구 전용 클러스터 + service-discovery 네임스페이스(`prod_mydata_agent_240523_arm`) 삭제 |
 | `NEXT-PROD-BATCH-II` | PROD | 1 instance | `Infra-ECS-Cluster-NEXT-PROD-BATCH-II-...-EC2CapacityProvider` | 1 | next batch |
 
-> **참고**: PROD 환경에서 `mydata-api` / `mydata-agent` 는 PROD-Cluster 의 service 외에 별도 ARM 클러스터(`PROD-MYDATA-API-240522-ARM`, `PROD-MYDATA-AGENT-240523-ARM`)에서도 가동된다. 트래픽이 어느 쪽으로 흐르는지는 `architecture.md §6.2` 의 ALB 라우팅 참조.
+> **참고**: PROD `mydata-agent` 는 **2026-06-11 기준 PROD-Cluster 단일 가동** — 구 전용 클러스터 `PROD-MYDATA-AGENT-240523-ARM` 는 폐기됨. `mydata-api` 는 아직 PROD-Cluster + `PROD-MYDATA-API-240522-ARM` 양쪽에서 가동된다. 트래픽 경로는 `architecture.md §6.2` 의 ALB 라우팅 참조.
 
 명명 규칙: `SVC-ECS-{ENV}-{앱이름}`, Task Definition: `TD-ECS-{ENV}-{앱이름}`, Task Role: `{env}-{앱이름}-task-role`. 모든 서비스가 `launchType` 대신 `capacityProviderStrategy` 사용.
 
@@ -349,7 +349,7 @@ graph LR
 | 컴포넌트 | 사용 서비스 | 비고 |
 |---------|------------|------|
 | **Aurora MySQL (RDS)** | next-backend 전 앱, legacy-backend, mydata-mgmts-api | DEV/STG/PROD 환경별. Terraform 미관리 (수동) |
-| **ElastiCache Redis (Serverless, TLS)** | next-backend (Redisson), chat-api, mydata-mgmts-api | 과거 PROD-Chat 전용 + 공용으로 분리되어 있었으나 클러스터 통합 후 재검증 필요. 현재 Redis 인스턴스 구성은 2026-05-19 시점에 확인되지 않음. |
+| **ElastiCache Redis (Serverless, TLS)** | next-backend (Redisson), chat-api, mydata-mgmts-api | 과거 PROD-Chat 전용(`prod-chat-redis`)은 **2026-06-11 폐기** — 공용 Redis(Serverless)로 통합. chat-api 포함 전 앱이 공용 엔드포인트 사용. |
 | **Amazon MSK (Kafka, SASL/SCRAM)** | chat-api (`chat-message`, `chat-status`), next-backend 일부 | `b-*.prodmskcluster.c4.kafka.ap-northeast-2.amazonaws.com:9096` |
 | **AWS Secrets Manager** | next-backend (Spring Cloud AWS, dev/stg/prod 환경별) | 2026-04 정식 적용 |
 

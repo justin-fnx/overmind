@@ -34,10 +34,10 @@ infra/
 ├── service-discovery-plan.md      # CloudMap / Service Connect 도입 계획
 ├── docs/
 │   └── network-diagram.md         # 네트워크 1차 다이어그램
-└── terraform/                    # ⬇ 환경별 모듈 구조 (MR !36, 미머지)
+└── terraform/                    # ⬇ 환경별 모듈 구조 (MR !36 머지 + 적용 완료)
     ├── provider.tf  variables.tf
     ├── main.tf                    # module "shared"/"prod"/"stg"/"dev" 선언 + cross-module 배선
-    ├── moved_shared.tf / moved_prod.tf / moved_stg.tf / moved_dev.tf   # state 주소 이동(671건)
+    │                              # (moved_*.tf 는 state mv 실현 후 제거됨 — 커밋 7eb31e5)
     ├── backend.tf                 # 빈 http backend (로컬 state 관행 — 로컬에선 제거하고 사용)
     ├── ecs_cross_env.tf           # env-spanning for_each (next_backend ECS 서비스/nb LT·ASG·CP/log-daemon)
     ├── iam_task_roles.tf          # env-spanning IAM task role/policy/attachment (9앱×3환경)
@@ -55,7 +55,9 @@ infra/
         └── dev/                   # dev 환경 (동일 구성)
 ```
 
-> **모듈 구조 (2026-06, MR !36 — 미머지/미적용)**: 작업단위로 난립하던 `.tf` 를 **환경 디렉토리(모듈) → 인프라 종류별 파일** 로 재구성. 단일 root module(698 resource blocks / 995 instances) 을 `modules/{shared,dev,stg,prod}` + cross-cutting root 로 분리하되 **drift 불변**(`1 to add, 44 to change, 17 to destroy` 동일 + moved 통지 671건)을 검증.
+> **모듈 구조 (2026-06, MR !36 머지 + 적용 완료)**: 작업단위로 난립하던 `.tf` 를 **환경 디렉토리(모듈) → 인프라 종류별 파일** 로 재구성. 단일 root module(698 resource blocks / 995 instances) 을 `modules/{shared,dev,stg,prod}` + cross-cutting root 로 분리하되 **drift 불변**(`1 to add, 44 to change, 17 to destroy` 동일 + moved 통지 671건)을 검증.
+> - **2026-06-11 적용 완료**: MR !36 머지(2209dee) 후 ① `terraform state mv` 566건으로 모듈 주소 이동 실현(AWS 무변경) → moved 블록 제거(7eb31e5), ② 드리프트 정리 코드 4커밋(cert·LB·webview/vkey·dev/stg 용량 large 복귀·폐기 리소스·mgmts 카나리 라이브값), ③ `-target` 점진 apply: **shared(4 chg) → dev(12 chg/5 destroy) → stg(8/5) → prod(13/5)**. prod 폐기분 = chat-redis 3 + 구 mydata-agent ns 1 + 고아 chat-api SG 1. prod task-def 6건은 가동 리비전 보호 위해 `state rm`(deregister 회피).
+> - **잔여 드리프트 = 5 benign update**: `planner_card_ssr`(az_rebalancing+deploy% — 공유 ASG 용량 고려해 보수적 보류) + dev-wings grace 300→600 + webview stickiness(비활성, cosmetic) + route53 ttl 300→60 ×2(검증 토큰 값 불변). 생성·삭제·교체 0.
 > - 의존: env/root → `shared` (acyclic). 환경 간 결합(prod 리스너룰→stg TG, stg subnet→prod VPC)은 root 가 변수로 중개.
 > - root 잔류 = env 를 가로지르는 `for_each` 리소스·cross-env SG rule·CI/CD IAM·cross-cutting route53 (shared 로 옮기면 순환참조).
 > - Target Group 은 한 파일 비대화 방지를 위해 **LB 단위 파일**로 분리(`target_groups_alb/nlb/internal_alb.tf`).
@@ -100,7 +102,7 @@ infra/
 2개 hosted zone (`bomapp.co.kr`, `bomapp.im`), 150+ 레코드. 환경 prefix(`dev-`/`stg-`/없음=PROD)로 분기.
 
 ### 4.4 ElastiCache (Redis)
-- `prod-chat-redis`: cache.r7g.large × 3, Multi-AZ, TLS + KMS 암호화, Redis 7.1
+- ~~`prod-chat-redis`: cache.r7g.large × 3, Multi-AZ, TLS + KMS 암호화, Redis 7.1~~ → **2026-06-11 폐기 완료**. ElastiCache 클러스터(수동 삭제) + Terraform 리소스(subnet group / SG `prod-chat-redis` / ingress rule `prod_chat_redis_from_prod_ecs_task`) destroy 적용. chat-api 는 공용 Redis(Serverless) 사용으로 정리됨. 고아 SG `SG-ECS-PROD-chat-api`(미부착)도 함께 제거.
 - 추가 공용 Redis (Serverless 엔드포인트 TLS, next-backend Redisson 사용) — 일부는 Terraform 외 관리
 
 ### 4.5 CloudFront / S3

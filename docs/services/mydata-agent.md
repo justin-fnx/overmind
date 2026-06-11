@@ -34,9 +34,10 @@
 
 | 환경 | 클러스터 | 타입 | 리소스 | 노드 수 |
 |------|---------|------|--------|---------|
-| PROD | `PROD-MYDATA-AGENT-240523-ARM` | **Fargate** (awsvpc) | CPU 1024 / Memory 2048 / **ARM64** | 2 (autoscaling min=2/max=10) |
+| PROD | `PROD-Cluster` (SVC `SVC-ECS-PROD-mydata-agent`) | Fargate (awsvpc) / ARM64 | CPU 1024 / Memory 2048 | 2 (autoscaling) |
 | DEV/STG | (ECS 서비스 미발견) | — | — | — |
 
+> **2026-06-11 갱신**: 구 전용 클러스터 `PROD-MYDATA-AGENT-240523-ARM` 는 **폐기**됨. 2026-06-09 PROD-Cluster 로 컷오버(prod-internal-alb:8080 → TG `prod-mydata-agent-ip-8080`, 신규 100%) 후 구 클러스터 + service-discovery 네임스페이스(`prod_mydata_agent_240523_arm`) 삭제. 호출자 `next-backend/mydata-api` 의 엔드포인트는 prod-internal-alb 그대로라 영향 없음.
 > Fargate ARM64 + awslogs + 오토스케일링 적용된 **모범 사례** 중 하나로 ECS 감사 리포트(2026-04-06)에서 평가됨.
 
 ### 2.2 도메인

@@ -307,7 +307,7 @@ done
 | CloudWatch | 11000 TG `RequestCountPerTarget` 14일 **2091** (~150/일, 생존) |
 | 호출자 IP | `210.216.219.20`(외부 마이데이터 표준 동의관리 API), `43.201.10.95`(AWS 서울 내부) |
 | 역할 | **금융 마이데이터 표준 동의·관리(mgmts) API 수신 서버**. OAuth 토큰발급(`ManagementService.issueOAuthToken`)을 **자체 구현**. 외부 의존: `my-data.management.org-url=https://api.mydatacenter.or.kr:7443`(종합포털) + Redis(`10.10.10.71`). 일부 경로는 `NextMyDataApiClient` 로 next-backend 에 위임("이관 중") |
-| 이관 상태 | **미이관.** 사용자 인지("mydata 전부 신규/prod-mydata-agent 로 이관")는 **수집·게이트웨이(mydata-agent/mydata-api)** 한정. 표준 mgmts 수신면은 DigiCert EV 인증서(auth 5443 구간)에 묶인 채 PROD-BACK 11000 에 잔존 |
+| 이관 상태 | **✅ 2026-06-11 신규 ECS 100% 컷오버 완료** (위 라우팅·jar 는 2026-06-04 구 jar 시점 스냅샷). 현재: `auth.bomapp.co.kr` → prod-alb:5443 **prio-100 host 룰** → TG `prod-mydata-mgmts-api-ip-8080` → ECS `PROD-Cluster/SVC-ECS-PROD-mydata-mgmts-api`(빌드 `20260611-9e0b726`, 8080). 카나리 25→50→100% + agreements NPE fix(PR#18). 구 11000 jar 는 `weight 0` 롤백 stub. 상세 [services/mydata-mgmts-api.md §2.1](./services/mydata-mgmts-api.md). 수집·게이트웨이(mydata-agent/mydata-api)는 별개 |
 
 ### 10.3 `bomapp_oauth` (8888, 기능적 死)
 

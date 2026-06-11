@@ -2,7 +2,7 @@
 
 > 금융 마이데이터 표준 **'지원 API(mgmts)' 수신 서버**. 보맵이 마이데이터사업자(정보수신자)로서 `auth.bomapp.co.kr` 에 노출하며, 종합포털(`api.mydatacenter.or.kr`)이 동의·전송요구(`/v2/mgmts/*`) 표준 API를 호출한다. 마이데이터 OAuth 토큰(RS512) 발급·동의 관리를 표준 스펙대로 자체 구현. **규제필수.**
 >
-> **구 이름 `bomapp_my_data`** (BOM-121, 2026-06 리네임). **BOM-113 현대화 완료**(SB 3.4.5 / Java 21 / jakarta / jjwt 0.12) — 단 PROD 는 아직 구 jar(미컷오버).
+> **구 이름 `bomapp_my_data`** (BOM-121, 2026-06 리네임). **BOM-113 현대화 완료**(SB 3.4.5 / Java 21 / jakarta / jjwt 0.12). **✅ 2026-06-11 PROD 신규 ECS 100% 컷오버 완료**(빌드 `20260611-9e0b726`, taskDef `:7`).
 
 | 항목 | 값 |
 |------|----|
@@ -13,7 +13,7 @@
 | artifact | `mydata-mgmts-api` (구 `bomappmydata`) |
 | 빌드 | Maven (+ Dockerfile temurin-21) |
 | feature_base_branch | `master` |
-| 활동 상태 | **현대화 완료(코드) · ECS 컨테이너화 산출물 준비 · PROD 미컷오버** |
+| 활동 상태 | **현대화 완료 · ECS 컨테이너화 · ✅ PROD 신규 ECS 100% 컷오버 완료(2026-06-11)** |
 
 ---
 
@@ -30,19 +30,21 @@
 
 ## 2. 배포 / 환경
 
-### 2.1 현재 PROD (구 jar, 미컷오버)
+### 2.1 현재 PROD (신규 ECS, ✅ 2026-06-11 100% 컷오버 완료)
 
 검증: [runtime-verification.md §10](../runtime-verification.md)
-- 라우팅: `auth.bomapp.co.kr` → prod-nlb:5443 → prod-alb:5443 **default** → TG `prod-back-ecs-host-2-http-11000` → `i-03f0178089f760c6f:11000`
-- `PROD-BACK` 공용 WAS 컨테이너(`next-backend-was:1.1`) 내 **수동 기동 jar**: PID 15890 `bomappmydata-0.0.1-SNAPSHOT.jar`(구 코드, UID `bomapp`)
-- 호스트 디렉토리: `/was/data/bomapp-mydata-prod/`, 시작: `--spring.profiles.active=prod --spring.config.location=/was/run/bomapp-mydata-prod/data/application-prod.properties`
-- ~150 req/일(2026-06). **규제필수 — 임의 중단 금지.**
+- 라우팅: `auth.bomapp.co.kr` → prod-nlb:5443 → prod-alb:5443 **prio-100 host 룰(host=auth)** → TG `prod-mydata-mgmts-api-ip-8080`(신규 100%) → ECS `PROD-Cluster / SVC-ECS-PROD-mydata-mgmts-api`(taskDef `:7`, 2 태스크 healthy)
+- 빌드 `20260611-9e0b726`, 컨테이너 **8080**, 프로파일 `prod`, secrets-init(JWT 2키, BOM-131), DESIRED 2 / CPU_RESERVATION soft
+- 컷오버 절차(2026-06-11): source-ip 핀(사무실 `14.52.60.172`→신규 100%)으로 검증 → weighted 카나리 **25%→50%→100%** 단계 증량 → 핀 제거. 각 단계 genuine consents/agreements **2xx** 확인, ERROR/5xx 0.
+- **롤백 경로**: 구 jar(`bomappmydata-0.0.1-SNAPSHOT.jar`, PROD-BACK `i-03f…:11000`)는 `prio-100 weight 0` + `:5443 default` 로 잔존(stub, 무트래픽). 장기 0 확인 후 제거.
+- ~150 req/일. **규제필수 — EV 인증서(5443) 구간.**
 
-### 2.2 신규 ECS (BOM-114 산출물, 미배포)
+### 2.2 빌드/배포 파이프라인 (BOM-114)
 
-- `Dockerfile`(temurin-21 멀티스테이지, ARM64, nonroot), `.github/workflows`(build→ECR→ECS, `workflow_dispatch`), `ops/ecs/mydata-mgmts-api/overlays/{dev,stg,prod}`
-- 컨테이너 포트 **8080**(전 환경), 프로파일 **dev/stg/prod**, prod `DESIRED_COUNT=2`·`CPU_RESERVATION` soft(TASK_CPU 하드캡 금지)
-- 실제 ECR/ECS/TG/ALB 5443 컷오버(weighted/blue-green)는 **별도 infra 티켓**(미완)
+- `.github/workflows`: `build-and-deploy.yml`(env 입력 필수, 기본값 없음) → `build.yml`(Jib→ECR, 태그 `YYYYMMDD-shortsha`) → `ecs-deploy.yml`(task def 등록 + `update-service`, circuit breaker rollback, min100/max200 **무중단 롤링**)
+- prod overlay `ops/ecs/mydata-mgmts-api/overlays/prod/.env`: CLUSTER `PROD-Cluster`, SERVICE `SVC-ECS-PROD-mydata-mgmts-api`, TASK_FAMILY `TD-ECS-PROD-mydata-mgmts-api`, 포트 8080, JWT secrets-init(BOM-131), APM enabled(BOM-142). 레거시 `deploy/*`(SSH/S3) = DEPRECATED
+- 배포: `gh workflow run build-and-deploy.yml --ref master -f environment=prod` (ref 명시 권장)
+- ⚠ 2026-06-11 컷오버 시 ALB 룰/가중치를 **aws-cli로 직접 변경 = Terraform drift**. infra 반영 필요(반드시 `-target`, blanket apply 금지)
 
 ---
 
@@ -100,7 +102,7 @@ mydata-mgmts-api ──▶ 종합포털(OpenFeign) / next-backend(NextMyDataApiC
 | Dockerfile | ✅ BOM-114 (temurin-21 멀티스테이지, ARM64, nonroot) |
 | CI/CD | ✅ GitHub Actions build→ECR→ECS (BOM-114). 레거시 `deploy/*`(수동 SSH/S3) = DEPRECATED |
 | 테스트 | `mvn test` 4통과/1스킵(`SlackApiClientTest` @Disabled 실 웹훅). 로컬 JDK 없음 → docker `maven:3.9-eclipse-temurin-21` |
-| 관측성 | ES 로그(`logs-{env}-mydata-mgmts-api`) + Elastic APM = **BOM-119** (미완) |
+| 관측성 | ES 로그 `logs-prod-mydata-mgmts-api`(데이터스트림, **가동중**) + Elastic APM(prod overlay `ELASTIC_APM_ENABLED=true`, BOM-142). BOM-119 후속 |
 | 헬스체크 | `GET /healthy` |
 | 보안 | clientSecret/토큰 로그 마스킹(BOM-116), nonroot 컨테이너 |
 
@@ -120,9 +122,11 @@ mydata-mgmts-api ──▶ 종합포털(OpenFeign) / next-backend(NextMyDataApiC
 
 ## 8. 알려진 이슈 / 남은 작업
 
-- **PROD 미컷오버**: 코드는 현대화·컨테이너화됐으나 PROD 는 구 jar(11000)로 가동. 실제 ECS 전환 = infra 티켓(ECR/ECS/TG/ALB 5443 weighted/blue-green, EV 인증서 구간 유지).
+- ✅ **PROD 컷오버 완료(2026-06-11)**: 신규 ECS 100%. 남은 정리 = ① ALB 룰/가중치 **Terraform 반영**(aws-cli 변경분, `-target`), ② 구 11000 롤백 stub 제거(장기 무트래픽 확인 후).
+- ✅ **agreements NPE fix (PR #18)**: `AgreementService.getAgreement` 에서 upstream `provConsentCnt=null` 을 `int` 로 언박싱 → NPE (카나리 검증 트래픽이 PROD에서 발견). null→0 가드 + 단위테스트. 빌드 `20260611-9e0b726` 에 포함.
+- 🟡 **HikariCP stale-connection WARN**: idle 후 `max-lifetime` 이 DB `wait_timeout` 보다 길어 풀 커넥션이 stale → borrow 시 검증/폐기(self-healing, **요청 실패 0**). `spring.datasource.hikari.max-lifetime` 단축 권고(비차단).
 - **이중 운영**: legacy-backend(redmin) 직접 호출 ↔ next-backend 경로 데이터 정합.
-- **테스트 얕음**: 표준 mgmts 계약(consents/agreements) 단위/회귀 테스트 부재.
+- **테스트**: agreements null 케이스 단위테스트 추가(PR #18). consents/revoke 등 표준 계약 회귀 테스트는 여전히 얕음.
 
 ---
 
