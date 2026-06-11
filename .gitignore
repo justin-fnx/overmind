@@ -1,1 +1,7 @@
 .DS_Store
+
+# mgmts replay 작업 디렉토리 (.env 등 시크릿 포함)
+tools/mgmts-replay/
+
+# 마이데이터 인증서 키 번들 (PFX/JKS = 개인키 포함 — git 커밋 금지)
+auth.bomapp.co.kr.zip

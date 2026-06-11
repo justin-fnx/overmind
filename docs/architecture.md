@@ -260,7 +260,7 @@ graph LR
 | 도메인 (PROD) | DEV | STG | 컨테이너 포트 | 실제 listening jar (검증) |
 |--------------|-----|-----|:---:|----------------------|
 | `bapi.bomapp.co.kr` | `dev-bapi.bomapp.co.kr` | `stg-bapi.bomapp.co.kr` | 8107 | **next-backend / bomapp-api** (`bomapp-server-bomapp-api.jar`, PID 10745) ✓ |
-| `web.bomapp.co.kr` | (별도) | (별도) | 7778 | **legacy-backend / bomapp_webview_server** (`bomapp_webview_server-0.1.0.jar`, PID 1428) ✓ |
+| `web.bomapp.co.kr` | (별도) | (별도) | 8080 | **legacy-backend / bomapp_webview_server — 신규 ECS 컷오버 (2026-06-10)**: prio 260 → `prod-bomapp-webview-ip-8080`(독립 ECS). 구 PROD-BACK :7778(PID 1428)은 롤백용 ✓ |
 | `wapi.bomapp.co.kr` | `dev-wapi.bomapp.co.kr` | `stg-wings-api.bomapp.co.kr` | 8102 | **next-backend / wings-api** (`bomapp-server-wings-api.jar`, PID 19422) ✓ |
 | `oapi.bomapp.co.kr` / `openapi.bomapp.co.kr` | `dev-oapi`/`dev-openapi` | `stg-oapi.bomapp.co.kr` | 8105 | **next-backend / open-api** (`bomapp-server-open-api.jar`, PID 5953) ✓ |
 | ~~`mapi.bomapp.co.kr` (`mapi1`, `mapi2`)~~ | `dev-mapi.bomapp.co.kr` | `stg-mapi.bomapp.co.kr` | — | **2026-06-01 정리 — PROD `mapi`/`mapi1`/`mapi2` 룰+TG+DNS 완전 삭제 (BOM-99)**. 근거: 30일(05-02~06-01) 외부 요청 0건 + 대상 TG 등록 타깃 0개(이미 비기능). 실 마이데이터 트래픽은 내부 `int-mapi.bomapp.co.kr`(4,563,564건/30일)로 정상 — **외부 진입 경로만 폐기, mydata-api 서비스는 운영 중**. dev/stg는 유지 |

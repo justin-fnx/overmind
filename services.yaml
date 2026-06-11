@@ -23,7 +23,15 @@ services:
     tech_stack: ["terraform", "aws", "ecs", "rds", "elasticache", "alb", "msk"]
     critical_paths:
       - path: "terraform"
-        description: "Terraform 모듈 및 환경별 설정 (dev/stg/prod)"
+        description: "Terraform root module. provider/variables/main(module 블록)/moved_*/ + cross-cutting 리소스(env-spanning for_each ECS·IAM, cross-env SG rule, CI/CD IAM, cross-cutting route53). 로컬 state. (MR !36 환경별 모듈 구조 — 미머지)"
+      - path: "terraform/modules/shared"
+        description: "전역+네트워킹 모듈: VPC/subnet, ECR, ACM, IAM 전역, OIDC, route53 zone, cloudwatch, ES 인덱스 템플릿. 무의존(acyclic 기준)."
+      - path: "terraform/modules/prod"
+        description: "PROD 환경 모듈: SG, LB, listener/rule, TG(LB 단위 파일 분리), elasticache, cluster, route53 records, S3/CF, IAM, secrets. shared 를 var 로 소비."
+      - path: "terraform/modules/stg"
+        description: "STG 환경 모듈 (PROD VPC 공유). 구성은 prod 모듈과 동형."
+      - path: "terraform/modules/dev"
+        description: "DEV 환경 모듈 (DEV VPC). 구성은 prod 모듈과 동형."
     docs_to_read:
       - "CLAUDE.md"   # Terraform 작업 규정 1~5번 (state 선독, destroy 금지, -target 점진 apply, prevent_destroy, AWS 실제 값 반영). 절대 규칙으로 이미 자동 선독되지만, 인프라 작업은 위반 시 영향이 커서 방어적으로 명시.
     dependencies: []

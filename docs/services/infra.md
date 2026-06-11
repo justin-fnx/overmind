@@ -34,35 +34,31 @@ infra/
 ├── service-discovery-plan.md      # CloudMap / Service Connect 도입 계획
 ├── docs/
 │   └── network-diagram.md         # 네트워크 1차 다이어그램
-└── terraform/
-    ├── provider.tf
-    ├── route53.tf                 # 150+ 레코드
-    ├── load_balancers.tf          # 5개 LB
-    ├── listeners.tf               # 15+ 리스너
-    ├── listener_rules.tf          # 30+ host header 룰
-    ├── target_groups.tf           # 30+ TG (25개 미사용)
-    ├── ecs_clusters.tf            # 13개 클러스터
-    ├── ecs_services.tf            # legacy 서비스
-    ├── ecs_services_next_backend.tf       # next-backend 9 앱 × 3 환경
-    ├── ecs_services_recipient_extractor.tf
-    ├── ecs_infra_next_backend.tf
-    ├── ecs_autoscaling.tf
-    ├── task_definitions.tf
-    ├── launch_templates.tf
-    ├── autoscaling.tf
-    ├── capacity_providers.tf
-    ├── security_groups.tf
-    ├── elasticache.tf             # ElastiCache Redis (과거 PROD-Chat 전용. 2025-2026 클러스터 통합 후 재검증 필요)
-    ├── service_discovery.tf       # CloudMap HTTP namespace 6개
-    ├── cloudfront_static_sites.tf # 정적 사이트 CloudFront
-    ├── s3_static_sites.tf
-    ├── acm.tf                     # bomapp_multi_wildcard
-    ├── ecr.tf
-    ├── cloudwatch.tf
-    ├── iam.tf
-    ├── import.sh                  # import 보조 스크립트
-    └── terraform.tfstate          # 로컬 state (S3 backend 전환 예정)
+└── terraform/                    # ⬇ 환경별 모듈 구조 (MR !36, 미머지)
+    ├── provider.tf  variables.tf
+    ├── main.tf                    # module "shared"/"prod"/"stg"/"dev" 선언 + cross-module 배선
+    ├── moved_shared.tf / moved_prod.tf / moved_stg.tf / moved_dev.tf   # state 주소 이동(671건)
+    ├── backend.tf                 # 빈 http backend (로컬 state 관행 — 로컬에선 제거하고 사용)
+    ├── ecs_cross_env.tf           # env-spanning for_each (next_backend ECS 서비스/nb LT·ASG·CP/log-daemon)
+    ├── iam_task_roles.tf          # env-spanning IAM task role/policy/attachment (9앱×3환경)
+    ├── iam_cicd.tf                # github/gitlab OIDC deploy glue
+    ├── security_group_rules_cross_env.tf   # 4개 cross-env SG rule (prod↔stg)
+    ├── secrets.tf                 # external_mydata_auth_jks (stg/prod)
+    ├── route53_records.tf         # 82개 cross-cutting 레코드 (shared zone + 여러 env LB/CF 참조)
+    ├── terraform.tfstate          # 로컬 state (S3 backend 전환 예정)
+    └── modules/
+        ├── shared/                # 전역+네트워킹: vpc/subnet, ecr, acm, iam(전역), oidc,
+        │                          #   route53 zone, cloudwatch, ES 인덱스 템플릿, silson static
+        ├── prod/                  # prod 환경: SG, LB, listener/rule, TG(LB 단위 파일 분리),
+        │                          #   elasticache, cluster, route53 records, S3/CF, IAM, secrets
+        ├── stg/                   # stg 환경 (동일 구성)
+        └── dev/                   # dev 환경 (동일 구성)
 ```
+
+> **모듈 구조 (2026-06, MR !36 — 미머지/미적용)**: 작업단위로 난립하던 `.tf` 를 **환경 디렉토리(모듈) → 인프라 종류별 파일** 로 재구성. 단일 root module(698 resource blocks / 995 instances) 을 `modules/{shared,dev,stg,prod}` + cross-cutting root 로 분리하되 **drift 불변**(`1 to add, 44 to change, 17 to destroy` 동일 + moved 통지 671건)을 검증.
+> - 의존: env/root → `shared` (acyclic). 환경 간 결합(prod 리스너룰→stg TG, stg subnet→prod VPC)은 root 가 변수로 중개.
+> - root 잔류 = env 를 가로지르는 `for_each` 리소스·cross-env SG rule·CI/CD IAM·cross-cutting route53 (shared 로 옮기면 순환참조).
+> - Target Group 은 한 파일 비대화 방지를 위해 **LB 단위 파일**로 분리(`target_groups_alb/nlb/internal_alb.tf`).
 
 ---
 

@@ -19,8 +19,8 @@
 
 ## 1. 책임 (현재)
 
-- **`bomapp_webview_server`** — **활용 중 (검증)**. 보맵 안드로이드 앱이 `web.bomapp.co.kr` 으로 약관/정책/공지/콘텐츠/이벤트 + 정적 자산(JS/CSS) 을 호출. PROD-BACK 컨테이너 :7778 (PID 1428, `bomapp_webview_server-0.1.0.jar`) 에서 실행 중 ([검증](../runtime-verification.md#24-활성-java-프로세스--포트-매핑-검증))
-- **`bomapp_redmin`** — 운영자 어드민. PROD-BACK `/was/data/bomapp-redmin-prod` 디렉토리 존재하나 검증한 인스턴스(`i-03f0178089f760c6f`)에서는 ps 비활성. 두 번째 인스턴스 미검증
+- **`bomapp_webview_server`** — **✅ PROD-Cluster 신규 ECS 이관·전면 컷오버 완료 (2026-06-10, BOM-137/138/139/154)**. `web.bomapp.co.kr` 전체 트래픽이 public **`prod-nlb`(고정IP 15.164.25.64) → target-type=alb → `prod-alb`** :443 prio 260 → 신규 TG `prod-bomapp-webview-ip-8080` (독립 ECS, SB1.5/Java8, 8080, DB datasource·mysql-connector 8.0.28). 구 PROD-BACK 공용 WAS :7778 (PID 1428) 은 롤백용 잔존. 보맵 앱이 약관/정책/공지/콘텐츠/이벤트 + 정적 자산(JS/CSS) 호출. (과거 운영 형태: PROD-BACK :7778, [검증](../runtime-verification.md#24-활성-java-프로세스--포트-매핑-검증))
+- **`bomapp_redmin`** — 운영자 어드민(**내부 전용**). **✅ 2026-06-10 신규 ECS 컷오버 완료** (BOM-137/138/157): `redmin.bomapp.co.kr` 은 **`prod-internal-alb`(internal)** 로 해석 → :443 **prio 20** host 룰 → 신규 TG `prod-bomapp-redmin-ip-8080` (독립 ECS, 8080, DB·mysql-connector 8.0.28). NEWTG RequestCount 양수로 라우팅 확정. 로그인=2FA(userId+userPw BCrypt → Google OTP). 구 경로 = internal-alb :443 **default** → `prod-back-ecs-1-http-7575`(i-09e36b30bad90990d:7575), 롤백용 잔존. ⚠ 최초 public `prod-alb`(prio 40 휴면 룰)에 잘못 걸었다 교정 — **redmin 은 internal ALB 가 실경로** (cf. webview 는 public `prod-nlb→prod-alb`)
 - **`bomapp_api_server`** — 노션상 "이전 완료" 진술. 단 `/was/data/legacy-bomapp-api-prod` 디렉토리 잔존 (ps 비활성). 완전 제거 미확정
 - **`bomapp_api_server_common`** — 공통 라이브러리 (위 모듈들이 의존)
 
@@ -143,8 +143,8 @@ legacy-backend/
 | 항목 | 상태 |
 |------|------|
 | `bomapp_api_server` → `next-backend / bomapp-api` | 노션상 "완료" 진술. 단 `/was/data/legacy-bomapp-api-prod` 디렉토리 잔존(ps 비활성), 완전 제거 미확정 |
-| `bomapp_redmin` 이전 | 미완. ps 비활성이라 처리 흐름 검증 필요 |
-| **`bomapp_webview_server` 이전** | **미완 + 활용 중**. 보맵 앱이 `web.bomapp.co.kr` 호출. 67개 endpoint 6개 controller 이전 + 정적 자산 S3+CloudFront 분리 필요 ([근거](../runtime-verification.md#5-legacy-backend--bomapp_webview_server-코드상-endpoint-검증)) |
+| `bomapp_redmin` 이전 | **✅ 완료 — 2026-06-10 신규 ECS 컷오버** (BOM-157). **`prod-internal-alb` :443 prio 20**(redmin 은 internal ALB 가 실경로) → `prod-bomapp-redmin-ip-8080`. NEWTG RequestCount 양수로 라우팅 확정. 계정 시드(2FA)·로그인 기능 테스트는 사용자 진행. 구 default→:7575 롤백용. (최초 prod-alb 오설정 교정) |
+| **`bomapp_webview_server` 이전** | **✅ 완료 — 2026-06-10 신규 ECS 전면 컷오버** (BOM-137/138/139/154). `web.bomapp.co.kr` → `prod-bomapp-webview-ip-8080`. 사무실 카나리가 공지 상세 네이티브 브릿지 버그(`window.bomapp.webNoticeDetail`↔`androidNative.openWithNaviBar`, BOM-154) 잡아 수정. 정적 자산 S3+CloudFront 분리는 미적용(이미지 베이킹 유지). 구 :7778 롤백용 잔존 ([근거](../runtime-verification.md#5-legacy-backend--bomapp_webview_server-코드상-endpoint-검증)) |
 | 직접 호스트(`api-was1/2`, `mapi-was1/2`, `batch-was`, `front-was`, `next-stg-back`) | 정리(폐기) 대상 |
 | Spring Boot 1.5 / Java 1.8 보안 | **EOL** — 잔존 모듈도 결국 이관 또는 재작성 필요 |
 | awslogs / SSH 22 / Circuit Breaker | ECS 감사 P0~P1 (PROD-BACK 대상) |
