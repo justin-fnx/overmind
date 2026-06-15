@@ -33,8 +33,8 @@
 ### 2.1 현재 PROD (신규 ECS, ✅ 2026-06-11 100% 컷오버 완료)
 
 검증: [runtime-verification.md §10](../runtime-verification.md)
-- 라우팅: `auth.bomapp.co.kr` → prod-nlb:5443 → prod-alb:5443 **prio-100 host 룰(host=auth)** → TG `prod-mydata-mgmts-api-ip-8080`(신규 100%) → ECS `PROD-Cluster / SVC-ECS-PROD-mydata-mgmts-api`(taskDef `:7`, 2 태스크 healthy)
-- 빌드 `20260611-9e0b726`, 컨테이너 **8080**, 프로파일 `prod`, secrets-init(JWT 2키, BOM-131), DESIRED 2 / CPU_RESERVATION soft
+- 라우팅: `auth.bomapp.co.kr` → prod-nlb:5443 → prod-alb:5443 **prio-100 host 룰(host=auth)** → TG `prod-mydata-mgmts-api-ip-8080`(신규 100%) → ECS `PROD-Cluster / SVC-ECS-PROD-mydata-mgmts-api`(현재 taskDef `:8`, 2 태스크 healthy; 2026-06-11 컷오버 시점은 `:7`)
+- 빌드 `20260615-724a5d0`(taskDef `:8`, 2026-06-15 HikariCP stale-connection + `/healthy` 로그노이즈 fix 배포; 컷오버 빌드는 `20260611-9e0b726`/`:7`), 컨테이너 **8080**, 프로파일 `prod`, secrets-init(JWT 2키, BOM-131), DESIRED 2 / CPU_RESERVATION soft
 - 컷오버 절차(2026-06-11): source-ip 핀(사무실 `14.52.60.172`→신규 100%)으로 검증 → weighted 카나리 **25%→50%→100%** 단계 증량 → 핀 제거. 각 단계 genuine consents/agreements **2xx** 확인, ERROR/5xx 0.
 - **롤백 경로**: 구 jar(`bomappmydata-0.0.1-SNAPSHOT.jar`, PROD-BACK `i-03f…:11000`)는 `prio-100 weight 0` + `:5443 default` 로 잔존(stub, 무트래픽). 장기 0 확인 후 제거.
 - ~150 req/일. **규제필수 — EV 인증서(5443) 구간.**

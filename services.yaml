@@ -168,7 +168,7 @@ services:
       - path: "src/main/resources"
         description: "application-{dev,stg,prod}.properties. 신규 ECS 배포는 server.port=8080(전 환경). 구 PROD jar 는 11000/15000. my-data.management.org-url=api.mydatacenter.or.kr:7443, spring.data.redis.host=10.10.10.71."
       - path: "ops/ecs/ , Dockerfile , .github/workflows/"
-        description: "BOM-114 컨테이너화 산출물 — Dockerfile(temurin-21 멀티스테이지, ARM64), ops/ecs/mydata-mgmts-api/overlays/{dev,stg,prod}(prod CPU_RESERVATION soft·DESIRED 2), GH Actions(build→ECR→ECS). ✅ 2026-06-11 PROD 5443 100% 컷오버 완료(빌드 20260611-9e0b726, taskDef:7). ALB 룰은 aws-cli 변경분 → TF 반영 필요(-target)."
+        description: "BOM-114 컨테이너화 산출물 — Dockerfile(temurin-21 멀티스테이지, ARM64), ops/ecs/mydata-mgmts-api/overlays/{dev,stg,prod}(prod CPU_RESERVATION soft·DESIRED 2), GH Actions(build→ECR→ECS). ✅ 2026-06-11 PROD 5443 100% 컷오버 완료. ALB 룰은 aws-cli 변경분 → TF 반영 필요(-target). 현재 가동: 빌드 20260615-724a5d0, taskDef:8(2026-06-15 HikariCP/healthy-log fix 배포). ⚠️ build-and-deploy.yml 은 환경마다 재빌드하는데 이미지 태그가 날짜-shortSHA(환경 무관 동일)+ECR immutable → 2번째 환경부터 TAG_INVALID 충돌. 다환경 순차 배포 시 build 1회 후 ecs-deploy.yml(image-tag 재사용)로 stg/prod 배포할 것."
     dependencies:
       - service: "mydatacenter.or.kr (마이데이터 종합포털/지원기관)"
         type: "sync"
@@ -186,7 +186,7 @@ services:
     notes:
       - "**리네임(BOM-121, 2026-06)**: repo `bomapp_my_data`→`mydata-mgmts-api`, 패키지 `kr.co.bomapp.auth.bomappmydata`→`kr.co.bomapp.mydata.mgmts`, artifact `bomappmydata`→`mydata-mgmts-api`(jar 명도). GitHub 구 URL 리디렉션. (APM `application_packages` 루트는 여전히 `kr.co.bomapp`.)"
       - "**현대화 완료(코드, BOM-113)**: SB 2.3→3.4.5 / Java 11→21 / jjwt 0.11→0.12(RS512 토큰 바이트 동등 검증) / javax→jakarta / 죽은코드·보안(clientSecret 마스킹) 정리. **✅ 2026-06-11 PROD 신규 ECS 배포·컷오버 완료**(빌드 20260611-9e0b726). 아래 '런타임 라우팅'의 구 jar 기술은 2026-06-04 시점 스냅샷."
-      - "**런타임 라우팅(✅ 2026-06-11 컷오버 후)**: auth.bomapp.co.kr → prod-nlb:5443 → prod-alb:5443 **prio-100 host룰** → TG `prod-mydata-mgmts-api-ip-8080` → ECS PROD-Cluster/SVC-ECS-PROD-mydata-mgmts-api(빌드 20260611-9e0b726, 8080, taskDef:7, 2태스크). 구 11000(`bomappmydata-0.0.1-SNAPSHOT.jar`, i-03f0178089f760c6f:11000)은 weight0 + :5443 default 롤백 stub. 상세: docs/runtime-verification.md §10 · docs/services/mydata-mgmts-api.md §2.1."
+      - "**런타임 라우팅(✅ 2026-06-11 컷오버 후)**: auth.bomapp.co.kr → prod-nlb:5443 → prod-alb:5443 **prio-100 host룰** → TG `prod-mydata-mgmts-api-ip-8080` → ECS PROD-Cluster/SVC-ECS-PROD-mydata-mgmts-api(빌드 20260615-724a5d0, 8080, taskDef:8, 2태스크; 2026-06-11 컷오버 시점은 20260611-9e0b726/taskDef:7). 구 11000(`bomappmydata-0.0.1-SNAPSHOT.jar`, i-03f0178089f760c6f:11000)은 weight0 + :5443 default 롤백 stub. 상세: docs/runtime-verification.md §10 · docs/services/mydata-mgmts-api.md §2.1."
       - "**규제필수 (decommission 주의)**: 표준 mgmts 수신면 = EV 인증서(5443) 구간. ✅ 2026-06-11 신규 ECS 100% 컷오버 완료(weighted 25→50→100% + 핀 검증 + agreements NPE fix PR#18). 구 PROD-BACK 11000 jar 는 롤백 stub(장기 무트래픽 확인 후 제거). ~150 req/일. **임의 중단 금지.** 남은 정리: ALB 룰 TF 반영(-target)."
       - "**배포**: 신규는 ECS(컨테이너 8080, 프로파일 dev/stg/prod), build-and-deploy.yml(Jib→ECR→ECS, circuit breaker rollback, 무중단). 레거시 `deploy/*`(SSH/S3 수동)는 DEPRECATED(롤백용 보존). 관측성: ES로그 `logs-prod-mydata-mgmts-api`(데이터스트림, 가동중) + Elastic APM(prod overlay enabled, BOM-142)."
 
