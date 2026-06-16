@@ -40,15 +40,15 @@ services:
     notes:
       - "PROD 리소스는 prevent_destroy로 보호. destroy/replace 작업 절대 금지."
       - "변경 전 반드시 terraform state를 완전히 읽어 확인 후 plan/apply 수행."
-      - "ECS 배포 대상 서비스: alimtalk-callback, bomapp-api, chat-api, mydata-api, open-api, bomapp-batch, mydata-batch, statics-batch, wings-api"
+      - "ECS 배포 대상 서비스: bomapp-api, chat-api, mydata-api, open-api, bomapp-batch, mydata-batch, statics-batch, wings-api"   # alimtalk-callback 디커미션됨 (BOM-180, 2026-06-16)"
 
   # ─────────────────────────────────────────────
   # Next-Generation Backend Platform
   # ─────────────────────────────────────────────
   - name: "next-backend"
-    repo_url: "github.com/bomapp-inc/next-backend"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/next-backend"   # 정본=GitLab(project id 40, group bomapp, default prod). 2026-06-16 정본 이전 — 작업은 GitLab MR(glab). github.com/bomapp-inc/next-backend 는 레거시 미러(PR 미사용).
     path: "../next-backend"
-    feature_base_branch: "dev"   # prod=운영, dev=개발통합, feature/*는 dev에서 분기→dev로 PR. docs/git-branching-strategy.md 참조.
+    feature_base_branch: "dev"   # prod=운영, dev=개발통합, feature/*는 dev에서 분기→dev로 MR. docs/git-branching-strategy.md 참조.
     description: "차세대 BOMAPP 백엔드 플랫폼. Gradle 멀티모듈로 5계층(core/internal/domain/external/server) 아키텍처를 구성하고, 9개 마이크로서비스 앱(API, 배치, 채팅, 마이데이터, 웹훅 등)을 단일 리포에서 빌드/배포한다. 보험 상품 조회/추천/판매의 핵심 도메인 로직 담당."
     tech_stack: ["java-21", "spring-boot-3.4", "spring-cloud-2024", "gradle-multi-module", "querydsl", "kafka-msk", "redisson", "jwt", "elastic-apm", "jib", "distroless"]
     critical_paths:
@@ -78,8 +78,6 @@ services:
         description: "통계 집계 배치"
       - path: "bomapp-server/wings-api"
         description: "Wings(설계사 도구) API"
-      - path: "bomapp-server/alimtalk-callback"
-        description: "카카오 알림톡 콜백 웹훅 수신"
     dependencies:
       - service: "mydata-agent"
         type: "sync"
@@ -95,6 +93,8 @@ services:
       - "앱별 테스트 실행: ./gradlew :bomapp-server-{app}:test"
       - "환경별 프로파일 분리: local/dev/stg/prod. application-{profile}.yml 다중 사용."
       - "JUnit 5 사용 (useJUnitPlatform). checkstyle/ktlint 미설정."
+      - "**CI 듀얼 운영(2026-06, 사내 GitLab 이전 진행 중)**: 기존 GitHub Actions(.github/workflows/build·build-and-deploy·ecs-deploy·pr-check) + 신규 GitLab CI(.gitlab-ci.yml)가 과도기 공존(양쪽 동일 Jib→ECR→ECS 동작). GitLab 측 제약: OIDC 불가→정적 AWS 키 CI/CD 변수, amazon/aws-cli entrypoint:[\"\"] 우회, AWS CLI v2 번들 설치, ECR 직접 push(대용량 artifact 미사용), ref_protected 러너(보호 브랜치/태그서만 실행). Claude 리뷰/봇 워크플로우(claude-code-review.yml·claude.yml)는 제거(양쪽 미운영). PR #462(base dev) — .gitlab-ci.yml 은 아직 PR 단계라 prod/dev 미반영, 머지 전엔 GitLab 파이프라인 미작동."
+      - "**GitLab 미러 생성·가동 완료(2026-06-15)**: gitlab.bomapp.co.kr/bomapp/next-backend (project id 40, private, group bomapp id 21). 9브랜치+34태그 푸시(prod HEAD 6fe23970 일치), default=prod. 러너=인스턴스 공유러너 id=1(`bomapp-linux-runner`, Linux, run_untagged, **ref_protected**) — dev·prod 브랜치 + v* 태그 보호 완료. CI/CD 변수 AWS_ACCESS_KEY_ID/SECRET 등록 완료(사용자). **.gitlab-ci.yml 은 GitLab dev 에 머지됨(MR !1) — GitHub PR#462 와 무관(GitLab 전용)**. **파이프라인 검증 완료(2026-06-15)**: api 트리거(pipeline 502, PIPELINE_TARGET=pr-check)→ref_protected 러너 픽업→job success. **api 소스 영구 허용(MR !2)** — Claude/자동화가 dev·stg 빌드/배포를 GitLab API 로 트리거(잡은 when:manual 이라 생성 후 play 필요). **정본 이전 완료(2026-06-16)**: 로컬 origin/작업 정본이 GitLab(`gitlab.bomapp.co.kr/bomapp/next-backend`)으로 이전 — 이후 작업은 GitLab MR(`glab`)로 처리하고 GitHub `bomapp-inc/next-backend` 는 레거시 미러(PR 미사용). **미해결: GitHub Claude 워크플로우 제거(원요청)는 사용자 결정으로 '그대로 둠' 보류, PR#462 도 비긴급 보류.**"
 
   - name: "next-frontend"
     repo_url: "github.com/bomapp-inc/next-frontend"
@@ -266,13 +266,13 @@ services:
     test_command: "./gradlew test"
     lint_command: null
     notes:
-      - "**현재 운영 형태 (2026-06-08 cutover 완료)**: ECS `PROD-Cluster` / service `SVC-ECS-PROD-bomapp-vkey`, EC2 launch type (m7g Graviton 3, arm64), desired=2 multi-AZ. ALB priority 10 가 새 TG `prod-bomapp-vkey-ip-8080` 100% 처리 (옛 `prod-back-ecs-host-http-8080` weight 0, drain 대기). priority 4 (X-Canary=office) / priority 5 (사무실 source-ip) 도 동일 새 TG."
+      - "**현재 운영 형태 (2026-06-08 cutover 완료)**: ECS `PROD-Cluster` / service `SVC-ECS-PROD-bomapp-vkey`, EC2 launch type (m7g Graviton 3, arm64), desired=2 multi-AZ. ALB priority 10 가 단일 TG `prod-bomapp-vkey-ip-8080` 처리 (옛 8080 leg 는 BOM-83 디커미션으로 제거). priority 4 (X-Canary=office 헤더 룰) 도 동일 TG — 헤더 검증 기반이라 재사용 위해 유지. priority 5 (사무실 source-ip 룰) 은 MR !43 으로 제거(컷오버 완료, redundant)."
       - "**BV 마이그레이션 (2026-05-19 ~ 2026-06-08)**: 옛 PROD-BACK 공용 WAS 컨테이너 (`next-backend-was:1.1`, `i-03f0178089f760c6f` 내부 PID 1205, Tomcat 9.0.45 WAR) → 독립 Spring Boot ECS service. BV-1 부활, BV-2 동등성 검증, BV-3 Dockerfile/Jib, BV-4 IAM/ECR/SM 프로비저닝, BV-5 GitHub Actions, BV-6 STG, BV-7 PROD cutover + silent decode fail fix (PR #13)."
       - "**BV-7 silent decode fail 회고**: 옛 운영의 decode 처리가 `TranskeyServlet.service()` 가 아닌 별도 controller (next-backend-was image 안에 존재, 정확한 source repo 미확정) 였는데 새 image 가 그 controller 누락 → bapi 호출이 그냥 servlet 으로 가서 SDK 가 op=\"decode\" 분기 진입 전 silent return. `TranskeyDecodeController` + `TransKey.withoutSessionDecode` 1단계로 해결. 자세히 [infra runbook](../../../infra/docs/runbooks/bv-7-silent-decode-failure.md)."
       - "**운영 라이선스 (2026-05-19 SSM 추출 + 2026-05-26 SM 이관)**: `transkey_license.ini` 의 `license.type=p` 활성. P 라이선스 X.509 Subject = `O=bomapp, CN=T=P&D=[*.bomapp.co.kr]`, 유효 2019-08-19 ~ **2049-08-11 (30년 영구)**. AWS Secrets Manager `bomapp/{dev,stg,prod}/raon_license` 에 SecretString (base64 zip) 으로 저장 → ECS env `RAON_LICENSE_ZIP_BASE64` 로 주입."
       - "**옛 PoC repo**: [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) — DEPRECATED. README 에 명시. BV-7 진단의 결정적 단서 (옛 jar SHA 비교, decoder_sample.jsp 패턴) 가치만 보존."
       - "**비표준 위치**: GitLab 셀프호스트(`gitlab.bomapp.co.kr`) 가 아닌 GitHub `bomapp-inc` 조직에 위치. BOMAPP 의 다른 서비스 호스팅 컨벤션 예외. CI: GitHub Actions OIDC + IAM Role `github-actions-bomapp-vkey-role` (trust condition: `repo:bomapp-inc/bomapp-vkey:*`)."
-      - "**bapi 측 호출**: `next-backend` 의 `bomapp-external/raon/SecureServletExternalClient` 가 Feign `@PostMapping(\"/transkeyServlet/decode\")` 로 호출. 사무실 IP 사용자의 청구 흐름 진단 위해 `OfficeCanaryRequestInterceptor` 가 X-Canary=office 헤더 부착 (BOMAPP_CANARY_ENABLED=true 시). BV cutover 완료 후 X-Canary 라우팅의 본래 목적은 사라지고 priority 10 만으로 처리."
+      - "**bapi 측 호출**: `next-backend` 의 `bomapp-external/raon/SecureServletExternalClient` 가 Feign `@PostMapping(\"/transkeyServlet/decode\")` 로 호출. 사무실 IP 사용자의 청구 흐름 진단 위해 `OfficeCanaryRequestInterceptor` 가 X-Canary=office 헤더 부착 (BOMAPP_CANARY_ENABLED=true 시). BV cutover 완료 후 X-Canary 라우팅의 본래 목적은 사라지고 평시엔 priority 10 만으로 처리하나, X-Canary=office 헤더 룰(priority 4)은 추후 재사용 대비로 ALB 에 유지(MR !43)."
 
   # ─────────────────────────────────────────────
   # Legacy Monolith

@@ -5,7 +5,7 @@
 | 항목 | 값 |
 |------|----|
 | 경로 | `../next-backend` |
-| 리포 | `github.com/bomapp/next-backend` (추정) |
+| 리포 | **GitLab 정본** `gitlab.bomapp.co.kr/bomapp/next-backend` (project id 40, default `prod`, 2026-06-16 정본 이전). GitHub `bomapp-inc/next-backend` = 레거시 미러(PR 미사용) |
 | 언어/플랫폼 | Java 21 / Spring Boot 3.4.12 / Spring Cloud 2024.0.3 |
 | 빌드 | Gradle 멀티모듈 + Jib 멀티아키 OCI 이미지 |
 | 첫 커밋 | 2022-03-24 |
@@ -46,7 +46,6 @@ next-backend/
     ├── mydata-api/        # 마이데이터 API
     ├── open-api/          # 외부 파트너 공개 API
     ├── wings-api/         # 설계사(Wings) 도구 API
-    ├── alimtalk-callback/ # 카카오 알림톡 webhook 수신
     ├── bomapp-batch/      # 메인 배치
     ├── mydata-batch/      # 마이데이터 갱신 배치
     └── statics-batch/     # 통계 집계 배치
@@ -197,15 +196,7 @@ next-backend/
 | POST | `/stat/*` | 설계사 통계 |
 | GET/POST | `/insurer-archive-support/*` | 보험사 자료 지원 |
 
-### 3.6 alimtalk-callback (카카오 알림톡 webhook)
-
-| 항목 | 값 |
-|------|----|
-| 컨테이너 포트 | 8080 |
-| 외부 도메인 | (현재 모든 환경에서 ALB 미연결 — 운영 가능 여부 불명, 이관 미완 추정) |
-| 노트 | 카카오에서 호출하는 콜백 — 외부에 노출되어야 함 |
-
-### 3.7 bomapp-batch / mydata-batch / statics-batch
+### 3.6 bomapp-batch / mydata-batch / statics-batch
 
 | 항목 | 값 |
 |------|----|
@@ -263,8 +254,6 @@ graph LR
   mydata_api --> mydata-mgmts-api[mydata-mgmts-api 레거시]
   open_api --> Aurora
   wings_api --> Aurora
-  alimtalk_cb[alimtalk-callback] --> Aurora
-  alimtalk_cb -.수신.- KakaoOpen((Kakao Alimtalk))
   bomapp_batch --> Aurora
   mydata_batch --> Aurora
   statics_batch --> Aurora
@@ -316,7 +305,7 @@ graph LR
 |------|------|
 | Dockerfile | 없음 (Jib 으로 OCI 이미지 직접 빌드) |
 | 빌드 | `./gradlew :bomapp-server-{app}:jib` |
-| CI | GitHub Actions (`.github/workflows/build.yml`, `build-and-deploy.yml`, `ecs-deploy.yml`) |
+| CI | **과도기 듀얼 CI**: GitHub Actions (`.github/workflows/build.yml`, `build-and-deploy.yml`, `ecs-deploy.yml`, `pr-check.yml`) + GitLab CI (`.gitlab-ci.yml`, 사내 `gitlab.bomapp.co.kr` 이전 대비). 양쪽 동일 동작(Jib→ECR→ECS). GitLab 측은 정적 AWS 키(OIDC 불가)·`amazon/aws-cli` entrypoint 우회·AWS CLI v2 번들 설치·ECR 직접 push(artifact 미사용). Claude 리뷰/봇 워크플로우(`claude-code-review.yml`, `claude.yml`)는 제거(양쪽 모두 미운영). [PR #462](https://github.com/bomapp-inc/next-backend/pull/462) |
 | 배포 | ECR push → ECS update-service |
 | 환경 분리 | `application-{profile}.yml` (dev/stg/prod) |
 | 시크릿 | AWS Secrets Manager (Spring Cloud AWS) |
@@ -340,13 +329,14 @@ graph LR
 | 2026-04 | 채팅 이미지 S3 저장 (#284) |
 | 2026-04 | ElastiCache Serverless 엔드포인트 TLS 활성화 |
 | 2026-05 | 채팅 시스템 스케일링, prod server.port 8107 → 8080 정상화 |
+| 2026-06 | GitLab(`gitlab.bomapp.co.kr`) 이전 대비 `.gitlab-ci.yml` 추가 (GitHub Actions 와 과도기 공존), Claude 리뷰/봇 워크플로우 제거 ([PR #462](https://github.com/bomapp-inc/next-backend/pull/462)) |
 
 ---
 
 ## 9. 알려진 이슈 / 마이그레이션 상태
 
 - **bomapp-api / wings-api / open-api PROD 가 PROD-BACK 공용 WAS 컨테이너의 jar 형태로 운영** (각각 :8107 / :8102 / :8105). 단일 컨테이너에 next-backend, legacy-backend, mydata-mgmts-api, oauth, vkey 등 다중 프로젝트 jar 가 공존하는 패턴. ECS 의 표준 마이크로서비스 분리 안 됨. SSM 검증 ([상세](../runtime-verification.md#2-prod-back-클러스터-운영-실체-ssm-검증))
-- **alimtalk-callback** 모든 환경에서 ALB 연결 미구성 (운영 가능 여부 불명)
+- ~~**alimtalk-callback** 모든 환경에서 ALB 연결 미구성~~ → **디커미션 완료** (BOM-167 모듈 제거 + BOM-180 인프라 제거, 2026-06-16). 미사용 확인(콜백은 open-api `POST /external/alimtalk/reception-result` 처리), ECS/ECR/IAM/log-daemon 라우팅 모두 삭제.
 - **STG mydata-api** 내부 도메인이 레거시 호스트(10.1.1.194)를 가리킴 — next-backend 전환 미완
 - **chat-api** 이미지 태그 `latest` (롤백 불가) — 시맨틱 태그 적용 필요
 - **PROD 로깅** 일부 태스크 awslogs 누락. PROD-BACK 컨테이너는 awslogs 미설정 + `enable_execute_command = false` 라 운영 가시성 매우 낮음

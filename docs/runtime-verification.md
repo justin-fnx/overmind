@@ -136,7 +136,7 @@ PID 1205 (UID `bomapp`) 의 정체를 SSM 으로 추가 검증한 결과:
 | `web.bomapp.co.kr` | ALB:443 priority 260 | **prod-bomapp-webview-ip-8080 (2026-06-10 컷오버)** | **8080** | 신규 ECS `bomapp-webview` (구 PROD-BACK :7778/PID 1428 은 롤백용) | legacy-backend / bomapp_webview_server |
 | `wapi.bomapp.co.kr` | ALB:443 (priority 미기재, 별도 rule) | (8102 TG) | **8102** | `bomapp-server-wings-api.jar` (PID 19422) | next-backend / wings-api |
 | `oapi.bomapp.co.kr` 외 | (priority 별도) | (8105 TG로 추정) | **8105** | `bomapp-server-open-api.jar` (PID 5953) | next-backend / open-api |
-| `vkey.bomapp.co.kr` | ALB:443 priority 10 | **prod-bomapp-vkey-ip-8080 (100%, 2026-06-08 cutover)**. 옛 prod-back-ecs-host-http-8080 은 weight 0 drain. priority 4 (X-Canary=office) / 5 (사무실 IP) 도 같은 새 TG. | **8080** | **`bomapp-vkey` Spring Boot 2.7 + embedded Tomcat 9 (Java 17, m7g Graviton arm64)** — `TranskeyDecodeController` + Raon `TranskeyServlet`. | [`bomapp-inc/bomapp-vkey`](https://github.com/bomapp-inc/bomapp-vkey) — 보험금 청구 플로우의 주민번호 입력용 |
+| `vkey.bomapp.co.kr` | ALB:443 priority 10 | **prod-bomapp-vkey-ip-8080 (단일 TG, 2026-06-08 cutover; 옛 8080 leg 는 BOM-83 으로 제거)**. priority 4 (X-Canary=office 헤더 룰) 도 같은 TG — **유지**. priority 5 (사무실 source-ip) 는 MR !43 으로 **제거**. | **8080** | **`bomapp-vkey` Spring Boot 2.7 + embedded Tomcat 9 (Java 17, m7g Graviton arm64)** — `TranskeyDecodeController` + Raon `TranskeyServlet`. | [`bomapp-inc/bomapp-vkey`](https://github.com/bomapp-inc/bomapp-vkey) — 보험금 청구 플로우의 주민번호 입력용 |
 | `api.bomapp.co.kr` (✱ 정리됨) | ALB:443 priority 160 | (정리 전: 8107) | — (현재 410 fixed-response) | — | — |
 | `my-data-cbt.bomapp.co.kr` (✱ 정리됨) | 동일 priority 160 host header | — (현재 410 fixed-response) | — | — | — |
 

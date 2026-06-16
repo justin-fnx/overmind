@@ -176,7 +176,6 @@ graph LR
     mydata_api[mydata-api]
     open_api[open-api]
     wings_api[wings-api]
-    alimtalk_cb[alimtalk-callback]
     bomapp_batch[bomapp-batch]
     mydata_batch[mydata-batch]
     statics_batch[statics-batch]
@@ -207,7 +206,7 @@ graph LR
   Browser --> chat_api
 
   Partners --> open_api
-  KakaoCB --> alimtalk_cb
+  KakaoCB --> open_api
 
   Kakaopay <-->|상담 PII pull| az_was[az-was 에즈 허브 EC2]
   az_was -->|상담 신청/만료 통보| chat_api
@@ -242,7 +241,7 @@ graph LR
 | next-backend / open-api | | | | ✓ 카카오페이 등 (v4) |
 | next-backend / chat-api | | | | ✓ Infobank, MSK |
 | legacy-backend / redmin | | | ✓ (직접 호출) | |
-| 외부 카카오 | (alimtalk-callback) | | | |
+| 외부 카카오 | (open-api 수신) | | | |
 | 마이데이터 기관 | | (mTLS 응답) | | |
 
 > **`*-internal` 도메인 (예: `int-mapi.bomapp.co.kr`, `magent.bomapp.co.kr`)** 은 PROD-Internal-ALB 를 통해 VPC 내부에서만 호출 가능하며, 인증·인가가 외부 도메인보다 가벼운 경우가 있다. 변경 시 보안 영향 검토 필수.
@@ -323,9 +322,9 @@ graph LR
 
 | 클러스터 | 환경 | 인스턴스 | Capacity Provider | running tasks | 호스팅 서비스 |
 |---------|------|---------|-------------------|:-:|--------------|
-| `DEV-Cluster` | DEV | m7g.xlarge × 1 | `CP-ECS-DEV` + FARGATE + FARGATE_SPOT | 9 | bomapp-api, mydata-api, mydata-agent, mydata-batch, bomapp-batch, statics-batch, open-api, wings-api, chat-api, alimtalk-callback, legacy-bomapp-api, bomapp-redmin, bomapp-webview, planner-card-ssr, recipient-extractor (15개 서비스) |
-| `STG-Cluster` | STG | m7g.xlarge × 1 | `CP-ECS-STG` + FARGATE + FARGATE_SPOT | 7 | 동일 (15개 서비스) |
-| `PROD-Cluster` | PROD | m7g.xlarge × 4 | `CP-ECS-PROD` + FARGATE + FARGATE_SPOT | 9 | 14개 서비스 — DEV/STG 와 동일하되 `recipient-extractor` 부재 |
+| `DEV-Cluster` | DEV | m7g.xlarge × 1 | `CP-ECS-DEV` + FARGATE + FARGATE_SPOT | 8 | bomapp-api, mydata-api, mydata-agent, mydata-batch, bomapp-batch, statics-batch, open-api, wings-api, chat-api, legacy-bomapp-api, bomapp-redmin, bomapp-webview, planner-card-ssr, recipient-extractor (14개 서비스) |
+| `STG-Cluster` | STG | m7g.xlarge × 1 | `CP-ECS-STG` + FARGATE + FARGATE_SPOT | 6 | 동일 (14개 서비스) |
+| `PROD-Cluster` | PROD | m7g.xlarge × 4 | `CP-ECS-PROD` + FARGATE + FARGATE_SPOT | 9 | 13개 서비스 — DEV/STG 와 동일하되 `recipient-extractor` 부재 |
 | `PROD-BACK` | PROD | t3.xlarge × 2 | (capacity provider 없음, EC2 직접) | 2 | **공용 WAS 컨테이너** (`next-backend-was:1.1` 이미지, `/was/data` 마운트) — 12개 디렉토리 / 7개 활성 jar 수동 운영. ECS service: `prod-next-backend-was-v5/v6`. **bomapp-vkey 등 레거시 jar 가 단일 컨테이너에 공존** ([상세](./runtime-verification.md#2-prod-back-클러스터-운영-실체-ssm-검증)) |
 | `PROD-FRONT-NEXT` | PROD | 1 instance | (EC2 직접) | 1 | next-frontend WAS |
 | `PROD-MYDATA-API-240522-ARM` | PROD | m7g.xlarge × 2 (추정 — ARM Graviton) | `Infra-ECS-Cluster-PROD-MYDATA-API-240522-ARM-...-EC2CapacityProvider` | 2 | mydata-api 전용 (PROD 만) |
@@ -415,7 +414,7 @@ infra 의 ECS 감사(2026-04-06) 와 운영 문서에서 도출된 핵심 이슈
 ### P3 (분기)
 - **클러스터 통합 13 → 6** (현재 환경별/서비스별로 과도하게 분산)
 - **STG mydata-api 가 레거시 호스트(10.1.1.194 등) 가리킴** — next-backend 전환 미완
-- **alimtalk-callback PROD ECS 미배포**
+- ~~**alimtalk-callback PROD ECS 미배포**~~ → 디커미션 완료 (BOM-180, 2026-06-16). 콜백은 open-api `POST /external/alimtalk/reception-result` 가 처리.
 - **bomapp-api PROD 가 PROD-Cluster 가 아닌 PROD-BACK(legacy 모놀리스) 에 27개 포트로 떠 있음** — 마이크로서비스 분리 미완
 - **Service Discovery (CloudMap HTTP namespace)** 만 생성, 실제 등록은 미완
 
