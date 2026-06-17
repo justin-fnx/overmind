@@ -1,0 +1,3516 @@
+{
+  "active": true,
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": true,
+    "connections": {
+      "Slack 인터랙션 수신": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "인터랙션 파싱",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "다음 라운드 저장": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "질문중 기록",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "다음 프롬프트 블록": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "다음 프롬프트 포스트",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "답변 병합·제출": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "답변 저장·제출",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "답변 저장·제출": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "접수 알림",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "라운드 판정": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "에스컬레이션?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "모달 뷰 생성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "모달 열기",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "보류 기록": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "보류 저장",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "보류 저장": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "프롬프트 잠금·보류",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "서브태스크 생성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수 통보 메시지",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "스누즈 기록": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "스누즈 저장",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "스누즈 저장": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "프롬프트 잠금·스누즈",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "스테이지·페르소나 결정": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수준비 게이트",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "액션 라우터": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "행 조회·폼",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "행 조회·제출",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "스누즈 기록",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "보류 기록",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "액션 정규화": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "액션 라우터",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "에스컬레이션 기록": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "에스컬레이션 저장",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "에스컬레이션 저장": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "프롬프트 잠금·에스컬",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "에스컬레이션?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "에스컬레이션 기록",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "다음 라운드 저장",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "이전 프롬프트 잠금": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "다음 프롬프트 블록",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "인터랙션 파싱": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "액션 정규화",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "재평가 Gemini": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "재평가 게이트",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "재평가 게이트": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "재평가 충분한가",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "재평가 충분한가": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "통과 기록",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "라운드 판정",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "재평가 파서": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "재평가 게이트",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "접수 알림": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "재평가 게이트",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "질문중 기록": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "이전 프롬프트 잠금",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "착수 Gemini": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "착수준비 게이트",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "착수 통보 메시지": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수 통보",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "착수 파서": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "착수준비 게이트",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "착수준비 게이트": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "서브태스크 생성",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "통과 기록": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "통과 저장",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "통과 메시지": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "통과 알림",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "통과 알림": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "스테이지·페르소나 결정",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "통과 저장": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "프롬프트 잠금·통과",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "프롬프트 잠금·에스컬": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "에스컬레이션 알림",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "프롬프트 잠금·통과": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "통과 메시지",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "행 조회·제출": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "답변 병합·제출",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "행 조회·폼": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "모달 뷰 생성",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-06-15T06:13:46.474Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "1533f5f4-76e0-4946-a694-6f3018adc6a5",
+        "name": "Slack 인터랙션 수신",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+            "noResponseBody": true,
+            "responseCode": {
+              "values": {}
+            }
+          },
+          "path": "overmind-slack-interactions"
+        },
+        "position": [
+          0,
+          400
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "webhookId": "7db5768b-8193-4a20-b698-b0cc4c58a6a8"
+      },
+      {
+        "id": "7bfcce4d-7c46-48b0-82b1-88c001e4796c",
+        "name": "인터랙션 파싱",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "p1",
+                "name": "payload",
+                "type": "object",
+                "value": "={{ $json.body && $json.body.payload ? JSON.parse($json.body.payload) : $json.body }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "position": [
+          224,
+          400
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "4ea84da5-3dc1-4eb8-8d81-f419c8ed5412",
+        "name": "액션 정규화",
+        "parameters": {
+          "jsCode": "const p = $json.payload || {};\nlet route = \"\", pageId = \"\", threadTs = \"\", channelId = \"\", promptTs = \"\", triggerId = \"\", round = 0, freeText = \"\";\nlet answers = {};\nif (p.type === \"view_submission\") {\n  route = \"submit\";\n  let meta = {};\n  try { meta = p.view && p.view.private_metadata ? JSON.parse(p.view.private_metadata) : {}; } catch (e) { meta = {}; }\n  pageId = meta.pageId || \"\"; threadTs = meta.threadTs || \"\"; channelId = meta.channelId || \"\"; promptTs = meta.promptTs || \"\"; round = Number(meta.round || 0);\n  const sv = (p.view && p.view.state && p.view.state.values) || {};\n  const optAns = {}; const freeAns = {};\n  Object.keys(sv).forEach(function (bid) {\n    const el = sv[bid]; const akey = Object.keys(el)[0]; const v = el[akey];\n    if (bid.indexOf(\"qf_\") === 0) {\n      const idx = bid.slice(3);\n      if (v && v.value) { freeAns[idx] = v.value; }\n    } else if (bid.indexOf(\"q_\") === 0) {\n      const idx = bid.slice(2);\n      if (v && v.selected_option) { optAns[idx] = v.selected_option.value; }\n      else if (v && v.selected_options) { optAns[idx] = v.selected_options.map(function (o) { return o.value; }).join(\", \"); }\n      else if (v && v.value) { optAns[idx] = v.value; }\n    }\n  });\n  const idxs = {};\n  Object.keys(optAns).forEach(function (k) { idxs[k] = true; });\n  Object.keys(freeAns).forEach(function (k) { idxs[k] = true; });\n  Object.keys(idxs).forEach(function (idx) {\n    const parts = [];\n    if (optAns[idx]) { parts.push(optAns[idx]); }\n    if (freeAns[idx]) { parts.push(\"(서술) \" + freeAns[idx]); }\n    answers[idx] = parts.join(\" / \");\n  });\n} else if (p.type === \"block_actions\") {\n  const a = (p.actions && p.actions[0]) || {};\n  route = a.action_id || \"\";\n  let val = {};\n  try { val = a.value ? JSON.parse(a.value) : {}; } catch (e) { val = {}; }\n  pageId = val.pageId || \"\";\n  threadTs = (p.container && p.container.thread_ts) || (p.message && p.message.thread_ts) || \"\";\n  channelId = (p.channel && p.channel.id) || (p.container && p.container.channel_id) || \"\";\n  promptTs = (p.container && p.container.message_ts) || (p.message && p.message.ts) || \"\";\n  triggerId = p.trigger_id || \"\";\n}\nreturn [{ json: { route: route, pageId: pageId, threadTs: threadTs, channelId: channelId, promptTs: promptTs, triggerId: triggerId, round: round, answers: JSON.stringify(answers), freeText: freeText } }];"
+        },
+        "position": [
+          448,
+          400
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "4baed4dc-68a4-43e4-b729-2cd6f23ad812",
+        "name": "액션 라우터",
+        "parameters": {
+          "options": {},
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "open_form"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  }
+                },
+                "outputKey": "open_form",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "submit"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  }
+                },
+                "outputKey": "submit",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "snooze"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  }
+                },
+                "outputKey": "snooze",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "hold"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 1
+                  }
+                },
+                "outputKey": "hold",
+                "renameOutput": true
+              }
+            ]
+          }
+        },
+        "position": [
+          672,
+          368
+        ],
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "20d5d040-16f8-4564-9b77-44d7842ec807",
+        "name": "행 조회·폼",
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "thread_ts",
+                "keyValue": "={{ $json.threadTs }}"
+              }
+            ]
+          },
+          "limit": 1,
+          "operation": "get"
+        },
+        "position": [
+          896,
+          112
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "0494bff6-e828-4f77-ba37-afba51e91f16",
+        "name": "모달 뷰 생성",
+        "parameters": {
+          "jsCode": "const row = $json;\nconst norm = $(\"액션 정규화\").first().json;\nlet qs = [];\ntry { qs = row.questions_json ? JSON.parse(row.questions_json) : []; } catch (e) { qs = []; }\nconst blocks = [];\nqs.forEach(function (q, i) {\n  const pfx = q.perspective ? (\"[\" + q.perspective + \"] \") : \"\";\n  const labelText = (pfx + \"Q\" + (i + 1) + \". \" + q.text).slice(0, 150);\n  const opts = (q.options || []).map(function (o) { return { text: { type: \"plain_text\", text: String(o).slice(0, 75), emoji: true }, value: String(o).slice(0, 150) }; });\n  if (opts.length === 0) {\n    blocks.push({ type: \"input\", block_id: (\"q_\" + i), optional: true, label: { type: \"plain_text\", text: labelText, emoji: true }, element: { type: \"plain_text_input\", action_id: \"a\", multiline: true } });\n  } else {\n    const element = q.multi ? { type: \"checkboxes\", action_id: \"a\", options: opts } : { type: \"radio_buttons\", action_id: \"a\", options: opts };\n    blocks.push({ type: \"input\", block_id: (\"q_\" + i), optional: true, label: { type: \"plain_text\", text: labelText, emoji: true }, element: element });\n    blocks.push({ type: \"input\", block_id: (\"qf_\" + i), optional: true, label: { type: \"plain_text\", text: \"↳ 보충 설명 (선택)\", emoji: true }, element: { type: \"plain_text_input\", action_id: \"v\", multiline: true } });\n  }\n});\nconst view = {\n  type: \"modal\", callback_id: \"answer_modal\",\n  private_metadata: JSON.stringify({ pageId: row.page_id, threadTs: row.thread_ts, channelId: row.channel_id, promptTs: norm.promptTs, round: Number(row.round || 0) }),\n  title: { type: \"plain_text\", text: \"기획 검토 답변\" },\n  submit: { type: \"plain_text\", text: \"제출\" },\n  close: { type: \"plain_text\", text: \"취소\" },\n  blocks: blocks\n};\nreturn [{ json: { body: { trigger_id: norm.triggerId, view: view } } }];"
+        },
+        "position": [
+          1120,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "ca14c151-7728-44a9-a891-a60fd579ed2e",
+        "name": "모달 열기",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/views.open"
+        },
+        "position": [
+          1344,
+          112
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "ff852567-b7a9-4636-822e-0c019312ccaf",
+        "name": "행 조회·제출",
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "thread_ts",
+                "keyValue": "={{ $json.threadTs }}"
+              }
+            ]
+          },
+          "limit": 1,
+          "operation": "get"
+        },
+        "position": [
+          896,
+          304
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "ffc72b7a-3c35-44b7-9d6f-ef711f94df4a",
+        "name": "답변 병합·제출",
+        "parameters": {
+          "jsCode": "const row = $json;\nconst norm = $(\"액션 정규화\").first().json;\nlet qs = []; let prior = {};\ntry { qs = row.questions_json ? JSON.parse(row.questions_json) : []; } catch (e) { qs = []; }\ntry { prior = row.answers_json ? JSON.parse(row.answers_json) : {}; } catch (e) { prior = {}; }\nlet submitted = {};\ntry { submitted = norm.answers ? JSON.parse(norm.answers) : {}; } catch (e) { submitted = {}; }\nconst round = Number(row.round || 0);\nconst lines = qs.map(function (q, i) {\n  const pfx = q.perspective ? (\"[\" + q.perspective + \"] \") : \"\";\n  return pfx + \"Q. \" + q.text + \"\\nA: \" + (submitted[String(i)] || \"(미답변)\");\n});\nif (norm.freeText) { lines.push(\"자유서술: \" + norm.freeText); }\nconst roundBlock = \"── 라운드 \" + round + \" ──\\n\" + lines.join(\"\\n\");\nlet log = Array.isArray(prior._log) ? prior._log : [];\nlog = log.concat([roundBlock]);\nconst fullQa = log.join(\"\\n\\n\");\nreturn [{ json: { answers_json: JSON.stringify({ _log: log }), qa: fullQa, title: row.task_title || \"\", round: round, pageId: row.page_id || \"\", threadTs: row.thread_ts || \"\", channelId: row.channel_id || \"\", promptTs: norm.promptTs || \"\" } }];"
+        },
+        "position": [
+          1120,
+          304
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "401d272c-f6f9-4a16-9d28-4854d9f11f01",
+        "name": "답변 저장·제출",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "answers_json": "={{ $(\"답변 병합·제출\").first().json.answers_json }}"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "thread_ts",
+                "keyValue": "={{ $(\"답변 병합·제출\").first().json.threadTs }}"
+              }
+            ]
+          },
+          "operation": "update",
+          "options": {}
+        },
+        "position": [
+          1344,
+          304
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "be1d98b8-e636-4603-bc7a-453262f305d8",
+        "name": "접수 알림",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={ \"channel\": \"{{ $(\"답변 병합·제출\").first().json.channelId }}\", \"ts\": \"{{ $(\"답변 병합·제출\").first().json.promptTs }}\", \"text\": \"답변 접수됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"📥 *답변 접수됨* — 내용을 검토하고 있어요…\" } } ] }",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.update"
+        },
+        "position": [
+          1568,
+          304
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "53b087dc-1a7a-48da-a058-f6ddc86d4662",
+        "name": "재평가 게이트",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 이전 라운드의 (직무 관점별) 질문과 사용자의 답변을 종합해, 다음 단계로 넘어가기에 맥락과 의사결정이 충분한지 재판정합니다.\n\n판정 규칙:\n- 위 질문·답변은 여러 라운드의 누적 기록입니다. 이미 답이 채워졌거나 이전 라운드에서 이미 물어본 질문은 절대 반복하지 말고, 아직 불명확한 빈칸에 대해서만 새 꼬리질문을 만드세요. 더 물을 게 없으면 sufficient=true.\n- 부족하면 sufficient=false, 남은 핵심 빈칸만 꼬리질문(최대 3개). 각 질문에 해당 직무 perspective(예: 디자인/개발) + 10자 내외 선택지 2~4개(options)(\"직접 입력\" 금지). multi(boolean): 복수선택이 자연스러우면 true.\n- roles: 이 기획이 통과되면 거칠 다운스트림 직무 시퀀스(예: [\"디자인\",\"개발\"]). 표준 순서(리서치→디자인→개발→QA→마케팅)를 따르되 불필요한 직무는 제외.\n- score 0~100. brief 는 항상 현재까지 정리된 5~8줄 요약(한국어).\n반드시 지정된 JSON 스키마로만 답하세요."
+          },
+          "promptType": "define",
+          "text": "=다음은 기획 태스크와 지금까지 모인 질문·답변입니다. 종합해서 다음 단계로 넘기기에 맥락이 충분한지 재판정하세요.\n\n제목: {{ $(\"답변 병합·제출\").first().json.title }}\n\n질문·답변:\n{{ $(\"답변 병합·제출\").first().json.qa }}"
+        },
+        "position": [
+          1792,
+          304
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "googlePalmApi": {
+            "id": "n897k5ieQlXRfsO4",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        },
+        "id": "e52ac0de-6006-416c-825d-26ce00637d7c",
+        "name": "재평가 Gemini",
+        "parameters": {
+          "modelName": "models/gemini-2.5-flash",
+          "options": {
+            "temperature": 0.2
+          }
+        },
+        "position": [
+          1808,
+          528
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "f3d6f23a-ffd9-4eab-8b92-e46d05d275d4",
+        "name": "재평가 파서",
+        "parameters": {
+          "jsonSchemaExample": "{ \"roles\": [\"디자인\", \"개발\"], \"sufficient\": false, \"score\": 60, \"questions\": [ { \"perspective\": \"개발\", \"text\": \"추가로 필요한 질문\", \"options\": [\"선택A\", \"선택B\"], \"multi\": false } ], \"brief\": \"정리된 브리프\" }"
+        },
+        "position": [
+          1936,
+          528
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3
+      },
+      {
+        "id": "228f4335-8876-4e3d-ac3a-1b4e179d374d",
+        "name": "재평가 충분한가",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "leftValue": "={{ $json.output.sufficient }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "position": [
+          2144,
+          304
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "d5a2050c-f762-460c-af9d-41911bfdd822",
+        "name": "통과 기록",
+        "parameters": {
+          "operation": "update",
+          "options": {},
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"답변 병합·제출\").first().json.pageId }}"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "🤖 AI 게이트|select",
+                "selectValue": "통과"
+              },
+              {
+                "key": "🤖 정리된 브리프|rich_text",
+                "textContent": "={{ $json.output.brief }}"
+              },
+              {
+                "key": "🤖 맥락 점수|number",
+                "numberValue": "={{ $json.output.score }}"
+              }
+            ]
+          },
+          "resource": "databasePage"
+        },
+        "position": [
+          2368,
+          112
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "5e0711d0-695d-4f30-b152-775cc964fee5",
+        "name": "통과 저장",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "status": "passed"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "thread_ts",
+                "keyValue": "={{ $(\"답변 병합·제출\").first().json.threadTs }}"
+              }
+            ]
+          },
+          "operation": "update",
+          "options": {}
+        },
+        "position": [
+          2592,
+          112
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "3dac0ce4-a500-4351-8195-1d319554d3ac",
+        "name": "프롬프트 잠금·통과",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={ \"channel\": \"{{ $(\"답변 병합·제출\").first().json.channelId }}\", \"ts\": \"{{ $(\"답변 병합·제출\").first().json.promptTs }}\", \"text\": \"답변 완료됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"✅ *답변 완료됨* — 맥락이 충분히 모여 다음 단계 착수 준비를 만들었어요.\" } } ] }",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.update"
+        },
+        "position": [
+          2816,
+          112
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "7df5d0ff-62fc-4978-8415-33cf2f4b8af8",
+        "name": "통과 메시지",
+        "parameters": {
+          "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst text = \"✅ 맥락이 충분히 모였어요. 정리해서 다음 단계로 넘길게요.\\n\\n*정리 브리프*\\n\" + (out.brief || \"\");\nreturn [{ json: { body: { channel: ri.channelId, thread_ts: ri.threadTs, text: text } } }];"
+        },
+        "position": [
+          3040,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "a5b87c2a-e645-42c2-8a9c-ed4d961ecd4e",
+        "name": "통과 알림",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          3264,
+          112
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "2711360e-305b-4e53-9ee7-06940deecb05",
+        "name": "스테이지·페르소나 결정",
+        "parameters": {
+          "jsCode": "const out = $(\"재평가 게이트\").first().json.output || {};\nconst ri = $(\"답변 병합·제출\").first().json;\nconst roles = out.roles || [];\nconst ORDER = [\"리서치\", \"디자인\", \"개발\", \"QA\", \"마케팅\"];\nconst PERSONA = { \"리서치\": \"UX 리서처\", \"디자인\": \"시니어 프로덕트 디자이너\", \"개발\": \"시니어 소프트웨어 개발자\", \"QA\": \"QA 엔지니어\", \"마케팅\": \"그로스 마케터\" };\nconst norm = roles.map(function (r) { return String(r).split(\"/\")[0].trim(); });\nconst ordered = ORDER.filter(function (s) { return norm.indexOf(s) !== -1; });\nconst first = ordered.length ? ordered[0] : (norm[0] || \"개발\");\nconst persona = PERSONA[first] || (first + \" 담당자\");\nreturn [{ json: { stage: first, persona: persona, pipeline: ordered.join(\" → \"), pageId: ri.pageId, title: ri.title, threadTs: ri.threadTs, channelId: ri.channelId, brief: out.brief || \"\" } }];"
+        },
+        "position": [
+          3488,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "a9fd2be5-6c69-41f7-a7e9-9804dbc207c8",
+        "name": "착수준비 게이트",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "당신은 해당 직무의 시니어 실무자입니다. 통과된 기획을 받아, 이 단계 작업을 *시작하기 전에* 준비/결정해 두면 좋을 것을 그 직무 관점에서 구체적이고 실행가능하게 작성합니다.\n\nbrief(마크다운)에 정확히 3개 섹션:\n## ✅ 착수 전 체크리스트 — 시작 전 확인·준비 항목(불릿)\n## 🔀 열린 결정사항 — 아직 안 정해져 이 단계에서 결정/확인이 필요한 것(불릿)\n## 🗺 착수 계획 — 어떤 순서로 접근할지 3~5줄\n\nsummary 는 슬랙 통보용 1줄 요약.\n반드시 지정된 JSON 스키마로만 답하세요."
+          },
+          "promptType": "define",
+          "text": "=당신은 {{ $(\"스테이지·페르소나 결정\").first().json.persona }} 입니다. 아래 통과된 기획을 받아, {{ $(\"스테이지·페르소나 결정\").first().json.stage }} 단계 작업을 시작하기 전에 정리해 두면 좋을 착수 준비물을 작성하세요.\n\n제목: {{ $(\"스테이지·페르소나 결정\").first().json.title }}\n\n정리된 기획 브리프:\n{{ $(\"스테이지·페르소나 결정\").first().json.brief }}\n\n기획 단계 질문·답변:\n{{ $(\"답변 병합·제출\").first().json.qa }}"
+        },
+        "position": [
+          3712,
+          0
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "googlePalmApi": {
+            "id": "n897k5ieQlXRfsO4",
+            "name": "Google Gemini(PaLM) Api account"
+          }
+        },
+        "id": "55b677cf-b3e2-4909-88a2-90c345160c1e",
+        "name": "착수 Gemini",
+        "parameters": {
+          "modelName": "models/gemini-2.5-flash",
+          "options": {
+            "temperature": 0.3
+          }
+        },
+        "position": [
+          3728,
+          224
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "3ad58dc8-c4b7-43e0-92f6-b3f93f59f858",
+        "name": "착수 파서",
+        "parameters": {
+          "jsonSchemaExample": "{ \"brief\": \"## ✅ 착수 전 체크리스트\\n- 항목1\\n- 항목2\\n\\n## 🔀 열린 결정사항\\n- 결정1\\n\\n## 🗺 착수 계획\\n1) ...\\n2) ...\", \"summary\": \"한 줄 요약\" }"
+        },
+        "position": [
+          3856,
+          224
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "80c64245-cbef-4e0d-8640-d1a7ac6e7120",
+        "name": "서브태스크 생성",
+        "parameters": {
+          "databaseId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
+          },
+          "options": {},
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "타입|select",
+                "selectValue": "={{ $(\"스테이지·페르소나 결정\").first().json.stage }}"
+              },
+              {
+                "key": "관계된 ✅ TASK|relation",
+                "relationValue": [
+                  "={{ $(\"스테이지·페르소나 결정\").first().json.pageId }}"
+                ]
+              },
+              {
+                "key": "🤖 정리된 브리프|rich_text",
+                "textContent": "={{ $(\"착수준비 게이트\").first().json.output.brief }}"
+              }
+            ]
+          },
+          "resource": "databasePage",
+          "title": "=[{{ $(\"스테이지·페르소나 결정\").first().json.stage }}] {{ $(\"스테이지·페르소나 결정\").first().json.title }}"
+        },
+        "position": [
+          4064,
+          112
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "022b5d9f-0335-4108-9b95-bb80cb45f968",
+        "name": "착수 통보 메시지",
+        "parameters": {
+          "jsCode": "const st = $(\"스테이지·페르소나 결정\").first().json;\nconst out = $(\"착수준비 게이트\").first().json.output || {};\nconst sub = $(\"서브태스크 생성\").first().json;\nconst url = (sub && sub.url) ? sub.url : \"\";\nconst text = \"🛠 *[\" + st.stage + \"] 착수 준비가 생성됐어요* — \" + st.persona + \" 관점\\n파이프라인: \" + (st.pipeline || st.stage) + \"\\n\" + (out.summary || \"\") + (url ? (\"\\n📄 서브태스크: \" + url) : \"\");\nreturn [{ json: { body: { channel: st.channelId, thread_ts: st.threadTs, text: text } } }];"
+        },
+        "position": [
+          4288,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "adb75884-2a7f-49cb-a3dd-31be7e512768",
+        "name": "착수 통보",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          4512,
+          112
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "8dd823ef-56b0-4cc5-a2dc-93dece32ebd8",
+        "name": "라운드 판정",
+        "parameters": {
+          "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst newRound = Number(ri.round || 0) + 1;\nreturn [{ json: { newRound: newRound, escalate: newRound > 2, questions: out.questions || [], pageId: ri.pageId, threadTs: ri.threadTs, channelId: ri.channelId, promptTs: ri.promptTs } }];"
+        },
+        "position": [
+          2368,
+          400
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "fa7ec21a-8f76-47fc-bb68-97db81dad758",
+        "name": "에스컬레이션?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "leftValue": "={{ $json.escalate }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "position": [
+          2592,
+          400
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "b6773d53-2d08-405f-8334-69de2e5a2edf",
+        "name": "에스컬레이션 기록",
+        "parameters": {
+          "operation": "update",
+          "options": {},
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"라운드 판정\").first().json.pageId }}"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "🤖 AI 게이트|select",
+                "selectValue": "보류"
+              },
+              {
+                "key": "🤖 미결 질문|rich_text",
+                "textContent": "⚠️ 2라운드 초과 — 사람이 직접 정리 필요"
+              }
+            ]
+          },
+          "resource": "databasePage"
+        },
+        "position": [
+          2816,
+          304
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "58d9665c-5727-486a-94da-adcd129f57fb",
+        "name": "에스컬레이션 저장",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "status": "escalated"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "thread_ts",
+                "keyValue": "={{ $(\"라운드 판정\").first().json.threadTs }}"
+              }
+            ]
+          },
+          "operation": "update",
+          "options": {}
+        },
+        "position": [
+          3040,
+          304
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "f40b7105-b425-4043-8ddd-847c7eab82e9",
+        "name": "프롬프트 잠금·에스컬",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={ \"channel\": \"{{ $(\"라운드 판정\").first().json.channelId }}\", \"ts\": \"{{ $(\"라운드 판정\").first().json.promptTs }}\", \"text\": \"답변 완료됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"✅ *답변 완료됨* — 다만 맥락이 더 필요해, 사람이 직접 정리하도록 넘겼어요.\" } } ] }",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.update"
+        },
+        "position": [
+          3264,
+          304
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "25a881b0-7f3f-4896-8fe3-65436ae6e7c7",
+        "name": "에스컬레이션 알림",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={ \"channel\": \"{{ $(\"라운드 판정\").first().json.channelId }}\", \"thread_ts\": \"{{ $(\"라운드 판정\").first().json.threadTs }}\", \"text\": \"🛟 2라운드 동안 여쭤봤는데도 맥락이 충분히 모이지 않았어요. 이 건은 사람이 직접 정리하는 게 좋겠습니다. 담당자분 확인 부탁드려요.\" }",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          3488,
+          304
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "5cd4ccdb-0173-418f-bb1c-94a6b62957e2",
+        "name": "다음 라운드 저장",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "questions_json": "={{ JSON.stringify($(\"라운드 판정\").first().json.questions) }}",
+              "round": "={{ $(\"라운드 판정\").first().json.newRound }}",
+              "status": "collecting"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "thread_ts",
+                "keyValue": "={{ $(\"라운드 판정\").first().json.threadTs }}"
+              }
+            ]
+          },
+          "operation": "update",
+          "options": {}
+        },
+        "position": [
+          2816,
+          496
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "f90c95b4-c507-453f-869e-1543c5b1ce08",
+        "name": "질문중 기록",
+        "parameters": {
+          "operation": "update",
+          "options": {},
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"라운드 판정\").first().json.pageId }}"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "🤖 AI 게이트|select",
+                "selectValue": "질문중"
+              },
+              {
+                "key": "🤖 미결 질문|rich_text",
+                "textContent": "={{ ($(\"라운드 판정\").first().json.questions || []).map(function(q){ return (q.perspective ? \"[\" + q.perspective + \"] \" : \"\") + q.text }).join(\"\\n\") }}"
+              }
+            ]
+          },
+          "resource": "databasePage"
+        },
+        "position": [
+          3040,
+          496
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "d566a129-cdfb-4189-93fd-ae59af825987",
+        "name": "이전 프롬프트 잠금",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={ \"channel\": \"{{ $(\"라운드 판정\").first().json.channelId }}\", \"ts\": \"{{ $(\"라운드 판정\").first().json.promptTs }}\", \"text\": \"답변 완료됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"✅ *답변 완료됨* — 확인해보니 몇 가지 더 필요해서 추가 질문을 이어서 드렸어요.\" } } ] }",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.update"
+        },
+        "position": [
+          3264,
+          496
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "e504c06a-48ee-463b-9caf-3c33d52de5b2",
+        "name": "다음 프롬프트 블록",
+        "parameters": {
+          "jsCode": "const rj = $(\"라운드 판정\").first().json;\nconst pageId = rj.pageId;\nconst n = (rj.questions || []).length;\nconst guide = [\"• *📝 답변하기* — 폼을 열어 답해요.\", \"• *⏸️ 아직 작성 중* — 4시간 뒤 다시 여쭤볼게요.\", \"• *🛑 보류* — 이 건을 멈춰요.\"].join(\"\\n\");\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: \"📋 추가로 확인할 질문이 \" + n + \"개 있어요.\" } },\n  { type: \"section\", text: { type: \"mrkdwn\", text: guide } },\n  { type: \"actions\", block_id: \"prompt_actions\", elements: [\n    { type: \"button\", style: \"primary\", text: { type: \"plain_text\", text: \"📝 답변하기\", emoji: true }, action_id: \"open_form\", value: JSON.stringify({ pageId: pageId }) },\n    { type: \"button\", text: { type: \"plain_text\", text: \"⏸️ 아직 작성 중\", emoji: true }, action_id: \"snooze\", value: JSON.stringify({ pageId: pageId }) },\n    { type: \"button\", style: \"danger\", text: { type: \"plain_text\", text: \"🛑 보류\", emoji: true }, action_id: \"hold\", value: JSON.stringify({ pageId: pageId }) }\n  ] }\n];\nreturn [{ json: { body: { channel: rj.channelId, thread_ts: rj.threadTs, text: \"추가 검토 질문\", blocks: blocks } } }];"
+        },
+        "position": [
+          3488,
+          496
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "d0afd0a0-dc73-4ba0-a08e-d57523e3d1d1",
+        "name": "다음 프롬프트 포스트",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          3776,
+          496
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "a0242d51-4c8b-40a3-a867-132d5b73b3e3",
+        "name": "스누즈 기록",
+        "parameters": {
+          "operation": "update",
+          "options": {},
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"액션 정규화\").first().json.pageId }}"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "🤖 AI 게이트|select",
+                "selectValue": "스누즈"
+              },
+              {
+                "date": "={{ $now.plus({ hours: 4 }).toISO() }}",
+                "key": "🤖 다음 점검 시각|date"
+              }
+            ]
+          },
+          "resource": "databasePage"
+        },
+        "position": [
+          896,
+          496
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "6afe4c23-8cd3-4c49-9f6c-60729eb4d308",
+        "name": "스누즈 저장",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "status": "snoozed"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "thread_ts",
+                "keyValue": "={{ $(\"액션 정규화\").first().json.threadTs }}"
+              }
+            ]
+          },
+          "operation": "update",
+          "options": {}
+        },
+        "position": [
+          1120,
+          496
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "04a5f553-c49c-47ab-8f05-b760b05117c4",
+        "name": "프롬프트 잠금·스누즈",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={ \"channel\": \"{{ $(\"액션 정규화\").first().json.channelId }}\", \"ts\": \"{{ $(\"액션 정규화\").first().json.promptTs }}\", \"text\": \"작성 중\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"⏸️ *아직 작성 중* — 4시간 뒤에 다시 여쭤볼게요.\" } } ] }",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.update"
+        },
+        "position": [
+          1344,
+          496
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "2dad9bba-7718-4ff9-9487-e6048241fba0",
+        "name": "보류 기록",
+        "parameters": {
+          "operation": "update",
+          "options": {},
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"액션 정규화\").first().json.pageId }}"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "🤖 AI 게이트|select",
+                "selectValue": "보류"
+              }
+            ]
+          },
+          "resource": "databasePage"
+        },
+        "position": [
+          896,
+          688
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "fcf43677-3fc7-41c2-8322-0c3a3af1907a",
+        "name": "보류 저장",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "status": "held"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "keyName": "thread_ts",
+                "keyValue": "={{ $(\"액션 정규화\").first().json.threadTs }}"
+              }
+            ]
+          },
+          "operation": "update",
+          "options": {}
+        },
+        "position": [
+          1120,
+          688
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "cc1c6eae-5a9e-4e70-99ba-3ced15d83620",
+        "name": "프롬프트 잠금·보류",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={ \"channel\": \"{{ $(\"액션 정규화\").first().json.channelId }}\", \"ts\": \"{{ $(\"액션 정규화\").first().json.promptTs }}\", \"text\": \"보류\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"🛑 *보류* — 더 묻지 않을게요. 다시 시작하려면 이 스레드에 알려주세요.\" } } ] }",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.update"
+        },
+        "position": [
+          1344,
+          688
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      }
+    ],
+    "updatedAt": "2026-06-15T06:13:46.474Z",
+    "versionId": "78842918-856a-4de1-a2d3-8bd477d69d0e",
+    "workflowId": "3LyKi5A20HoPrP0p",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-15T06:14:23.202Z",
+        "event": "activated",
+        "id": 27,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "78842918-856a-4de1-a2d3-8bd477d69d0e",
+        "workflowId": "3LyKi5A20HoPrP0p"
+      }
+    ]
+  },
+  "activeVersionId": "78842918-856a-4de1-a2d3-8bd477d69d0e",
+  "connections": {
+    "Slack 인터랙션 수신": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "인터랙션 파싱",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "다음 라운드 저장": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "질문중 기록",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "다음 프롬프트 블록": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "다음 프롬프트 포스트",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "답변 병합·제출": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "답변 저장·제출",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "답변 저장·제출": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "접수 알림",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "라운드 판정": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "에스컬레이션?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "모달 뷰 생성": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "모달 열기",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "보류 기록": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "보류 저장",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "보류 저장": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "프롬프트 잠금·보류",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "서브태스크 생성": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "착수 통보 메시지",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스누즈 기록": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "스누즈 저장",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스누즈 저장": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "프롬프트 잠금·스누즈",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스테이지·페르소나 결정": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "착수준비 게이트",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "액션 라우터": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "행 조회·폼",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "행 조회·제출",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "스누즈 기록",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "보류 기록",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "액션 정규화": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "액션 라우터",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "에스컬레이션 기록": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "에스컬레이션 저장",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "에스컬레이션 저장": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "프롬프트 잠금·에스컬",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "에스컬레이션?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "에스컬레이션 기록",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "다음 라운드 저장",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "이전 프롬프트 잠금": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "다음 프롬프트 블록",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "인터랙션 파싱": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "액션 정규화",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "재평가 Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "재평가 게이트",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    },
+    "재평가 게이트": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "재평가 충분한가",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "재평가 충분한가": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "통과 기록",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "라운드 판정",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "재평가 파서": {
+      "ai_outputParser": [
+        [
+          {
+            "index": 0,
+            "node": "재평가 게이트",
+            "type": "ai_outputParser"
+          }
+        ]
+      ]
+    },
+    "접수 알림": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "재평가 게이트",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "질문중 기록": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "이전 프롬프트 잠금",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "착수 Gemini": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "착수준비 게이트",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    },
+    "착수 통보 메시지": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "착수 통보",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "착수 파서": {
+      "ai_outputParser": [
+        [
+          {
+            "index": 0,
+            "node": "착수준비 게이트",
+            "type": "ai_outputParser"
+          }
+        ]
+      ]
+    },
+    "착수준비 게이트": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "서브태스크 생성",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "통과 기록": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "통과 저장",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "통과 메시지": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "통과 알림",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "통과 알림": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "스테이지·페르소나 결정",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "통과 저장": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "프롬프트 잠금·통과",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "프롬프트 잠금·에스컬": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "에스컬레이션 알림",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "프롬프트 잠금·통과": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "통과 메시지",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "행 조회·제출": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "답변 병합·제출",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "행 조회·폼": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "모달 뷰 생성",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-06-10T05:05:07.925Z",
+  "description": "Slack 모달 라우터 + Phase2. submit→재평가(roles 추론). 통과 시 첫 다운스트림 단계 페르소나로 착수준비 생성→타입별 연결 서브태스크(Notion)+Slack 통보. open_form/snooze/hold. 관점태그 모달·질문별 보충칸·접수즉시표시·누적로그.",
+  "id": "3LyKi5A20HoPrP0p",
+  "isArchived": false,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "name": "Overmind WF2 · Slack 리스너",
+  "nodes": [
+    {
+      "id": "1533f5f4-76e0-4946-a694-6f3018adc6a5",
+      "name": "Slack 인터랙션 수신",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {
+          "noResponseBody": true,
+          "responseCode": {
+            "values": {}
+          }
+        },
+        "path": "overmind-slack-interactions"
+      },
+      "position": [
+        0,
+        400
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "7db5768b-8193-4a20-b698-b0cc4c58a6a8"
+    },
+    {
+      "id": "7bfcce4d-7c46-48b0-82b1-88c001e4796c",
+      "name": "인터랙션 파싱",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "payload",
+              "type": "object",
+              "value": "={{ $json.body && $json.body.payload ? JSON.parse($json.body.payload) : $json.body }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "position": [
+        224,
+        400
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "id": "4ea84da5-3dc1-4eb8-8d81-f419c8ed5412",
+      "name": "액션 정규화",
+      "parameters": {
+        "jsCode": "const p = $json.payload || {};\nlet route = \"\", pageId = \"\", threadTs = \"\", channelId = \"\", promptTs = \"\", triggerId = \"\", round = 0, freeText = \"\";\nlet answers = {};\nif (p.type === \"view_submission\") {\n  route = \"submit\";\n  let meta = {};\n  try { meta = p.view && p.view.private_metadata ? JSON.parse(p.view.private_metadata) : {}; } catch (e) { meta = {}; }\n  pageId = meta.pageId || \"\"; threadTs = meta.threadTs || \"\"; channelId = meta.channelId || \"\"; promptTs = meta.promptTs || \"\"; round = Number(meta.round || 0);\n  const sv = (p.view && p.view.state && p.view.state.values) || {};\n  const optAns = {}; const freeAns = {};\n  Object.keys(sv).forEach(function (bid) {\n    const el = sv[bid]; const akey = Object.keys(el)[0]; const v = el[akey];\n    if (bid.indexOf(\"qf_\") === 0) {\n      const idx = bid.slice(3);\n      if (v && v.value) { freeAns[idx] = v.value; }\n    } else if (bid.indexOf(\"q_\") === 0) {\n      const idx = bid.slice(2);\n      if (v && v.selected_option) { optAns[idx] = v.selected_option.value; }\n      else if (v && v.selected_options) { optAns[idx] = v.selected_options.map(function (o) { return o.value; }).join(\", \"); }\n      else if (v && v.value) { optAns[idx] = v.value; }\n    }\n  });\n  const idxs = {};\n  Object.keys(optAns).forEach(function (k) { idxs[k] = true; });\n  Object.keys(freeAns).forEach(function (k) { idxs[k] = true; });\n  Object.keys(idxs).forEach(function (idx) {\n    const parts = [];\n    if (optAns[idx]) { parts.push(optAns[idx]); }\n    if (freeAns[idx]) { parts.push(\"(서술) \" + freeAns[idx]); }\n    answers[idx] = parts.join(\" / \");\n  });\n} else if (p.type === \"block_actions\") {\n  const a = (p.actions && p.actions[0]) || {};\n  route = a.action_id || \"\";\n  let val = {};\n  try { val = a.value ? JSON.parse(a.value) : {}; } catch (e) { val = {}; }\n  pageId = val.pageId || \"\";\n  threadTs = (p.container && p.container.thread_ts) || (p.message && p.message.thread_ts) || \"\";\n  channelId = (p.channel && p.channel.id) || (p.container && p.container.channel_id) || \"\";\n  promptTs = (p.container && p.container.message_ts) || (p.message && p.message.ts) || \"\";\n  triggerId = p.trigger_id || \"\";\n}\nreturn [{ json: { route: route, pageId: pageId, threadTs: threadTs, channelId: channelId, promptTs: promptTs, triggerId: triggerId, round: round, answers: JSON.stringify(answers), freeText: freeText } }];"
+      },
+      "position": [
+        448,
+        400
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "4baed4dc-68a4-43e4-b729-2cd6f23ad812",
+      "name": "액션 라우터",
+      "parameters": {
+        "options": {},
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "open_form"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              },
+              "outputKey": "open_form",
+              "renameOutput": true
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "submit"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              },
+              "outputKey": "submit",
+              "renameOutput": true
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "snooze"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              },
+              "outputKey": "snooze",
+              "renameOutput": true
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.route }}",
+                    "operator": {
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "hold"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                }
+              },
+              "outputKey": "hold",
+              "renameOutput": true
+            }
+          ]
+        }
+      },
+      "position": [
+        672,
+        368
+      ],
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4
+    },
+    {
+      "id": "20d5d040-16f8-4564-9b77-44d7842ec807",
+      "name": "행 조회·폼",
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "thread_ts",
+              "keyValue": "={{ $json.threadTs }}"
+            }
+          ]
+        },
+        "limit": 1,
+        "operation": "get"
+      },
+      "position": [
+        896,
+        112
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "0494bff6-e828-4f77-ba37-afba51e91f16",
+      "name": "모달 뷰 생성",
+      "parameters": {
+        "jsCode": "const row = $json;\nconst norm = $(\"액션 정규화\").first().json;\nlet qs = [];\ntry { qs = row.questions_json ? JSON.parse(row.questions_json) : []; } catch (e) { qs = []; }\nconst blocks = [];\nqs.forEach(function (q, i) {\n  const pfx = q.perspective ? (\"[\" + q.perspective + \"] \") : \"\";\n  const labelText = (pfx + \"Q\" + (i + 1) + \". \" + q.text).slice(0, 150);\n  const opts = (q.options || []).map(function (o) { return { text: { type: \"plain_text\", text: String(o).slice(0, 75), emoji: true }, value: String(o).slice(0, 150) }; });\n  if (opts.length === 0) {\n    blocks.push({ type: \"input\", block_id: (\"q_\" + i), optional: true, label: { type: \"plain_text\", text: labelText, emoji: true }, element: { type: \"plain_text_input\", action_id: \"a\", multiline: true } });\n  } else {\n    const element = q.multi ? { type: \"checkboxes\", action_id: \"a\", options: opts } : { type: \"radio_buttons\", action_id: \"a\", options: opts };\n    blocks.push({ type: \"input\", block_id: (\"q_\" + i), optional: true, label: { type: \"plain_text\", text: labelText, emoji: true }, element: element });\n    blocks.push({ type: \"input\", block_id: (\"qf_\" + i), optional: true, label: { type: \"plain_text\", text: \"↳ 보충 설명 (선택)\", emoji: true }, element: { type: \"plain_text_input\", action_id: \"v\", multiline: true } });\n  }\n});\nconst view = {\n  type: \"modal\", callback_id: \"answer_modal\",\n  private_metadata: JSON.stringify({ pageId: row.page_id, threadTs: row.thread_ts, channelId: row.channel_id, promptTs: norm.promptTs, round: Number(row.round || 0) }),\n  title: { type: \"plain_text\", text: \"기획 검토 답변\" },\n  submit: { type: \"plain_text\", text: \"제출\" },\n  close: { type: \"plain_text\", text: \"취소\" },\n  blocks: blocks\n};\nreturn [{ json: { body: { trigger_id: norm.triggerId, view: view } } }];"
+      },
+      "position": [
+        1120,
+        112
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "ca14c151-7728-44a9-a891-a60fd579ed2e",
+      "name": "모달 열기",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={{ $json.body }}",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/views.open"
+      },
+      "position": [
+        1344,
+        112
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "ff852567-b7a9-4636-822e-0c019312ccaf",
+      "name": "행 조회·제출",
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "thread_ts",
+              "keyValue": "={{ $json.threadTs }}"
+            }
+          ]
+        },
+        "limit": 1,
+        "operation": "get"
+      },
+      "position": [
+        896,
+        304
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "ffc72b7a-3c35-44b7-9d6f-ef711f94df4a",
+      "name": "답변 병합·제출",
+      "parameters": {
+        "jsCode": "const row = $json;\nconst norm = $(\"액션 정규화\").first().json;\nlet qs = []; let prior = {};\ntry { qs = row.questions_json ? JSON.parse(row.questions_json) : []; } catch (e) { qs = []; }\ntry { prior = row.answers_json ? JSON.parse(row.answers_json) : {}; } catch (e) { prior = {}; }\nlet submitted = {};\ntry { submitted = norm.answers ? JSON.parse(norm.answers) : {}; } catch (e) { submitted = {}; }\nconst round = Number(row.round || 0);\nconst lines = qs.map(function (q, i) {\n  const pfx = q.perspective ? (\"[\" + q.perspective + \"] \") : \"\";\n  return pfx + \"Q. \" + q.text + \"\\nA: \" + (submitted[String(i)] || \"(미답변)\");\n});\nif (norm.freeText) { lines.push(\"자유서술: \" + norm.freeText); }\nconst roundBlock = \"── 라운드 \" + round + \" ──\\n\" + lines.join(\"\\n\");\nlet log = Array.isArray(prior._log) ? prior._log : [];\nlog = log.concat([roundBlock]);\nconst fullQa = log.join(\"\\n\\n\");\nreturn [{ json: { answers_json: JSON.stringify({ _log: log }), qa: fullQa, title: row.task_title || \"\", round: round, pageId: row.page_id || \"\", threadTs: row.thread_ts || \"\", channelId: row.channel_id || \"\", promptTs: norm.promptTs || \"\" } }];"
+      },
+      "position": [
+        1120,
+        304
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "401d272c-f6f9-4a16-9d28-4854d9f11f01",
+      "name": "답변 저장·제출",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "answers_json": "={{ $(\"답변 병합·제출\").first().json.answers_json }}"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "thread_ts",
+              "keyValue": "={{ $(\"답변 병합·제출\").first().json.threadTs }}"
+            }
+          ]
+        },
+        "operation": "update",
+        "options": {}
+      },
+      "position": [
+        1344,
+        304
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "be1d98b8-e636-4603-bc7a-453262f305d8",
+      "name": "접수 알림",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={ \"channel\": \"{{ $(\"답변 병합·제출\").first().json.channelId }}\", \"ts\": \"{{ $(\"답변 병합·제출\").first().json.promptTs }}\", \"text\": \"답변 접수됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"📥 *답변 접수됨* — 내용을 검토하고 있어요…\" } } ] }",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.update"
+      },
+      "position": [
+        1568,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "53b087dc-1a7a-48da-a058-f6ddc86d4662",
+      "name": "재평가 게이트",
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 이전 라운드의 (직무 관점별) 질문과 사용자의 답변을 종합해, 다음 단계로 넘어가기에 맥락과 의사결정이 충분한지 재판정합니다.\n\n판정 규칙:\n- 위 질문·답변은 여러 라운드의 누적 기록입니다. 이미 답이 채워졌거나 이전 라운드에서 이미 물어본 질문은 절대 반복하지 말고, 아직 불명확한 빈칸에 대해서만 새 꼬리질문을 만드세요. 더 물을 게 없으면 sufficient=true.\n- 부족하면 sufficient=false, 남은 핵심 빈칸만 꼬리질문(최대 3개). 각 질문에 해당 직무 perspective(예: 디자인/개발) + 10자 내외 선택지 2~4개(options)(\"직접 입력\" 금지). multi(boolean): 복수선택이 자연스러우면 true.\n- roles: 이 기획이 통과되면 거칠 다운스트림 직무 시퀀스(예: [\"디자인\",\"개발\"]). 표준 순서(리서치→디자인→개발→QA→마케팅)를 따르되 불필요한 직무는 제외.\n- score 0~100. brief 는 항상 현재까지 정리된 5~8줄 요약(한국어).\n반드시 지정된 JSON 스키마로만 답하세요."
+        },
+        "promptType": "define",
+        "text": "=다음은 기획 태스크와 지금까지 모인 질문·답변입니다. 종합해서 다음 단계로 넘기기에 맥락이 충분한지 재판정하세요.\n\n제목: {{ $(\"답변 병합·제출\").first().json.title }}\n\n질문·답변:\n{{ $(\"답변 병합·제출\").first().json.qa }}"
+      },
+      "position": [
+        1792,
+        304
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1
+    },
+    {
+      "credentials": {
+        "googlePalmApi": {
+          "id": "n897k5ieQlXRfsO4",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "id": "e52ac0de-6006-416c-825d-26ce00637d7c",
+      "name": "재평가 Gemini",
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "position": [
+        1808,
+        528
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "f3d6f23a-ffd9-4eab-8b92-e46d05d275d4",
+      "name": "재평가 파서",
+      "parameters": {
+        "jsonSchemaExample": "{ \"roles\": [\"디자인\", \"개발\"], \"sufficient\": false, \"score\": 60, \"questions\": [ { \"perspective\": \"개발\", \"text\": \"추가로 필요한 질문\", \"options\": [\"선택A\", \"선택B\"], \"multi\": false } ], \"brief\": \"정리된 브리프\" }"
+      },
+      "position": [
+        1936,
+        528
+      ],
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3
+    },
+    {
+      "id": "228f4335-8876-4e3d-ac3a-1b4e179d374d",
+      "name": "재평가 충분한가",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.output.sufficient }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        2144,
+        304
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "d5a2050c-f762-460c-af9d-41911bfdd822",
+      "name": "통과 기록",
+      "parameters": {
+        "operation": "update",
+        "options": {},
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"답변 병합·제출\").first().json.pageId }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "🤖 AI 게이트|select",
+              "selectValue": "통과"
+            },
+            {
+              "key": "🤖 정리된 브리프|rich_text",
+              "textContent": "={{ $json.output.brief }}"
+            },
+            {
+              "key": "🤖 맥락 점수|number",
+              "numberValue": "={{ $json.output.score }}"
+            }
+          ]
+        },
+        "resource": "databasePage"
+      },
+      "position": [
+        2368,
+        112
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "5e0711d0-695d-4f30-b152-775cc964fee5",
+      "name": "통과 저장",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "passed"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "thread_ts",
+              "keyValue": "={{ $(\"답변 병합·제출\").first().json.threadTs }}"
+            }
+          ]
+        },
+        "operation": "update",
+        "options": {}
+      },
+      "position": [
+        2592,
+        112
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "3dac0ce4-a500-4351-8195-1d319554d3ac",
+      "name": "프롬프트 잠금·통과",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={ \"channel\": \"{{ $(\"답변 병합·제출\").first().json.channelId }}\", \"ts\": \"{{ $(\"답변 병합·제출\").first().json.promptTs }}\", \"text\": \"답변 완료됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"✅ *답변 완료됨* — 맥락이 충분히 모여 다음 단계 착수 준비를 만들었어요.\" } } ] }",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.update"
+      },
+      "position": [
+        2816,
+        112
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "7df5d0ff-62fc-4978-8415-33cf2f4b8af8",
+      "name": "통과 메시지",
+      "parameters": {
+        "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst text = \"✅ 맥락이 충분히 모였어요. 정리해서 다음 단계로 넘길게요.\\n\\n*정리 브리프*\\n\" + (out.brief || \"\");\nreturn [{ json: { body: { channel: ri.channelId, thread_ts: ri.threadTs, text: text } } }];"
+      },
+      "position": [
+        3040,
+        112
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "a5b87c2a-e645-42c2-8a9c-ed4d961ecd4e",
+      "name": "통과 알림",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={{ $json.body }}",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.postMessage"
+      },
+      "position": [
+        3264,
+        112
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "2711360e-305b-4e53-9ee7-06940deecb05",
+      "name": "스테이지·페르소나 결정",
+      "parameters": {
+        "jsCode": "const out = $(\"재평가 게이트\").first().json.output || {};\nconst ri = $(\"답변 병합·제출\").first().json;\nconst roles = out.roles || [];\nconst ORDER = [\"리서치\", \"디자인\", \"개발\", \"QA\", \"마케팅\"];\nconst PERSONA = { \"리서치\": \"UX 리서처\", \"디자인\": \"시니어 프로덕트 디자이너\", \"개발\": \"시니어 소프트웨어 개발자\", \"QA\": \"QA 엔지니어\", \"마케팅\": \"그로스 마케터\" };\nconst norm = roles.map(function (r) { return String(r).split(\"/\")[0].trim(); });\nconst ordered = ORDER.filter(function (s) { return norm.indexOf(s) !== -1; });\nconst first = ordered.length ? ordered[0] : (norm[0] || \"개발\");\nconst persona = PERSONA[first] || (first + \" 담당자\");\nreturn [{ json: { stage: first, persona: persona, pipeline: ordered.join(\" → \"), pageId: ri.pageId, title: ri.title, threadTs: ri.threadTs, channelId: ri.channelId, brief: out.brief || \"\" } }];"
+      },
+      "position": [
+        3488,
+        112
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "a9fd2be5-6c69-41f7-a7e9-9804dbc207c8",
+      "name": "착수준비 게이트",
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "당신은 해당 직무의 시니어 실무자입니다. 통과된 기획을 받아, 이 단계 작업을 *시작하기 전에* 준비/결정해 두면 좋을 것을 그 직무 관점에서 구체적이고 실행가능하게 작성합니다.\n\nbrief(마크다운)에 정확히 3개 섹션:\n## ✅ 착수 전 체크리스트 — 시작 전 확인·준비 항목(불릿)\n## 🔀 열린 결정사항 — 아직 안 정해져 이 단계에서 결정/확인이 필요한 것(불릿)\n## 🗺 착수 계획 — 어떤 순서로 접근할지 3~5줄\n\nsummary 는 슬랙 통보용 1줄 요약.\n반드시 지정된 JSON 스키마로만 답하세요."
+        },
+        "promptType": "define",
+        "text": "=당신은 {{ $(\"스테이지·페르소나 결정\").first().json.persona }} 입니다. 아래 통과된 기획을 받아, {{ $(\"스테이지·페르소나 결정\").first().json.stage }} 단계 작업을 시작하기 전에 정리해 두면 좋을 착수 준비물을 작성하세요.\n\n제목: {{ $(\"스테이지·페르소나 결정\").first().json.title }}\n\n정리된 기획 브리프:\n{{ $(\"스테이지·페르소나 결정\").first().json.brief }}\n\n기획 단계 질문·답변:\n{{ $(\"답변 병합·제출\").first().json.qa }}"
+      },
+      "position": [
+        3712,
+        0
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1
+    },
+    {
+      "credentials": {
+        "googlePalmApi": {
+          "id": "n897k5ieQlXRfsO4",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      },
+      "id": "55b677cf-b3e2-4909-88a2-90c345160c1e",
+      "name": "착수 Gemini",
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "position": [
+        3728,
+        224
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "3ad58dc8-c4b7-43e0-92f6-b3f93f59f858",
+      "name": "착수 파서",
+      "parameters": {
+        "jsonSchemaExample": "{ \"brief\": \"## ✅ 착수 전 체크리스트\\n- 항목1\\n- 항목2\\n\\n## 🔀 열린 결정사항\\n- 결정1\\n\\n## 🗺 착수 계획\\n1) ...\\n2) ...\", \"summary\": \"한 줄 요약\" }"
+      },
+      "position": [
+        3856,
+        224
+      ],
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "80c64245-cbef-4e0d-8640-d1a7ac6e7120",
+      "name": "서브태스크 생성",
+      "parameters": {
+        "databaseId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
+        },
+        "options": {},
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "타입|select",
+              "selectValue": "={{ $(\"스테이지·페르소나 결정\").first().json.stage }}"
+            },
+            {
+              "key": "관계된 ✅ TASK|relation",
+              "relationValue": [
+                "={{ $(\"스테이지·페르소나 결정\").first().json.pageId }}"
+              ]
+            },
+            {
+              "key": "🤖 정리된 브리프|rich_text",
+              "textContent": "={{ $(\"착수준비 게이트\").first().json.output.brief }}"
+            }
+          ]
+        },
+        "resource": "databasePage",
+        "title": "=[{{ $(\"스테이지·페르소나 결정\").first().json.stage }}] {{ $(\"스테이지·페르소나 결정\").first().json.title }}"
+      },
+      "position": [
+        4064,
+        112
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "022b5d9f-0335-4108-9b95-bb80cb45f968",
+      "name": "착수 통보 메시지",
+      "parameters": {
+        "jsCode": "const st = $(\"스테이지·페르소나 결정\").first().json;\nconst out = $(\"착수준비 게이트\").first().json.output || {};\nconst sub = $(\"서브태스크 생성\").first().json;\nconst url = (sub && sub.url) ? sub.url : \"\";\nconst text = \"🛠 *[\" + st.stage + \"] 착수 준비가 생성됐어요* — \" + st.persona + \" 관점\\n파이프라인: \" + (st.pipeline || st.stage) + \"\\n\" + (out.summary || \"\") + (url ? (\"\\n📄 서브태스크: \" + url) : \"\");\nreturn [{ json: { body: { channel: st.channelId, thread_ts: st.threadTs, text: text } } }];"
+      },
+      "position": [
+        4288,
+        112
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "adb75884-2a7f-49cb-a3dd-31be7e512768",
+      "name": "착수 통보",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={{ $json.body }}",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.postMessage"
+      },
+      "position": [
+        4512,
+        112
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "8dd823ef-56b0-4cc5-a2dc-93dece32ebd8",
+      "name": "라운드 판정",
+      "parameters": {
+        "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst newRound = Number(ri.round || 0) + 1;\nreturn [{ json: { newRound: newRound, escalate: newRound > 2, questions: out.questions || [], pageId: ri.pageId, threadTs: ri.threadTs, channelId: ri.channelId, promptTs: ri.promptTs } }];"
+      },
+      "position": [
+        2368,
+        400
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "fa7ec21a-8f76-47fc-bb68-97db81dad758",
+      "name": "에스컬레이션?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.escalate }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        2592,
+        400
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "b6773d53-2d08-405f-8334-69de2e5a2edf",
+      "name": "에스컬레이션 기록",
+      "parameters": {
+        "operation": "update",
+        "options": {},
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"라운드 판정\").first().json.pageId }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "🤖 AI 게이트|select",
+              "selectValue": "보류"
+            },
+            {
+              "key": "🤖 미결 질문|rich_text",
+              "textContent": "⚠️ 2라운드 초과 — 사람이 직접 정리 필요"
+            }
+          ]
+        },
+        "resource": "databasePage"
+      },
+      "position": [
+        2816,
+        304
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "58d9665c-5727-486a-94da-adcd129f57fb",
+      "name": "에스컬레이션 저장",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "escalated"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "thread_ts",
+              "keyValue": "={{ $(\"라운드 판정\").first().json.threadTs }}"
+            }
+          ]
+        },
+        "operation": "update",
+        "options": {}
+      },
+      "position": [
+        3040,
+        304
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "f40b7105-b425-4043-8ddd-847c7eab82e9",
+      "name": "프롬프트 잠금·에스컬",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={ \"channel\": \"{{ $(\"라운드 판정\").first().json.channelId }}\", \"ts\": \"{{ $(\"라운드 판정\").first().json.promptTs }}\", \"text\": \"답변 완료됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"✅ *답변 완료됨* — 다만 맥락이 더 필요해, 사람이 직접 정리하도록 넘겼어요.\" } } ] }",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.update"
+      },
+      "position": [
+        3264,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "25a881b0-7f3f-4896-8fe3-65436ae6e7c7",
+      "name": "에스컬레이션 알림",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={ \"channel\": \"{{ $(\"라운드 판정\").first().json.channelId }}\", \"thread_ts\": \"{{ $(\"라운드 판정\").first().json.threadTs }}\", \"text\": \"🛟 2라운드 동안 여쭤봤는데도 맥락이 충분히 모이지 않았어요. 이 건은 사람이 직접 정리하는 게 좋겠습니다. 담당자분 확인 부탁드려요.\" }",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.postMessage"
+      },
+      "position": [
+        3488,
+        304
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "5cd4ccdb-0173-418f-bb1c-94a6b62957e2",
+      "name": "다음 라운드 저장",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "questions_json": "={{ JSON.stringify($(\"라운드 판정\").first().json.questions) }}",
+            "round": "={{ $(\"라운드 판정\").first().json.newRound }}",
+            "status": "collecting"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "thread_ts",
+              "keyValue": "={{ $(\"라운드 판정\").first().json.threadTs }}"
+            }
+          ]
+        },
+        "operation": "update",
+        "options": {}
+      },
+      "position": [
+        2816,
+        496
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "f90c95b4-c507-453f-869e-1543c5b1ce08",
+      "name": "질문중 기록",
+      "parameters": {
+        "operation": "update",
+        "options": {},
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"라운드 판정\").first().json.pageId }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "🤖 AI 게이트|select",
+              "selectValue": "질문중"
+            },
+            {
+              "key": "🤖 미결 질문|rich_text",
+              "textContent": "={{ ($(\"라운드 판정\").first().json.questions || []).map(function(q){ return (q.perspective ? \"[\" + q.perspective + \"] \" : \"\") + q.text }).join(\"\\n\") }}"
+            }
+          ]
+        },
+        "resource": "databasePage"
+      },
+      "position": [
+        3040,
+        496
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "d566a129-cdfb-4189-93fd-ae59af825987",
+      "name": "이전 프롬프트 잠금",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={ \"channel\": \"{{ $(\"라운드 판정\").first().json.channelId }}\", \"ts\": \"{{ $(\"라운드 판정\").first().json.promptTs }}\", \"text\": \"답변 완료됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"✅ *답변 완료됨* — 확인해보니 몇 가지 더 필요해서 추가 질문을 이어서 드렸어요.\" } } ] }",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.update"
+      },
+      "position": [
+        3264,
+        496
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "e504c06a-48ee-463b-9caf-3c33d52de5b2",
+      "name": "다음 프롬프트 블록",
+      "parameters": {
+        "jsCode": "const rj = $(\"라운드 판정\").first().json;\nconst pageId = rj.pageId;\nconst n = (rj.questions || []).length;\nconst guide = [\"• *📝 답변하기* — 폼을 열어 답해요.\", \"• *⏸️ 아직 작성 중* — 4시간 뒤 다시 여쭤볼게요.\", \"• *🛑 보류* — 이 건을 멈춰요.\"].join(\"\\n\");\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: \"📋 추가로 확인할 질문이 \" + n + \"개 있어요.\" } },\n  { type: \"section\", text: { type: \"mrkdwn\", text: guide } },\n  { type: \"actions\", block_id: \"prompt_actions\", elements: [\n    { type: \"button\", style: \"primary\", text: { type: \"plain_text\", text: \"📝 답변하기\", emoji: true }, action_id: \"open_form\", value: JSON.stringify({ pageId: pageId }) },\n    { type: \"button\", text: { type: \"plain_text\", text: \"⏸️ 아직 작성 중\", emoji: true }, action_id: \"snooze\", value: JSON.stringify({ pageId: pageId }) },\n    { type: \"button\", style: \"danger\", text: { type: \"plain_text\", text: \"🛑 보류\", emoji: true }, action_id: \"hold\", value: JSON.stringify({ pageId: pageId }) }\n  ] }\n];\nreturn [{ json: { body: { channel: rj.channelId, thread_ts: rj.threadTs, text: \"추가 검토 질문\", blocks: blocks } } }];"
+      },
+      "position": [
+        3488,
+        496
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "d0afd0a0-dc73-4ba0-a08e-d57523e3d1d1",
+      "name": "다음 프롬프트 포스트",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={{ $json.body }}",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.postMessage"
+      },
+      "position": [
+        3776,
+        496
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "a0242d51-4c8b-40a3-a867-132d5b73b3e3",
+      "name": "스누즈 기록",
+      "parameters": {
+        "operation": "update",
+        "options": {},
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"액션 정규화\").first().json.pageId }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "🤖 AI 게이트|select",
+              "selectValue": "스누즈"
+            },
+            {
+              "date": "={{ $now.plus({ hours: 4 }).toISO() }}",
+              "key": "🤖 다음 점검 시각|date"
+            }
+          ]
+        },
+        "resource": "databasePage"
+      },
+      "position": [
+        896,
+        496
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "6afe4c23-8cd3-4c49-9f6c-60729eb4d308",
+      "name": "스누즈 저장",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "snoozed"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "thread_ts",
+              "keyValue": "={{ $(\"액션 정규화\").first().json.threadTs }}"
+            }
+          ]
+        },
+        "operation": "update",
+        "options": {}
+      },
+      "position": [
+        1120,
+        496
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "04a5f553-c49c-47ab-8f05-b760b05117c4",
+      "name": "프롬프트 잠금·스누즈",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={ \"channel\": \"{{ $(\"액션 정규화\").first().json.channelId }}\", \"ts\": \"{{ $(\"액션 정규화\").first().json.promptTs }}\", \"text\": \"작성 중\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"⏸️ *아직 작성 중* — 4시간 뒤에 다시 여쭤볼게요.\" } } ] }",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.update"
+      },
+      "position": [
+        1344,
+        496
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "2dad9bba-7718-4ff9-9487-e6048241fba0",
+      "name": "보류 기록",
+      "parameters": {
+        "operation": "update",
+        "options": {},
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"액션 정규화\").first().json.pageId }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "🤖 AI 게이트|select",
+              "selectValue": "보류"
+            }
+          ]
+        },
+        "resource": "databasePage"
+      },
+      "position": [
+        896,
+        688
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "fcf43677-3fc7-41c2-8322-0c3a3af1907a",
+      "name": "보류 저장",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "held"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "thread_ts",
+              "keyValue": "={{ $(\"액션 정규화\").first().json.threadTs }}"
+            }
+          ]
+        },
+        "operation": "update",
+        "options": {}
+      },
+      "position": [
+        1120,
+        688
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "cc1c6eae-5a9e-4e70-99ba-3ced15d83620",
+      "name": "프롬프트 잠금·보류",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "jsonBody": "={ \"channel\": \"{{ $(\"액션 정규화\").first().json.channelId }}\", \"ts\": \"{{ $(\"액션 정규화\").first().json.promptTs }}\", \"text\": \"보류\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"🛑 *보류* — 더 묻지 않을게요. 다시 시작하려면 이 스레드에 알려주세요.\" } } ] }",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.update"
+      },
+      "position": [
+        1344,
+        688
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2026-06-10T05:05:07.925Z",
+      "project": {
+        "createdAt": "2026-05-27T07:22:23.960Z",
+        "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "description": null,
+        "icon": null,
+        "id": "501Q7eGEKoHjxZfp",
+        "name": "재은 김 <justin@bomapp.co.kr>",
+        "type": "personal",
+        "updatedAt": "2026-05-27T07:24:05.558Z"
+      },
+      "projectId": "501Q7eGEKoHjxZfp",
+      "role": "workflow:owner",
+      "updatedAt": "2026-06-10T05:05:07.925Z",
+      "workflowId": "3LyKi5A20HoPrP0p"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-06-15T06:13:48.334Z",
+  "versionCounter": 45,
+  "versionId": "78842918-856a-4de1-a2d3-8bd477d69d0e"
+}

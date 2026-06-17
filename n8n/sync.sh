@@ -31,8 +31,10 @@ pull_one() {
 
 push_one() {
   local name=$1 id; id=$(wf_id "$name") || return 1
-  # PUT 허용 필드만 전송 (active/id/tags 등 읽기전용 제거). nodes 의 credentials 참조는 보존됨.
-  jq '{name, nodes, connections, settings}' "workflows/${name}.json" \
+  # PUT 허용 필드만 전송. nodes 의 credentials 참조는 보존됨.
+  # settings 는 공개 API 스키마 허용 키만 (availableInMCP/binaryMode 등 비공개 필드는 400 유발).
+  jq '{name, nodes, connections,
+       settings: (.settings | {executionOrder, saveExecutionProgress, saveManualExecutions, saveDataErrorExecution, saveDataSuccessExecution, executionTimeout, errorWorkflow, timezone} | with_entries(select(.value != null)))}' "workflows/${name}.json" \
     | api -X PUT -H "Content-Type: application/json" --data @- \
         "${N8N_API_URL%/}/api/v1/workflows/${id}" > /dev/null
   echo "pushed ${name} (${id}) — 반영 후 n8n 에서 publish 필요"
