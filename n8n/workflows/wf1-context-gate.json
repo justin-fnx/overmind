@@ -265,7 +265,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-17T00:31:26.688Z",
+    "createdAt": "2026-06-17T02:26:46.100Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -574,7 +574,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] intent_briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑. 목적은 (a)위 지식이 제대로 반영됐는지 (b)등록자 의도와 당신 이해의 정렬 확인.\n- 닿는 서비스/채널/화면/규제를 위 지식에서 구체 인용(예 \"마이데이터(mydata-api)\",\"보맵 앱 분석 탭\",\"플래너(wings-api)\").\n- 무엇을·어디를·어떻게 작업할 것으로 이해했는지 기획 수준으로.\n- 디자인/개발 디테일로 깊이 들어가지 마세요(컴포넌트 props·API 시그니처·DB 스키마 금지). 기획자가 맞다/아니다 판단할 수준.\n- 3~5문장. 끝에 \"이 이해가 맞는지, 다르면 어떤 점이 다른지 알려주세요\"로 정렬 요청.\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무 관점(디자인:플로우/화면상태/정보구조, 개발:데이터·API/예외/의존성/범위, 마케팅:타겟/메시징/지표, QA:인수기준/시나리오/경계값)으로 기획 단계에 반드시 정해져야 할 핵심 빈칸만. 직무당 최대 3개, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 빈칸 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
+            "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] intent_briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑. 목적은 (a)위 지식이 제대로 반영됐는지 (b)등록자 의도와 당신 이해의 정렬 확인.\n- 닿는 서비스/채널/화면/규제를 위 지식에서 구체 인용(예 \"마이데이터(mydata-api)\",\"보맵 앱 분석 탭\",\"플래너(wings-api)\").\n- 무엇을·어디를·어떻게 작업할 것으로 이해했는지 기획 수준으로.\n- 디자인/개발 디테일로 깊이 들어가지 마세요(컴포넌트 props·API 시그니처·DB 스키마 금지). 기획자가 맞다/아니다 판단할 수준.\n- 3~5문장. 끝에 \"이 이해가 맞는지, 다르면 어떤 점이 다른지 알려주세요\"로 정렬 요청.\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n직무당 최대 3개, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
           },
           "promptType": "define",
           "text": "=아래는 노션에 새로 등록된 \"기획\" 태스크입니다.\n\n제목: {{ $(\"맥락 수집\").first().json.title }}\n프로덕트: {{ $(\"맥락 수집\").first().json.product }}\n우선순위: {{ $(\"맥락 수집\").first().json.priority }}\n본문:\n{{ $(\"맥락 수집\").first().json.body }}"
@@ -986,10 +986,10 @@
         "id": "31625989-ebda-4c40-ab62-34b2a32594c2",
         "name": "AWS Bedrock Chat Model",
         "parameters": {
-          "model": "apac.amazon.nova-pro-v1:0",
+          "model": "global.anthropic.claude-sonnet-4-6",
           "modelSource": "inferenceProfile",
           "options": {
-            "maxTokensToSample": 4000,
+            "maxTokensToSample": 8000,
             "temperature": 0.2
           }
         },
@@ -1001,21 +1001,29 @@
         "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-17T00:31:26.688Z",
-    "versionId": "0647d872-4fc1-4c9e-9984-81ed7ad7f96e",
+    "updatedAt": "2026-06-17T02:26:46.100Z",
+    "versionId": "d74e970b-05fd-4c66-8a48-34b48e751107",
     "workflowId": "Y74XMZpTEUejToOQ",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-17T00:31:53.356Z",
-        "event": "activated",
-        "id": 35,
+        "createdAt": "2026-06-17T02:26:46.176Z",
+        "event": "deactivated",
+        "id": 36,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "0647d872-4fc1-4c9e-9984-81ed7ad7f96e",
+        "versionId": "d74e970b-05fd-4c66-8a48-34b48e751107",
+        "workflowId": "Y74XMZpTEUejToOQ"
+      },
+      {
+        "createdAt": "2026-06-17T02:26:46.202Z",
+        "event": "activated",
+        "id": 37,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "d74e970b-05fd-4c66-8a48-34b48e751107",
         "workflowId": "Y74XMZpTEUejToOQ"
       }
     ]
   },
-  "activeVersionId": "0647d872-4fc1-4c9e-9984-81ed7ad7f96e",
+  "activeVersionId": "d74e970b-05fd-4c66-8a48-34b48e751107",
   "connections": {
     "AWS Bedrock Chat Model": {
       "ai_languageModel": [
@@ -1594,7 +1602,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] intent_briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑. 목적은 (a)위 지식이 제대로 반영됐는지 (b)등록자 의도와 당신 이해의 정렬 확인.\n- 닿는 서비스/채널/화면/규제를 위 지식에서 구체 인용(예 \"마이데이터(mydata-api)\",\"보맵 앱 분석 탭\",\"플래너(wings-api)\").\n- 무엇을·어디를·어떻게 작업할 것으로 이해했는지 기획 수준으로.\n- 디자인/개발 디테일로 깊이 들어가지 마세요(컴포넌트 props·API 시그니처·DB 스키마 금지). 기획자가 맞다/아니다 판단할 수준.\n- 3~5문장. 끝에 \"이 이해가 맞는지, 다르면 어떤 점이 다른지 알려주세요\"로 정렬 요청.\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무 관점(디자인:플로우/화면상태/정보구조, 개발:데이터·API/예외/의존성/범위, 마케팅:타겟/메시징/지표, QA:인수기준/시나리오/경계값)으로 기획 단계에 반드시 정해져야 할 핵심 빈칸만. 직무당 최대 3개, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 빈칸 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
+          "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] intent_briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑. 목적은 (a)위 지식이 제대로 반영됐는지 (b)등록자 의도와 당신 이해의 정렬 확인.\n- 닿는 서비스/채널/화면/규제를 위 지식에서 구체 인용(예 \"마이데이터(mydata-api)\",\"보맵 앱 분석 탭\",\"플래너(wings-api)\").\n- 무엇을·어디를·어떻게 작업할 것으로 이해했는지 기획 수준으로.\n- 디자인/개발 디테일로 깊이 들어가지 마세요(컴포넌트 props·API 시그니처·DB 스키마 금지). 기획자가 맞다/아니다 판단할 수준.\n- 3~5문장. 끝에 \"이 이해가 맞는지, 다르면 어떤 점이 다른지 알려주세요\"로 정렬 요청.\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n직무당 최대 3개, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
         },
         "promptType": "define",
         "text": "=아래는 노션에 새로 등록된 \"기획\" 태스크입니다.\n\n제목: {{ $(\"맥락 수집\").first().json.title }}\n프로덕트: {{ $(\"맥락 수집\").first().json.product }}\n우선순위: {{ $(\"맥락 수집\").first().json.priority }}\n본문:\n{{ $(\"맥락 수집\").first().json.body }}"
@@ -2006,10 +2014,10 @@
       "id": "31625989-ebda-4c40-ab62-34b2a32594c2",
       "name": "AWS Bedrock Chat Model",
       "parameters": {
-        "model": "apac.amazon.nova-pro-v1:0",
+        "model": "global.anthropic.claude-sonnet-4-6",
         "modelSource": "inferenceProfile",
         "options": {
-          "maxTokensToSample": 4000,
+          "maxTokensToSample": 8000,
           "temperature": 0.2
         }
       },
@@ -2059,7 +2067,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-17T00:31:26.685Z",
-  "versionCounter": 92,
-  "versionId": "0647d872-4fc1-4c9e-9984-81ed7ad7f96e"
+  "updatedAt": "2026-06-17T02:26:46.097Z",
+  "versionCounter": 100,
+  "versionId": "d74e970b-05fd-4c66-8a48-34b48e751107"
 }
