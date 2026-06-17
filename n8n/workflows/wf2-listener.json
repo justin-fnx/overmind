@@ -458,7 +458,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-17T05:08:47.727Z",
+    "createdAt": "2026-06-17T05:36:44.891Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -868,7 +868,7 @@
             "combinator": "and",
             "conditions": [
               {
-                "leftValue": "={{ $json.output.sufficient }}",
+                "leftValue": "={{ $json.output.sufficient || Number($(\"답변 병합·제출\").first().json.round) >= 2 }}",
                 "operator": {
                   "operation": "true",
                   "singleValue": true,
@@ -1206,7 +1206,7 @@
         "id": "8dd823ef-56b0-4cc5-a2dc-93dece32ebd8",
         "name": "라운드 판정",
         "parameters": {
-          "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst newRound = Number(ri.round || 0) + 1;\nreturn [{ json: { newRound: newRound, escalate: newRound > 2, questions: out.questions || [], pageId: ri.pageId, threadTs: ri.threadTs, channelId: ri.channelId, promptTs: ri.promptTs } }];"
+          "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst newRound = Number(ri.round || 0) + 1;\nreturn [{ json: { newRound: newRound, escalate: newRound > 2, questions: out.questions || [], score: out.score, brief: out.brief, pageId: ri.pageId, threadTs: ri.threadTs, channelId: ri.channelId, promptTs: ri.promptTs } }];"
         },
         "position": [
           2368,
@@ -1444,6 +1444,14 @@
               {
                 "key": "🤖 미결 질문|rich_text",
                 "textContent": "={{ ($(\"라운드 판정\").first().json.questions || []).map(function(q){ return (q.perspective ? \"[\" + q.perspective + \"] \" : \"\") + q.text }).join(\"\\n\") }}"
+              },
+              {
+                "key": "🤖 맥락 점수|number",
+                "numberValue": "={{ $(\"라운드 판정\").first().json.score }}"
+              },
+              {
+                "key": "🤖 정리된 브리프|rich_text",
+                "textContent": "={{ $(\"라운드 판정\").first().json.brief }}"
               }
             ]
           },
@@ -1736,29 +1744,29 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-17T05:08:47.727Z",
-    "versionId": "43296f59-1729-4f31-97f7-c87dcc492184",
+    "updatedAt": "2026-06-17T05:36:44.891Z",
+    "versionId": "9d8c14d4-cdd0-4968-b861-b1d832ac523d",
     "workflowId": "3LyKi5A20HoPrP0p",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-17T05:08:47.838Z",
+        "createdAt": "2026-06-17T05:36:44.978Z",
         "event": "deactivated",
-        "id": 38,
+        "id": 42,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "43296f59-1729-4f31-97f7-c87dcc492184",
+        "versionId": "9d8c14d4-cdd0-4968-b861-b1d832ac523d",
         "workflowId": "3LyKi5A20HoPrP0p"
       },
       {
-        "createdAt": "2026-06-17T05:08:47.879Z",
+        "createdAt": "2026-06-17T05:36:45.015Z",
         "event": "activated",
-        "id": 39,
+        "id": 43,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "43296f59-1729-4f31-97f7-c87dcc492184",
+        "versionId": "9d8c14d4-cdd0-4968-b861-b1d832ac523d",
         "workflowId": "3LyKi5A20HoPrP0p"
       }
     ]
   },
-  "activeVersionId": "43296f59-1729-4f31-97f7-c87dcc492184",
+  "activeVersionId": "9d8c14d4-cdd0-4968-b861-b1d832ac523d",
   "connections": {
     "Slack 인터랙션 수신": {
       "main": [
@@ -2493,7 +2501,7 @@
       "id": "ffc72b7a-3c35-44b7-9d6f-ef711f94df4a",
       "name": "답변 병합·제출",
       "parameters": {
-        "jsCode": "const row = $json;\nconst norm = $(\"액션 정규화\").first().json;\nlet qs = []; let prior = {};\ntry { qs = row.questions_json ? JSON.parse(row.questions_json) : []; } catch (e) { qs = []; }\ntry { prior = row.answers_json ? JSON.parse(row.answers_json) : {}; } catch (e) { prior = {}; }\nlet submitted = {};\ntry { submitted = norm.answers ? JSON.parse(norm.answers) : {}; } catch (e) { submitted = {}; }\nconst round = Number(row.round || 0);\nconst lines = qs.map(function (q, i) {\n  const pfx = q.perspective ? (\"[\" + q.perspective + \"] \") : \"\";\n  return pfx + \"Q. \" + q.text + \"\\nA: \" + (submitted[String(i)] || \"(미답변)\");\n});\nif (norm.freeText) { lines.push(\"자유서술: \" + norm.freeText); }\nconst roundBlock = \"── 라운드 \" + round + \" ──\\n\" + lines.join(\"\\n\");\nlet log = Array.isArray(prior._log) ? prior._log : [];\nlog = log.concat([roundBlock]);\nconst fullQa = log.join(\"\\n\\n\");\nreturn [{ json: { answers_json: JSON.stringify({ _log: log }), qa: fullQa, title: row.task_title || \"\", round: round, pageId: row.page_id || \"\", threadTs: row.thread_ts || \"\", channelId: row.channel_id || \"\", promptTs: norm.promptTs || \"\" } }];"
+        "jsCode": "const row = $json;\nconst norm = $(\"액션 정규화\").first().json;\nlet qs = []; let prior = {};\ntry { qs = row.questions_json ? JSON.parse(row.questions_json) : []; } catch (e) { qs = []; }\ntry { prior = row.answers_json ? JSON.parse(row.answers_json) : {}; } catch (e) { prior = {}; }\nlet submitted = {};\ntry { submitted = norm.answers ? JSON.parse(norm.answers) : {}; } catch (e) { submitted = {}; }\nconst round = Number(row.round || 0);\nconst lines = qs.map(function (q, i) {\n  const pfx = q.perspective ? (\"[\" + q.perspective + \"] \") : \"\";\n  return pfx + \"Q. \" + q.text + \"\\nA: \" + (submitted[String(i)] || \"(미답변)\");\n});\nconst qaLines = qs.map(function (q, i) {\n  const pfx = q.perspective ? (\"[\" + q.perspective + \"] \") : \"\";\n  return \"\\u2022 \" + pfx + q.text + \"  \\u2192  *\" + (submitted[String(i)] || \"(미답변)\") + \"*\";\n});\nif (norm.freeText) { lines.push(\"자유서술: \" + norm.freeText); qaLines.push(\"\\u2022 자유서술  \\u2192  *\" + norm.freeText + \"*\"); }\nconst roundQA = qaLines.join(\"\\n\");\nconst roundBlock = \"\\u2500\\u2500 라운드 \" + round + \" \\u2500\\u2500\\n\" + lines.join(\"\\n\");\nlet log = Array.isArray(prior._log) ? prior._log : [];\nlog = log.concat([roundBlock]);\nconst fullQa = log.join(\"\\n\\n\");\nreturn [{ json: { answers_json: JSON.stringify({ _log: log }), qa: fullQa, roundQA: roundQA, title: row.task_title || \"\", round: round, pageId: row.page_id || \"\", threadTs: row.thread_ts || \"\", channelId: row.channel_id || \"\", promptTs: norm.promptTs || \"\" } }];"
       },
       "position": [
         1120,
@@ -2685,6 +2693,10 @@
             {
               "key": "🤖 맥락 점수|number",
               "numberValue": "={{ $json.output.score }}"
+            },
+            {
+              "key": "🤖 미결 질문|rich_text",
+              "textContent": ""
             }
           ]
         },
@@ -2741,7 +2753,7 @@
       "name": "프롬프트 잠금·통과",
       "parameters": {
         "authentication": "predefinedCredentialType",
-        "jsonBody": "={ \"channel\": \"{{ $(\"답변 병합·제출\").first().json.channelId }}\", \"ts\": \"{{ $(\"답변 병합·제출\").first().json.promptTs }}\", \"text\": \"답변 완료됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"✅ *답변 완료됨* — 맥락이 충분히 모여 다음 단계 착수 준비를 만들었어요.\" } } ] }",
+        "jsonBody": "={{ ({ channel: $(\"답변 병합·제출\").first().json.channelId, ts: $(\"답변 병합·제출\").first().json.promptTs, text: \"답변 완료됨\", blocks: [ { type: \"section\", text: { type: \"mrkdwn\", text: \"\\u2705 *답변 완료됨* \\u2014 맥락이 충분히 모여 다음 단계 착수 준비를 만들었어요.\" } }, { type: \"context\", elements: [ { type: \"mrkdwn\", text: \"\\ud83d\\udcdd *문답 이력*\" } ] }, { type: \"section\", text: { type: \"mrkdwn\", text: $(\"답변 병합·제출\").first().json.roundQA } } ] }) }}",
         "method": "POST",
         "nodeCredentialType": "slackApi",
         "options": {
@@ -2766,7 +2778,7 @@
       "id": "7df5d0ff-62fc-4978-8415-33cf2f4b8af8",
       "name": "통과 메시지",
       "parameters": {
-        "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst text = \"✅ 맥락이 충분히 모였어요. 정리해서 다음 단계로 넘길게요.\\n\\n*정리 브리프*\\n\" + (out.brief || \"\");\nreturn [{ json: { body: { channel: ri.channelId, thread_ts: ri.threadTs, text: text } } }];"
+        "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst text = \"\\u2705 맥락이 충분히 모였어요. 정리해서 다음 단계로 넘길게요.\";\nreturn [{ json: { body: { channel: ri.channelId, thread_ts: ri.threadTs, text: text } } }];"
       },
       "position": [
         3040,
@@ -2826,7 +2838,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "당신은 해당 직무의 시니어 실무자입니다. 통과된 기획을 받아, 이 단계 작업을 *시작하기 전에* 준비/결정해 두면 좋을 것을 그 직무 관점에서 구체적이고 실행가능하게 작성합니다.\n\nbrief(마크다운)에 정확히 3개 섹션:\n## ✅ 착수 전 체크리스트 — 시작 전 확인·준비 항목(불릿)\n## 🔀 열린 결정사항 — 아직 안 정해져 이 단계에서 결정/확인이 필요한 것(불릿)\n## 🗺 착수 계획 — 어떤 순서로 접근할지 3~5줄\n\nsummary 는 슬랙 통보용 1줄 요약.\n반드시 지정된 JSON 스키마로만 답하세요."
+          "systemMessage": "당신은 해당 직무의 시니어 실무자입니다. 통과된 기획을 받아, 이 단계 작업을 *시작하기 전에* 준비/결정해 두면 좋을 것을 그 직무 관점에서 구체적이고 실행가능하게 작성합니다.\n\n\\u26a0\\ufe0f 아래 \"기획 단계 질문·답변\"은 이전 단계에서 이미 결정된 사실입니다. 그 결정들을 전제로 삼으세요. 이미 답변/결정된 사항을 체크리스트나 열린 결정사항에 다시 넣지 마세요(중복 금지) — 그 결정들 위에서 아직 준비/결정되지 않은 것만 다룹니다.\n\nbrief(마크다운)에 정확히 3개 섹션:\n## \\u2705 착수 전 체크리스트 — 결정된 사항을 전제로, 실무 착수에 필요한 새 준비·확인 항목만(불릿)\n## \\ud83d\\udd00 열린 결정사항 — Q&A로도 아직 안 풀려 이 단계에서 결정/확인이 필요한 것만(불릿). 없으면 \"없음\".\n## \\ud83d\\uddfa 착수 계획 — 어떤 순서로 접근할지 3~5줄. 소요 시간·일정 추정은 넣지 마세요.\n\nsummary 는 슬랙 통보용 1줄 요약.\n반드시 지정된 JSON 스키마로만 답하세요."
         },
         "promptType": "define",
         "text": "=당신은 {{ $(\"스테이지·페르소나 결정\").first().json.persona }} 입니다. 아래 통과된 기획을 받아, {{ $(\"스테이지·페르소나 결정\").first().json.stage }} 단계 작업을 시작하기 전에 정리해 두면 좋을 착수 준비물을 작성하세요.\n\n제목: {{ $(\"스테이지·페르소나 결정\").first().json.title }}\n\n정리된 기획 브리프:\n{{ $(\"스테이지·페르소나 결정\").first().json.brief }}\n\n기획 단계 질문·답변:\n{{ $(\"답변 병합·제출\").first().json.qa }}"
@@ -2885,6 +2897,14 @@
       "id": "80c64245-cbef-4e0d-8640-d1a7ac6e7120",
       "name": "서브태스크 생성",
       "parameters": {
+        "blockUi": {
+          "blockValues": [
+            {
+              "textContent": "={{ $(\"착수준비 게이트\").first().json.output.brief }}",
+              "type": "paragraph"
+            }
+          ]
+        },
         "databaseId": {
           "__rl": true,
           "mode": "id",
@@ -2902,10 +2922,6 @@
               "relationValue": [
                 "={{ $(\"스테이지·페르소나 결정\").first().json.pageId }}"
               ]
-            },
-            {
-              "key": "🤖 정리된 브리프|rich_text",
-              "textContent": "={{ $(\"착수준비 게이트\").first().json.output.brief }}"
             }
           ]
         },
@@ -3237,7 +3253,7 @@
       "name": "이전 프롬프트 잠금",
       "parameters": {
         "authentication": "predefinedCredentialType",
-        "jsonBody": "={ \"channel\": \"{{ $(\"라운드 판정\").first().json.channelId }}\", \"ts\": \"{{ $(\"라운드 판정\").first().json.promptTs }}\", \"text\": \"답변 완료됨\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"✅ *답변 완료됨* — 확인해보니 몇 가지 더 필요해서 추가 질문을 이어서 드렸어요.\" } } ] }",
+        "jsonBody": "={{ ({ channel: $(\"라운드 판정\").first().json.channelId, ts: $(\"라운드 판정\").first().json.promptTs, text: \"답변 완료됨\", blocks: [ { type: \"section\", text: { type: \"mrkdwn\", text: \"\\u2705 *답변 완료됨* \\u2014 확인해보니 몇 가지 더 필요해서 추가 질문을 이어서 드렸어요.\" } }, { type: \"context\", elements: [ { type: \"mrkdwn\", text: \"\\ud83d\\udcdd *문답 이력*\" } ] }, { type: \"section\", text: { type: \"mrkdwn\", text: $(\"답변 병합·제출\").first().json.roundQA } } ] }) }}",
         "method": "POST",
         "nodeCredentialType": "slackApi",
         "options": {
@@ -3534,7 +3550,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-17T05:08:47.725Z",
-  "versionCounter": 48,
-  "versionId": "43296f59-1729-4f31-97f7-c87dcc492184"
+  "updatedAt": "2026-06-17T05:36:44.889Z",
+  "versionCounter": 51,
+  "versionId": "9d8c14d4-cdd0-4968-b861-b1d832ac523d"
 }
