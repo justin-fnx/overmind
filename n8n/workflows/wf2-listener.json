@@ -2,7 +2,7 @@
   "active": true,
   "activeVersion": {
     "authors": "재은 김",
-    "autosaved": true,
+    "autosaved": false,
     "connections": {
       "Slack 인터랙션 수신": {
         "main": [
@@ -252,7 +252,7 @@
           ]
         ]
       },
-      "재평가 Gemini": {
+      "재평가 Sonnet": {
         "ai_languageModel": [
           [
             {
@@ -325,7 +325,7 @@
           ]
         ]
       },
-      "착수 Gemini": {
+      "착수 Sonnet": {
         "ai_languageModel": [
           [
             {
@@ -458,7 +458,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-15T06:13:46.474Z",
+    "createdAt": "2026-06-17T05:08:47.727Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -811,7 +811,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 이전 라운드의 (직무 관점별) 질문과 사용자의 답변을 종합해, 다음 단계로 넘어가기에 맥락과 의사결정이 충분한지 재판정합니다.\n\n판정 규칙:\n- 위 질문·답변은 여러 라운드의 누적 기록입니다. 이미 답이 채워졌거나 이전 라운드에서 이미 물어본 질문은 절대 반복하지 말고, 아직 불명확한 빈칸에 대해서만 새 꼬리질문을 만드세요. 더 물을 게 없으면 sufficient=true.\n- 부족하면 sufficient=false, 남은 핵심 빈칸만 꼬리질문(최대 3개). 각 질문에 해당 직무 perspective(예: 디자인/개발) + 10자 내외 선택지 2~4개(options)(\"직접 입력\" 금지). multi(boolean): 복수선택이 자연스러우면 true.\n- roles: 이 기획이 통과되면 거칠 다운스트림 직무 시퀀스(예: [\"디자인\",\"개발\"]). 표준 순서(리서치→디자인→개발→QA→마케팅)를 따르되 불필요한 직무는 제외.\n- score 0~100. brief 는 항상 현재까지 정리된 5~8줄 요약(한국어).\n반드시 지정된 JSON 스키마로만 답하세요."
+            "systemMessage": "당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 이전 라운드의 (직무 관점별) 질문과 사용자의 답변을 종합해, 다음 단계로 넘어가기에 맥락과 의사결정이 충분한지 재판정합니다.\n\n판정 규칙:\n- 위 질문·답변은 여러 라운드의 누적 기록입니다. 이미 답이 채워졌거나 이전 라운드에서 이미 물어본 질문은 절대 반복하지 말고, 아직 불명확한 빈칸에 대해서만 새 꼬리질문을 만드세요. 더 물을 게 없으면 sufficient=true.\n- 부족하면 sufficient=false, 남은 핵심 빈칸만 꼬리질문(최대 3개). 각 질문에 해당 직무 perspective(예: 디자인/개발) + 10자 내외 선택지 2~4개(options)(\"직접 입력\" 금지). multi(boolean): 복수선택이 자연스러우면 true.\n- ⚠️ 꼬리질문도 그 직무의 기술·구현·디자인 결정(스키마/API/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 실무자가 정한다. 기획자가 답할 \"기획/요구사항\" 빈칸만 묻는다(기대 동작·처리 범위·비즈니스 규칙·예외의 비즈니스 처리·UX 의도·지표 정의 등).\n- roles: 이 기획이 통과되면 거칠 다운스트림 직무 시퀀스(예: [\"디자인\",\"개발\"]). 표준 순서(리서치→디자인→개발→QA→마케팅)를 따르되 불필요한 직무는 제외.\n- score 0~100. brief 는 항상 현재까지 정리된 5~8줄 요약(한국어).\n반드시 지정된 JSON 스키마로만 답하세요."
           },
           "promptType": "define",
           "text": "=다음은 기획 태스크와 지금까지 모인 질문·답변입니다. 종합해서 다음 단계로 넘기기에 맥락이 충분한지 재판정하세요.\n\n제목: {{ $(\"답변 병합·제출\").first().json.title }}\n\n질문·답변:\n{{ $(\"답변 병합·제출\").first().json.qa }}"
@@ -825,16 +825,18 @@
       },
       {
         "credentials": {
-          "googlePalmApi": {
-            "id": "n897k5ieQlXRfsO4",
-            "name": "Google Gemini(PaLM) Api account"
+          "aws": {
+            "id": "GftVHJqfxQshQZ4P",
+            "name": "AWS (IAM) account"
           }
         },
         "id": "e52ac0de-6006-416c-825d-26ce00637d7c",
-        "name": "재평가 Gemini",
+        "name": "재평가 Sonnet",
         "parameters": {
-          "modelName": "models/gemini-2.5-flash",
+          "model": "global.anthropic.claude-sonnet-4-6",
+          "modelSource": "inferenceProfile",
           "options": {
+            "maxTokensToSample": 8000,
             "temperature": 0.2
           }
         },
@@ -842,7 +844,7 @@
           1808,
           528
         ],
-        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
         "typeVersion": 1.1
       },
       {
@@ -1076,24 +1078,26 @@
       },
       {
         "credentials": {
-          "googlePalmApi": {
-            "id": "n897k5ieQlXRfsO4",
-            "name": "Google Gemini(PaLM) Api account"
+          "aws": {
+            "id": "GftVHJqfxQshQZ4P",
+            "name": "AWS (IAM) account"
           }
         },
         "id": "55b677cf-b3e2-4909-88a2-90c345160c1e",
-        "name": "착수 Gemini",
+        "name": "착수 Sonnet",
         "parameters": {
-          "modelName": "models/gemini-2.5-flash",
+          "model": "global.anthropic.claude-sonnet-4-6",
+          "modelSource": "inferenceProfile",
           "options": {
-            "temperature": 0.3
+            "maxTokensToSample": 8000,
+            "temperature": 0.2
           }
         },
         "position": [
           3728,
           224
         ],
-        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
         "typeVersion": 1.1
       },
       {
@@ -1732,21 +1736,29 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-15T06:13:46.474Z",
-    "versionId": "78842918-856a-4de1-a2d3-8bd477d69d0e",
+    "updatedAt": "2026-06-17T05:08:47.727Z",
+    "versionId": "43296f59-1729-4f31-97f7-c87dcc492184",
     "workflowId": "3LyKi5A20HoPrP0p",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-15T06:14:23.202Z",
-        "event": "activated",
-        "id": 27,
+        "createdAt": "2026-06-17T05:08:47.838Z",
+        "event": "deactivated",
+        "id": 38,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "78842918-856a-4de1-a2d3-8bd477d69d0e",
+        "versionId": "43296f59-1729-4f31-97f7-c87dcc492184",
+        "workflowId": "3LyKi5A20HoPrP0p"
+      },
+      {
+        "createdAt": "2026-06-17T05:08:47.879Z",
+        "event": "activated",
+        "id": 39,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "43296f59-1729-4f31-97f7-c87dcc492184",
         "workflowId": "3LyKi5A20HoPrP0p"
       }
     ]
   },
-  "activeVersionId": "78842918-856a-4de1-a2d3-8bd477d69d0e",
+  "activeVersionId": "43296f59-1729-4f31-97f7-c87dcc492184",
   "connections": {
     "Slack 인터랙션 수신": {
       "main": [
@@ -1996,7 +2008,7 @@
         ]
       ]
     },
-    "재평가 Gemini": {
+    "재평가 Sonnet": {
       "ai_languageModel": [
         [
           {
@@ -2069,7 +2081,7 @@
         ]
       ]
     },
-    "착수 Gemini": {
+    "착수 Sonnet": {
       "ai_languageModel": [
         [
           {
@@ -2561,7 +2573,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 이전 라운드의 (직무 관점별) 질문과 사용자의 답변을 종합해, 다음 단계로 넘어가기에 맥락과 의사결정이 충분한지 재판정합니다.\n\n판정 규칙:\n- 위 질문·답변은 여러 라운드의 누적 기록입니다. 이미 답이 채워졌거나 이전 라운드에서 이미 물어본 질문은 절대 반복하지 말고, 아직 불명확한 빈칸에 대해서만 새 꼬리질문을 만드세요. 더 물을 게 없으면 sufficient=true.\n- 부족하면 sufficient=false, 남은 핵심 빈칸만 꼬리질문(최대 3개). 각 질문에 해당 직무 perspective(예: 디자인/개발) + 10자 내외 선택지 2~4개(options)(\"직접 입력\" 금지). multi(boolean): 복수선택이 자연스러우면 true.\n- roles: 이 기획이 통과되면 거칠 다운스트림 직무 시퀀스(예: [\"디자인\",\"개발\"]). 표준 순서(리서치→디자인→개발→QA→마케팅)를 따르되 불필요한 직무는 제외.\n- score 0~100. brief 는 항상 현재까지 정리된 5~8줄 요약(한국어).\n반드시 지정된 JSON 스키마로만 답하세요."
+          "systemMessage": "당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 이전 라운드의 (직무 관점별) 질문과 사용자의 답변을 종합해, 다음 단계로 넘어가기에 맥락과 의사결정이 충분한지 재판정합니다.\n\n판정 규칙:\n- 위 질문·답변은 여러 라운드의 누적 기록입니다. 이미 답이 채워졌거나 이전 라운드에서 이미 물어본 질문은 절대 반복하지 말고, 아직 불명확한 빈칸에 대해서만 새 꼬리질문을 만드세요. 더 물을 게 없으면 sufficient=true.\n- 부족하면 sufficient=false, 남은 핵심 빈칸만 꼬리질문(최대 3개). 각 질문에 해당 직무 perspective(예: 디자인/개발) + 10자 내외 선택지 2~4개(options)(\"직접 입력\" 금지). multi(boolean): 복수선택이 자연스러우면 true.\n- ⚠️ 꼬리질문도 그 직무의 기술·구현·디자인 결정(스키마/API/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 실무자가 정한다. 기획자가 답할 \"기획/요구사항\" 빈칸만 묻는다(기대 동작·처리 범위·비즈니스 규칙·예외의 비즈니스 처리·UX 의도·지표 정의 등).\n- roles: 이 기획이 통과되면 거칠 다운스트림 직무 시퀀스(예: [\"디자인\",\"개발\"]). 표준 순서(리서치→디자인→개발→QA→마케팅)를 따르되 불필요한 직무는 제외.\n- score 0~100. brief 는 항상 현재까지 정리된 5~8줄 요약(한국어).\n반드시 지정된 JSON 스키마로만 답하세요."
         },
         "promptType": "define",
         "text": "=다음은 기획 태스크와 지금까지 모인 질문·답변입니다. 종합해서 다음 단계로 넘기기에 맥락이 충분한지 재판정하세요.\n\n제목: {{ $(\"답변 병합·제출\").first().json.title }}\n\n질문·답변:\n{{ $(\"답변 병합·제출\").first().json.qa }}"
@@ -2575,16 +2587,18 @@
     },
     {
       "credentials": {
-        "googlePalmApi": {
-          "id": "n897k5ieQlXRfsO4",
-          "name": "Google Gemini(PaLM) Api account"
+        "aws": {
+          "id": "GftVHJqfxQshQZ4P",
+          "name": "AWS (IAM) account"
         }
       },
       "id": "e52ac0de-6006-416c-825d-26ce00637d7c",
-      "name": "재평가 Gemini",
+      "name": "재평가 Sonnet",
       "parameters": {
-        "modelName": "models/gemini-2.5-flash",
+        "model": "global.anthropic.claude-sonnet-4-6",
+        "modelSource": "inferenceProfile",
         "options": {
+          "maxTokensToSample": 8000,
           "temperature": 0.2
         }
       },
@@ -2592,7 +2606,7 @@
         1808,
         528
       ],
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
       "typeVersion": 1.1
     },
     {
@@ -2826,24 +2840,26 @@
     },
     {
       "credentials": {
-        "googlePalmApi": {
-          "id": "n897k5ieQlXRfsO4",
-          "name": "Google Gemini(PaLM) Api account"
+        "aws": {
+          "id": "GftVHJqfxQshQZ4P",
+          "name": "AWS (IAM) account"
         }
       },
       "id": "55b677cf-b3e2-4909-88a2-90c345160c1e",
-      "name": "착수 Gemini",
+      "name": "착수 Sonnet",
       "parameters": {
-        "modelName": "models/gemini-2.5-flash",
+        "model": "global.anthropic.claude-sonnet-4-6",
+        "modelSource": "inferenceProfile",
         "options": {
-          "temperature": 0.3
+          "maxTokensToSample": 8000,
+          "temperature": 0.2
         }
       },
       "position": [
         3728,
         224
       ],
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
       "typeVersion": 1.1
     },
     {
@@ -3510,7 +3526,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-15T06:13:48.334Z",
-  "versionCounter": 45,
-  "versionId": "78842918-856a-4de1-a2d3-8bd477d69d0e"
+  "updatedAt": "2026-06-17T05:08:47.725Z",
+  "versionCounter": 48,
+  "versionId": "43296f59-1729-4f31-97f7-c87dcc492184"
 }
