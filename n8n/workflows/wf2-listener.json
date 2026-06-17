@@ -2630,7 +2630,7 @@
           "combinator": "and",
           "conditions": [
             {
-              "leftValue": "={{ $json.output.sufficient }}",
+              "leftValue": "={{ $json.output.sufficient || Number($(\"답변 병합·제출\").first().json.round) >= 2 }}",
               "operator": {
                 "operation": "true",
                 "singleValue": true,
@@ -2968,7 +2968,7 @@
       "id": "8dd823ef-56b0-4cc5-a2dc-93dece32ebd8",
       "name": "라운드 판정",
       "parameters": {
-        "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst newRound = Number(ri.round || 0) + 1;\nreturn [{ json: { newRound: newRound, escalate: newRound > 2, questions: out.questions || [], pageId: ri.pageId, threadTs: ri.threadTs, channelId: ri.channelId, promptTs: ri.promptTs } }];"
+        "jsCode": "const ri = $(\"답변 병합·제출\").first().json;\nconst out = $(\"재평가 게이트\").first().json.output || {};\nconst newRound = Number(ri.round || 0) + 1;\nreturn [{ json: { newRound: newRound, escalate: newRound > 2, questions: out.questions || [], score: out.score, brief: out.brief, pageId: ri.pageId, threadTs: ri.threadTs, channelId: ri.channelId, promptTs: ri.promptTs } }];"
       },
       "position": [
         2368,
@@ -3206,6 +3206,14 @@
             {
               "key": "🤖 미결 질문|rich_text",
               "textContent": "={{ ($(\"라운드 판정\").first().json.questions || []).map(function(q){ return (q.perspective ? \"[\" + q.perspective + \"] \" : \"\") + q.text }).join(\"\\n\") }}"
+            },
+            {
+              "key": "🤖 맥락 점수|number",
+              "numberValue": "={{ $(\"라운드 판정\").first().json.score }}"
+            },
+            {
+              "key": "🤖 정리된 브리프|rich_text",
+              "textContent": "={{ $(\"라운드 판정\").first().json.brief }}"
             }
           ]
         },
