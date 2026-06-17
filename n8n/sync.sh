@@ -10,13 +10,14 @@ if [ -f .env ]; then set -a; . ./.env; set +a; fi
 : "${N8N_API_URL:?N8N_API_URL not set (n8n/.env 참고)}"
 : "${N8N_API_KEY:?N8N_API_KEY not set (n8n/.env 참고)}"
 
-WF_NAMES="wf1-context-gate wf2-listener wf-snooze"
+WF_NAMES="wf1-context-gate wf2-listener wf-snooze wf3-handoff"
 
 wf_id() {
   case "$1" in
     wf1-context-gate) echo "Y74XMZpTEUejToOQ" ;;
     wf2-listener)     echo "3LyKi5A20HoPrP0p" ;;
     wf-snooze)        echo "PpZ7nC12PWWet4DB" ;;
+    wf3-handoff)      echo "mjyDgdVWnrJjsKBN" ;;
     *) echo "알 수 없는 워크플로우: $1 (가능: ${WF_NAMES})" >&2; return 1 ;;
   esac
 }
