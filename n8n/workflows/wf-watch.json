@@ -1,313 +1,7 @@
 {
-  "active": true,
-  "activeVersion": {
-    "authors": "재은 김",
-    "autosaved": false,
-    "connections": {
-      "WF3 호출": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "status 갱신",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "created 조회": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "완료 조회",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "pending 조회": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "created 조회",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "감시 폴링": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "pending 조회",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "디스패치 판정": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "WF3 호출",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "완료 조회": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "디스패치 판정",
-              "type": "main"
-            }
-          ]
-        ]
-      }
-    },
-    "createdAt": "2026-06-18T09:24:08.998Z",
-    "description": null,
-    "name": null,
-    "nodes": [
-      {
-        "id": "2a88df18-084e-4651-bee0-0bd86ba7939b",
-        "name": "감시 폴링",
-        "parameters": {
-          "rule": {
-            "interval": [
-              {
-                "field": "minutes",
-                "minutesInterval": 2
-              }
-            ]
-          }
-        },
-        "position": [
-          0,
-          300
-        ],
-        "type": "n8n-nodes-base.scheduleTrigger",
-        "typeVersion": 1.3
-      },
-      {
-        "id": "06825901-9313-4238-b87c-65d0b7d71d07",
-        "name": "pending 조회",
-        "parameters": {
-          "dataTableId": {
-            "__rl": true,
-            "mode": "id",
-            "value": "16uFko9jgm6gFs0T"
-          },
-          "filters": {
-            "conditions": [
-              {
-                "condition": "eq",
-                "keyName": "status",
-                "keyValue": "pending"
-              }
-            ]
-          },
-          "matchType": "allConditions",
-          "operation": "get",
-          "resource": "row",
-          "returnAll": true
-        },
-        "position": [
-          220,
-          300
-        ],
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1
-      },
-      {
-        "credentials": {
-          "notionApi": {
-            "id": "b03vHUApw6s0O5jS",
-            "name": "Notion account"
-          }
-        },
-        "id": "8f32a83d-eba8-4a20-9382-d2efc9cc89d1",
-        "name": "완료 조회",
-        "parameters": {
-          "databaseId": {
-            "__rl": true,
-            "mode": "id",
-            "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
-          },
-          "filterType": "manual",
-          "filters": {
-            "conditions": [
-              {
-                "condition": "equals",
-                "key": "상태|status",
-                "statusValue": "완료",
-                "type": "status"
-              }
-            ]
-          },
-          "matchType": "allFilters",
-          "operation": "getAll",
-          "options": {},
-          "resource": "databasePage",
-          "returnAll": true,
-          "simple": false
-        },
-        "position": [
-          440,
-          300
-        ],
-        "type": "n8n-nodes-base.notion",
-        "typeVersion": 2.2
-      },
-      {
-        "id": "91e7e1de-2754-40d8-8c58-33c5ae851bb7",
-        "name": "디스패치 판정",
-        "parameters": {
-          "jsCode": "const completed=new Set();$('완료 조회').all().forEach(function(it){var id=String(it.json.id||'').replace(/-/g,'');if(id)completed.add(id);});const createdMap={};$('created 조회').all().forEach(function(it){var r=it.json;if(r.subtask_page_id){createdMap[String(r.parent_page_id||'').replace(/-/g,'')+'|'+r.stage]=String(r.subtask_page_id).replace(/-/g,'');}});const out=[];$('pending 조회').all().forEach(function(it){var row=it.json;var parent=String(row.parent_page_id||'').replace(/-/g,'');var deps=[];try{deps=JSON.parse(row.depends_on||'[]');}catch(e){deps=[];}var ready=deps.length>0&&deps.every(function(dep){var sid=createdMap[parent+'|'+dep];return sid&&completed.has(sid);});if(ready){out.push({json:{rowId:row.id,stage:row.stage,persona:row.persona,pipeline:row.pipeline,pageId:row.parent_page_id,title:row.title,brief:row.brief,qa:row.qa,channelId:row.channel_id,threadTs:row.thread_ts}});}});return out;"
-        },
-        "position": [
-          660,
-          300
-        ],
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2
-      },
-      {
-        "id": "626c5c87-e396-4666-80a0-ef26aaac4ba2",
-        "name": "WF3 호출",
-        "parameters": {
-          "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs} }}",
-          "method": "POST",
-          "options": {
-            "response": {
-              "response": {
-                "neverError": true
-              }
-            }
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "url": "https://n8n-webhook.bomapp.co.kr/webhook/wf3-handoff"
-        },
-        "position": [
-          900,
-          200
-        ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4
-      },
-      {
-        "id": "abee0d2b-a73d-4572-9ce5-3a1c9719f01f",
-        "name": "status 갱신",
-        "parameters": {
-          "columns": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "status": "created"
-            }
-          },
-          "dataTableId": {
-            "__rl": true,
-            "mode": "id",
-            "value": "16uFko9jgm6gFs0T"
-          },
-          "filters": {
-            "conditions": [
-              {
-                "condition": "eq",
-                "keyName": "id",
-                "keyValue": "={{ $json.rowId }}"
-              }
-            ]
-          },
-          "matchType": "allConditions",
-          "operation": "update",
-          "options": {},
-          "resource": "row"
-        },
-        "position": [
-          1120,
-          200
-        ],
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1
-      },
-      {
-        "id": "6082665a-f9ab-4b13-aaba-0666c8d8d391",
-        "name": "created 조회",
-        "parameters": {
-          "dataTableId": {
-            "__rl": true,
-            "mode": "id",
-            "value": "16uFko9jgm6gFs0T"
-          },
-          "filters": {
-            "conditions": [
-              {
-                "condition": "eq",
-                "keyName": "status",
-                "keyValue": "created"
-              }
-            ]
-          },
-          "matchType": "allConditions",
-          "operation": "get",
-          "resource": "row",
-          "returnAll": true
-        },
-        "position": [
-          330,
-          480
-        ],
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1
-      }
-    ],
-    "updatedAt": "2026-06-18T09:24:08.998Z",
-    "versionId": "0cd10cac-bb0b-414f-95d3-375fbac647f9",
-    "workflowId": "Nivu3hdSDVlL5LrR",
-    "workflowPublishHistory": [
-      {
-        "createdAt": "2026-06-18T09:24:09.033Z",
-        "event": "deactivated",
-        "id": 201,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "0cd10cac-bb0b-414f-95d3-375fbac647f9",
-        "workflowId": "Nivu3hdSDVlL5LrR"
-      },
-      {
-        "createdAt": "2026-06-18T09:24:09.047Z",
-        "event": "activated",
-        "id": 202,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "0cd10cac-bb0b-414f-95d3-375fbac647f9",
-        "workflowId": "Nivu3hdSDVlL5LrR"
-      },
-      {
-        "createdAt": "2026-06-18T09:24:09.150Z",
-        "event": "deactivated",
-        "id": 203,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "0cd10cac-bb0b-414f-95d3-375fbac647f9",
-        "workflowId": "Nivu3hdSDVlL5LrR"
-      },
-      {
-        "createdAt": "2026-06-18T09:24:09.169Z",
-        "event": "activated",
-        "id": 204,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "0cd10cac-bb0b-414f-95d3-375fbac647f9",
-        "workflowId": "Nivu3hdSDVlL5LrR"
-      }
-    ]
-  },
-  "activeVersionId": "0cd10cac-bb0b-414f-95d3-375fbac647f9",
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
   "connections": {
     "WF3 호출": {
       "main": [
@@ -477,7 +171,7 @@
       "id": "91e7e1de-2754-40d8-8c58-33c5ae851bb7",
       "name": "디스패치 판정",
       "parameters": {
-        "jsCode": "const completed=new Set();$('완료 조회').all().forEach(function(it){var id=String(it.json.id||'').replace(/-/g,'');if(id)completed.add(id);});const createdMap={};$('created 조회').all().forEach(function(it){var r=it.json;if(r.subtask_page_id){createdMap[String(r.parent_page_id||'').replace(/-/g,'')+'|'+r.stage]=String(r.subtask_page_id).replace(/-/g,'');}});const out=[];$('pending 조회').all().forEach(function(it){var row=it.json;var parent=String(row.parent_page_id||'').replace(/-/g,'');var deps=[];try{deps=JSON.parse(row.depends_on||'[]');}catch(e){deps=[];}var ready=deps.length>0&&deps.every(function(dep){var sid=createdMap[parent+'|'+dep];return sid&&completed.has(sid);});if(ready){out.push({json:{rowId:row.id,stage:row.stage,persona:row.persona,pipeline:row.pipeline,pageId:row.parent_page_id,title:row.title,brief:row.brief,qa:row.qa,channelId:row.channel_id,threadTs:row.thread_ts}});}});return out;"
+        "jsCode": "const completed=new Set();$('완료 조회').all().forEach(function(it){var id=String(it.json.id||'').replace(/-/g,'');if(id)completed.add(id);});const createdMap={};$('created 조회').all().forEach(function(it){var r=it.json;if(r.subtask_page_id){createdMap[String(r.parent_page_id||'').replace(/-/g,'')+'|'+r.stage]=String(r.subtask_page_id).replace(/-/g,'');}});const out=[];const seen={};$('pending 조회').all().forEach(function(it){var row=it.json;var parent=String(row.parent_page_id||'').replace(/-/g,'');var key=parent+'|'+row.stage;if(createdMap[key])return;if(seen[key])return;var deps=[];try{deps=JSON.parse(row.depends_on||'[]');}catch(e){deps=[];}var ready=deps.length>0&&deps.every(function(dep){var sid=createdMap[parent+'|'+dep];return sid&&completed.has(sid);});if(ready){seen[key]=1;out.push({json:{rowId:row.id,parentPageId:row.parent_page_id,stage:row.stage,persona:row.persona,pipeline:row.pipeline,pageId:row.parent_page_id,title:row.title,brief:row.brief,qa:row.qa,channelId:row.channel_id,threadTs:row.thread_ts}});}});return out;"
       },
       "position": [
         660,
@@ -517,7 +211,7 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "status": "created"
+            "status": "dispatched"
           }
         },
         "dataTableId": {
@@ -529,8 +223,18 @@
           "conditions": [
             {
               "condition": "eq",
-              "keyName": "id",
-              "keyValue": "={{ $json.rowId }}"
+              "keyName": "parent_page_id",
+              "keyValue": "={{ $json.parentPageId }}"
+            },
+            {
+              "condition": "eq",
+              "keyName": "stage",
+              "keyValue": "={{ $json.stage }}"
+            },
+            {
+              "condition": "eq",
+              "keyName": "status",
+              "keyValue": "pending"
             }
           ]
         },
@@ -607,7 +311,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-18T09:24:08.996Z",
-  "versionCounter": 9,
-  "versionId": "0cd10cac-bb0b-414f-95d3-375fbac647f9"
+  "updatedAt": "2026-06-18T09:55:16.673Z",
+  "versionCounter": 11,
+  "versionId": "613931ca-dea0-4e87-889e-1a04fbb66f25"
 }
