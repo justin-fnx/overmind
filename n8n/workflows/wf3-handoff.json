@@ -783,7 +783,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": Figma node 구조 조회(fileKey + node id 지정). DS 파일(3Ifh58l7EWLXapWRys0vjf)=컴포넌트·토큰·화면취합 개요, 기능별 실제 화면은 태스크/Hub 카드에 링크된 다른 파일 키로. node id·fileKey는 카드/링크에서 얻으세요. 큰 노드는 응답이 잘릴 수 있으니 구체적 node를 조회. 디자인 무관이면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
+          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": Figma node 구조 조회(fileKey + node id). 보맵 앱 컴포넌트·토큰·전 화면이 모두 BDS 파일 3Ifh58l7EWLXapWRys0vjf 에 있음 — 특히 화면취합 노드 11095-53827 에 5탭 전 화면이 취합됨(화면 참조는 이 노드). 태스크에 Figma 링크(node-id)가 있으면 1순위. 큰 노드는 응답이 잘리니 구체 node로 좁혀 조회. 디자인 무관이면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
         },
         "promptType": "define",
         "text": "=직무: {{ $json.persona }} / 단계: {{ $json.stage }}\n제목: {{ $json.title }}\n기획 page id: {{ $json.pageId }}\n\n정리된 기획 브리프:\n{{ $json.brief }}\n\n기획 단계 질문·답변(이미 결정된 사실):\n{{ $json.qa }}"
@@ -1001,7 +1001,7 @@
       "id": "c7942cb9-51cc-45c0-a4da-f2cbaaf4b9ab",
       "name": "본문 청크",
       "parameters": {
-        "jsCode": "const brief=(($('착수준비 게이트').first().json.output)||{}).brief||'';const pageId=$('서브태스크 생성').first().json.id;const MAX=1900;const lines=brief.split('\\n');const chunks=[];let cur='';for(let k=0;k<lines.length;k++){const ln=lines[k];const piece=cur?(cur+'\\n'+ln):ln;if(piece.length>MAX){if(cur){chunks.push(cur);cur='';}if(ln.length>MAX){for(let i=0;i<ln.length;i+=MAX)chunks.push(ln.slice(i,i+MAX));cur='';}else{cur=ln;}}else{cur=piece;}}if(cur)chunks.push(cur);if(!chunks.length)chunks.push('(본문 없음)');return chunks.map(function(c){return {json:{pageId:pageId,text:c}};});"
+        "jsCode": "const brief = (($('착수준비 게이트').first().json.output) || {}).brief || '';\nconst pageId = $('서브태스크 생성').first().json.id;\n\nfunction inline(s) {\n  s = String(s == null ? '' : s);\n  const out = [];\n  const re = /(\\*\\*([^*]+)\\*\\*|`([^`]+)`)/g;\n  let last = 0, m;\n  while ((m = re.exec(s)) !== null) {\n    if (m.index > last) out.push({ type: 'text', text: { content: s.slice(last, m.index) } });\n    if (m[2] !== undefined) out.push({ type: 'text', text: { content: m[2] }, annotations: { bold: true } });\n    else if (m[3] !== undefined) out.push({ type: 'text', text: { content: m[3] }, annotations: { code: true } });\n    last = re.lastIndex;\n  }\n  if (last < s.length) out.push({ type: 'text', text: { content: s.slice(last) } });\n  if (!out.length) out.push({ type: 'text', text: { content: '' } });\n  const split = [];\n  out.forEach(function (rt) {\n    const c = rt.text.content;\n    if (c.length <= 2000) { split.push(rt); return; }\n    for (let j = 0; j < c.length; j += 2000) {\n      split.push({ type: 'text', text: { content: c.slice(j, j + 2000) }, annotations: rt.annotations });\n    }\n  });\n  return split;\n}\nfunction cells(line) {\n  const parts = line.split('|');\n  if (parts.length && parts[0].trim() === '') parts.shift();\n  if (parts.length && parts[parts.length - 1].trim() === '') parts.pop();\n  return parts.map(function (c) { return c.trim(); });\n}\n\nconst lines = brief.split('\\n');\nconst blocks = [];\nlet i = 0;\nwhile (i < lines.length) {\n  const line = lines[i];\n  if (line.trim().indexOf('```') === 0) {\n    const buf = []; i++;\n    while (i < lines.length && lines[i].trim().indexOf('```') !== 0) { buf.push(lines[i]); i++; }\n    i++;\n    let code = buf.join('\\n'); if (code.length > 2000) code = code.slice(0, 2000);\n    blocks.push({ object: 'block', type: 'code', code: { rich_text: [{ type: 'text', text: { content: code || ' ' } }], language: 'plain text' } });\n    continue;\n  }\n  if (line.trim().indexOf('|') === 0 && i + 1 < lines.length && /^[\\s|:-]+$/.test(lines[i + 1]) && lines[i + 1].indexOf('-') !== -1) {\n    const header = cells(line);\n    const width = header.length;\n    const rows = [header];\n    i += 2;\n    while (i < lines.length && lines[i].trim().indexOf('|') === 0) { rows.push(cells(lines[i])); i++; }\n    const children = rows.map(function (r) {\n      const c = [];\n      for (let k = 0; k < width; k++) c.push(inline(r[k] || ''));\n      return { object: 'block', type: 'table_row', table_row: { cells: c } };\n    });\n    blocks.push({ object: 'block', type: 'table', table: { table_width: width, has_column_header: true, has_row_header: false, children: children } });\n    continue;\n  }\n  const hm = line.match(/^(#{1,3})\\s+(.*)$/);\n  if (hm) {\n    const key = 'heading_' + hm[1].length;\n    const b = { object: 'block', type: key }; b[key] = { rich_text: inline(hm[2]) };\n    blocks.push(b); i++; continue;\n  }\n  const bm = line.match(/^\\s*[-*]\\s+(.*)$/);\n  if (bm) { blocks.push({ object: 'block', type: 'bulleted_list_item', bulleted_list_item: { rich_text: inline(bm[1]) } }); i++; continue; }\n  const nm = line.match(/^\\s*\\d+\\.\\s+(.*)$/);\n  if (nm) { blocks.push({ object: 'block', type: 'numbered_list_item', numbered_list_item: { rich_text: inline(nm[1]) } }); i++; continue; }\n  if (line.trim() === '---' || line.trim() === '***') { blocks.push({ object: 'block', type: 'divider', divider: {} }); i++; continue; }\n  if (line.trim() === '') { i++; continue; }\n  blocks.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: inline(line) } });\n  i++;\n}\nif (!blocks.length) blocks.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: '(본문 없음)' } }] } });\n\nconst groups = [];\nfor (let g = 0; g < blocks.length; g += 90) groups.push(blocks.slice(g, g + 90));\nreturn groups.map(function (gr) { return { json: { pageId: pageId, children: gr } }; });\n"
       },
       "position": [
         1760,
@@ -1020,29 +1020,30 @@
       "id": "beadbe04-7763-4466-a0c8-e6fcf922bd5b",
       "name": "본문 추가",
       "parameters": {
-        "blockId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "={{ $json.pageId }}"
-        },
-        "blockUi": {
-          "blockValues": [
+        "method": "PATCH",
+        "url": "=https://api.notion.com/v1/blocks/{{ $json.pageId }}/children",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "notionApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ ({ children: $json.children }) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
             {
-              "textContent": "={{ $json.text }}",
-              "type": "paragraph"
+              "name": "Notion-Version",
+              "value": "2022-06-28"
             }
           ]
         },
-        "operation": "append",
-        "options": {},
-        "resource": "block"
+        "options": {}
       },
       "position": [
         1960,
         320
       ],
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
     }
   ],
   "pinData": {},
