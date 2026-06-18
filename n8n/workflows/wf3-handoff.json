@@ -15,12 +15,34 @@
           ]
         ]
       },
-      "서브태스크 생성": {
+      "본문 청크": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "본문 추가",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "본문 추가": {
         "main": [
           [
             {
               "index": 0,
               "node": "착수 통보 메시지",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "서브태스크 생성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "본문 청크",
               "type": "main"
             }
           ]
@@ -33,6 +55,17 @@
               "index": 0,
               "node": "착수 허브 조회",
               "type": "main"
+            }
+          ]
+        ]
+      },
+      "착수 Figma 조회": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "착수준비 게이트",
+              "type": "ai_tool"
             }
           ]
         ]
@@ -126,7 +159,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-17T10:39:41.650Z",
+    "createdAt": "2026-06-18T02:29:03.196Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -221,7 +254,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- Figma 화면 링크는 디자인 카드에 적힌 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
+            "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": 디자인 카드에 적힌 Figma node id(예 11095:53827)를 넣어 실제 화면/컴포넌트 구조를 조회·검증. 디자인 작업이면 화면 링크를 쓰기 전에 이 도구로 node를 확인하세요. 디자인 무관이면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
           },
           "promptType": "define",
           "text": "=직무: {{ $json.persona }} / 단계: {{ $json.stage }}\n제목: {{ $json.title }}\n기획 page id: {{ $json.pageId }}\n\n정리된 기획 브리프:\n{{ $json.brief }}\n\n기획 단계 질문·답변(이미 결정된 사실):\n{{ $json.qa }}"
@@ -308,14 +341,6 @@
         "id": "08bf7fad-683b-49da-942c-1d7c65beedbe",
         "name": "서브태스크 생성",
         "parameters": {
-          "blockUi": {
-            "blockValues": [
-              {
-                "textContent": "={{ $('착수준비 게이트').first().json.output.brief }}",
-                "type": "paragraph"
-              }
-            ]
-          },
           "databaseId": {
             "__rl": true,
             "mode": "id",
@@ -354,13 +379,19 @@
           "jsCode": "const st=$('스테이지·페르소나 결정').first().json;const out=$('착수준비 게이트').first().json.output||{};const sub=$('서브태스크 생성').first().json;const url=(sub&&sub.url)?sub.url:'';const text='[' + st.stage + '] 착수 준비가 생성됐어요 — '+st.persona+' 관점\\n파이프라인: '+(st.pipeline||st.stage)+'\\n'+(out.summary||'')+(url?('\\n서브태스크: '+url):'');return [{json:{body:{channel:st.channelId,thread_ts:st.threadTs,text:text}}}];"
         },
         "position": [
-          1808,
+          2200,
           112
         ],
         "type": "n8n-nodes-base.code",
         "typeVersion": 2
       },
       {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
         "id": "edc36d91-eae1-49f9-8577-a40af0ee8a27",
         "name": "착수 통보",
         "parameters": {
@@ -380,44 +411,121 @@
           "url": "https://slack.com/api/chat.postMessage"
         },
         "position": [
-          2032,
+          2420,
           112
         ],
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4
+      },
+      {
+        "id": "71462b87-ea0d-4d5b-ba1d-4e0265947247",
+        "name": "착수 Figma 조회",
+        "parameters": {
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "method": "GET",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "ids",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ids', '조회할 Figma node id (예 11095:53827). 여러 개면 콤마 구분', 'string') }}"
+              },
+              {
+                "name": "depth",
+                "value": "1"
+              }
+            ]
+          },
+          "sendQuery": true,
+          "specifyQuery": "keypair",
+          "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
+          "url": "https://api.figma.com/v1/files/3Ifh58l7EWLXapWRys0vjf/nodes"
+        },
+        "position": [
+          1480,
+          336
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "c7942cb9-51cc-45c0-a4da-f2cbaaf4b9ab",
+        "name": "본문 청크",
+        "parameters": {
+          "jsCode": "const brief=(($('착수준비 게이트').first().json.output)||{}).brief||'';const pageId=$('서브태스크 생성').first().json.id;const MAX=1900;const lines=brief.split('\\n');const chunks=[];let cur='';for(let k=0;k<lines.length;k++){const ln=lines[k];const piece=cur?(cur+'\\n'+ln):ln;if(piece.length>MAX){if(cur){chunks.push(cur);cur='';}if(ln.length>MAX){for(let i=0;i<ln.length;i+=MAX)chunks.push(ln.slice(i,i+MAX));cur='';}else{cur=ln;}}else{cur=piece;}}if(cur)chunks.push(cur);if(!chunks.length)chunks.push('(본문 없음)');return chunks.map(function(c){return {json:{pageId:pageId,text:c}};});"
+        },
+        "position": [
+          1760,
+          320
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "beadbe04-7763-4466-a0c8-e6fcf922bd5b",
+        "name": "본문 추가",
+        "parameters": {
+          "blockId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.pageId }}"
+          },
+          "blockUi": {
+            "blockValues": [
+              {
+                "textContent": "={{ $json.text }}",
+                "type": "paragraph"
+              }
+            ]
+          },
+          "operation": "append",
+          "options": {},
+          "resource": "block"
+        },
+        "position": [
+          1960,
+          320
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
       }
     ],
-    "updatedAt": "2026-06-17T10:39:41.650Z",
-    "versionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
+    "updatedAt": "2026-06-18T02:29:03.196Z",
+    "versionId": "28098854-3c6b-44d2-b907-43bef5a57916",
     "workflowId": "m6YGNNCEP5RI3SSF",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-17T10:40:44.270Z",
-        "event": "activated",
-        "id": 65,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
-        "workflowId": "m6YGNNCEP5RI3SSF"
-      },
-      {
-        "createdAt": "2026-06-18T01:19:28.843Z",
+        "createdAt": "2026-06-18T02:29:03.243Z",
         "event": "deactivated",
-        "id": 66,
+        "id": 84,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
+        "versionId": "28098854-3c6b-44d2-b907-43bef5a57916",
         "workflowId": "m6YGNNCEP5RI3SSF"
       },
       {
-        "createdAt": "2026-06-18T01:19:28.875Z",
+        "createdAt": "2026-06-18T02:29:03.262Z",
         "event": "activated",
-        "id": 67,
+        "id": 85,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
+        "versionId": "28098854-3c6b-44d2-b907-43bef5a57916",
         "workflowId": "m6YGNNCEP5RI3SSF"
       }
     ]
   },
-  "activeVersionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
+  "activeVersionId": "28098854-3c6b-44d2-b907-43bef5a57916",
   "connections": {
     "WF3 시작": {
       "main": [
@@ -430,13 +538,35 @@
         ]
       ]
     },
+    "본문 청크": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "본문 추가",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "본문 추가": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "착수 통보 메시지",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "서브태스크 생성": {
       "main": [
         [
           {
+            "index": 0,
             "node": "본문 청크",
-            "type": "main",
-            "index": 0
+            "type": "main"
           }
         ]
       ]
@@ -448,6 +578,17 @@
             "index": 0,
             "node": "착수 허브 조회",
             "type": "main"
+          }
+        ]
+      ]
+    },
+    "착수 Figma 조회": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "착수준비 게이트",
+            "type": "ai_tool"
           }
         ]
       ]
@@ -536,39 +677,6 @@
             "index": 0,
             "node": "서브태스크 생성",
             "type": "main"
-          }
-        ]
-      ]
-    },
-    "착수 Figma 조회": {
-      "ai_tool": [
-        [
-          {
-            "node": "착수준비 게이트",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "본문 청크": {
-      "main": [
-        [
-          {
-            "node": "본문 추가",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "본문 추가": {
-      "main": [
-        [
-          {
-            "node": "착수 통보 메시지",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -675,7 +783,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": 디자인 카드에 적힌 Figma node id(예 11095:53827)를 넣어 실제 화면/컴포넌트 구조를 조회·검증. 디자인 작업이면 화면 링크를 쓰기 전에 이 도구로 node를 확인하세요. 디자인 무관이면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
+          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": Figma node 구조 조회(fileKey + node id 지정). DS 파일(3Ifh58l7EWLXapWRys0vjf)=컴포넌트·토큰·화면취합 개요, 기능별 실제 화면은 태스크/Hub 카드에 링크된 다른 파일 키로. node id·fileKey는 카드/링크에서 얻으세요. 큰 노드는 응답이 잘릴 수 있으니 구체적 node를 조회. 디자인 무관이면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
         },
         "promptType": "define",
         "text": "=직무: {{ $json.persona }} / 단계: {{ $json.stage }}\n제목: {{ $json.title }}\n기획 page id: {{ $json.pageId }}\n\n정리된 기획 브리프:\n{{ $json.brief }}\n\n기획 단계 질문·답변(이미 결정된 사실):\n{{ $json.qa }}"
@@ -685,7 +793,9 @@
         112
       ],
       "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 3.1
+      "typeVersion": 3.1,
+      "retryOnFail": true,
+      "maxTries": 2
     },
     {
       "credentials": {
@@ -767,6 +877,7 @@
           "mode": "id",
           "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
         },
+        "operation": "create",
         "options": {},
         "propertiesUi": {
           "propertyValues": [
@@ -783,8 +894,7 @@
           ]
         },
         "resource": "databasePage",
-        "title": "=[{{ $('스테이지·페르소나 결정').first().json.stage }}] {{ $('스테이지·페르소나 결정').first().json.title }}",
-        "operation": "create"
+        "title": "=[{{ $('스테이지·페르소나 결정').first().json.stage }}] {{ $('스테이지·페르소나 결정').first().json.title }}"
       },
       "position": [
         1584,
@@ -841,20 +951,18 @@
     {
       "id": "71462b87-ea0d-4d5b-ba1d-4e0265947247",
       "name": "착수 Figma 조회",
-      "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.4,
-      "position": [
-        1480,
-        336
-      ],
       "parameters": {
-        "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
         "method": "GET",
-        "url": "https://api.figma.com/v1/files/3Ifh58l7EWLXapWRys0vjf/nodes",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "figmaApi",
-        "sendQuery": true,
-        "specifyQuery": "keypair",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
         "queryParameters": {
           "parameters": [
             {
@@ -867,46 +975,51 @@
             }
           ]
         },
-        "options": {
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        }
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
+        "url": "=https://api.figma.com/v1/files/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fileKey', '조회할 Figma 파일 key (figma.com/design/<KEY>/... 의 KEY). DS 컴포넌트·토큰·화면취합 개요는 3Ifh58l7EWLXapWRys0vjf, 기능별 실제 화면은 태스크/Hub 카드에 링크된 파일 키 사용', 'string') }}/nodes",
+        "optimizeResponse": true,
+        "responseType": "text",
+        "truncateResponse": true,
+        "maxLength": 12000
       },
+      "position": [
+        1480,
+        336
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
       "credentials": {
-        "figmaApi": {
-          "id": "Rg6fKjWcdHHj0e1O",
-          "name": "Figma account"
+        "httpHeaderAuth": {
+          "id": "OKR5k0AAH8p23JJj",
+          "name": "Figma PAT"
         }
       }
     },
     {
       "id": "c7942cb9-51cc-45c0-a4da-f2cbaaf4b9ab",
       "name": "본문 청크",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const brief=(($('착수준비 게이트').first().json.output)||{}).brief||'';const pageId=$('서브태스크 생성').first().json.id;const MAX=1900;const lines=brief.split('\\n');const chunks=[];let cur='';for(let k=0;k<lines.length;k++){const ln=lines[k];const piece=cur?(cur+'\\n'+ln):ln;if(piece.length>MAX){if(cur){chunks.push(cur);cur='';}if(ln.length>MAX){for(let i=0;i<ln.length;i+=MAX)chunks.push(ln.slice(i,i+MAX));cur='';}else{cur=ln;}}else{cur=piece;}}if(cur)chunks.push(cur);if(!chunks.length)chunks.push('(본문 없음)');return chunks.map(function(c){return {json:{pageId:pageId,text:c}};});"
+      },
       "position": [
         1760,
         320
       ],
-      "parameters": {
-        "jsCode": "const brief=(($('착수준비 게이트').first().json.output)||{}).brief||'';const pageId=$('서브태스크 생성').first().json.id;const MAX=1900;const lines=brief.split('\\n');const chunks=[];let cur='';for(let k=0;k<lines.length;k++){const ln=lines[k];const piece=cur?(cur+'\\n'+ln):ln;if(piece.length>MAX){if(cur){chunks.push(cur);cur='';}if(ln.length>MAX){for(let i=0;i<ln.length;i+=MAX)chunks.push(ln.slice(i,i+MAX));cur='';}else{cur=ln;}}else{cur=piece;}}if(cur)chunks.push(cur);if(!chunks.length)chunks.push('(본문 없음)');return chunks.map(function(c){return {json:{pageId:pageId,text:c}};});"
-      }
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
       "id": "beadbe04-7763-4466-a0c8-e6fcf922bd5b",
       "name": "본문 추가",
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2,
-      "position": [
-        1960,
-        320
-      ],
       "parameters": {
-        "resource": "block",
-        "operation": "append",
         "blockId": {
           "__rl": true,
           "mode": "id",
@@ -915,19 +1028,21 @@
         "blockUi": {
           "blockValues": [
             {
-              "type": "paragraph",
-              "textContent": "={{ $json.text }}"
+              "textContent": "={{ $json.text }}",
+              "type": "paragraph"
             }
           ]
         },
-        "options": {}
+        "operation": "append",
+        "options": {},
+        "resource": "block"
       },
-      "credentials": {
-        "notionApi": {
-          "id": "b03vHUApw6s0O5jS",
-          "name": "Notion account"
-        }
-      }
+      "position": [
+        1960,
+        320
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
     }
   ],
   "pinData": {},
@@ -958,7 +1073,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-18T01:19:28.747Z",
-  "versionCounter": 8,
-  "versionId": "6c856d21-11d7-4167-a498-1313bc6023ed"
+  "updatedAt": "2026-06-18T02:29:03.195Z",
+  "versionCounter": 35,
+  "versionId": "28098854-3c6b-44d2-b907-43bef5a57916"
 }
