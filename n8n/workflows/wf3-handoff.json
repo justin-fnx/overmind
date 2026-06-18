@@ -805,7 +805,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": Figma node 구조 조회(fileKey + node id). 보맵 앱 컴포넌트·토큰·전 화면이 모두 BDS 파일 3Ifh58l7EWLXapWRys0vjf 에 있음 — 특히 화면취합 노드 11095-53827 에 5탭 전 화면이 취합됨(화면 참조는 이 노드). 태스크에 Figma 링크(node-id)가 있으면 1순위. 큰 노드는 응답이 잘리니 구체 node로 좁혀 조회. 디자인 무관이면 호출 금지.\n- 도구 \"GitLab Search\"(코드검색)/\"GitLab File\"(파일읽기): 코드·문서를 GitLab에서 직접 조회(개발/QA 스펙, 또는 디자인 마스터 없는 앱은 코드로 확인). projectId=`bomapp%2F<레포명>`(예 bomapp%2Fnext-backend); 서비스↔레포 매핑·docs는 `bomapp%2Fovermind`의 services.yaml/docs 에서 파악. ref=대부분 main, next-backend·bomapp-aos=prod, legacy-backend·bomapp-homepage=master. 파일경로는 URL-encode(슬래시 %2F). 검색으로 관련 파일 찾고→파일 읽기로 내용 확인. 불필요하면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
+          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": **메뉴에 있는 Context Hub 카드**를 그 카드 id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. ⚠️ 기획 맥락은 위 brief에 이미 정리돼 있으니 **기획 page id를 이 툴로 읽지 말 것**(통합 공유 밖이라 실패). cardId 는 반드시 메뉴의 카드 id 만 사용.\n- 도구 \"착수 Figma 조회\": Figma node 구조 조회(fileKey + node id). 보맵 앱 컴포넌트·토큰·전 화면이 모두 BDS 파일 3Ifh58l7EWLXapWRys0vjf 에 있음 — 특히 화면취합 노드 11095-53827 에 5탭 전 화면이 취합됨(화면 참조는 이 노드). ⚠️ 단 이 화면들은 캡처 이미지라 node 구조(JSON)로는 화면 내용 파악이 제한적이다(이미지 자체는 못 봄) — 어떤 화면이 이 태스크의 대상/참조인지 확신이 없으면 추측으로 단정하지 말고 결정사항에 '대상 화면(node id) 확인 필요'로 남겨라. 태스크에 Figma 링크(node-id)가 있으면 1순위. 큰 노드는 응답이 잘리니 구체 node로 좁혀 조회. 디자인 무관이면 호출 금지.\n- 도구 \"GitLab Search\"(코드검색)/\"GitLab File\"(파일읽기): 코드·문서를 GitLab에서 직접 조회(개발/QA 스펙, 또는 디자인 마스터 없는 앱은 코드로 확인). projectId=`bomapp%2F<레포명>`(예 bomapp%2Fnext-backend); 서비스↔레포 매핑·docs는 `bomapp%2Fovermind`의 services.yaml/docs 에서 파악. ref=대부분 main, next-backend·bomapp-aos=prod, legacy-backend·bomapp-homepage=master. 파일경로는 URL-encode(슬래시 %2F). 검색으로 관련 파일 찾고→파일 읽기로 내용 확인. 불필요하면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. process 필드에는 이 지시서를 만들며 거친 사고·검토·판단을 솔직히 기록한다(태스크를 어떻게 이해했는지, 어떤 Hub카드/Figma node/GitLab 파일을 왜 조회했고 무엇을 얻었는지, 핵심 가정·판단, 특히 화면이 캡처라 내용 확인이 어려웠던 부분과 추측한 점). 사람이 과정을 보고 개선할 수 있도록 구체적으로. 반드시 지정 JSON 스키마로만 답하세요."
         },
         "promptType": "define",
         "text": "=직무: {{ $json.persona }} / 단계: {{ $json.stage }}\n제목: {{ $json.title }}\n기획 page id: {{ $json.pageId }}\n\n정리된 기획 브리프:\n{{ $json.brief }}\n\n기획 단계 질문·답변(이미 결정된 사실):\n{{ $json.qa }}"
@@ -869,13 +869,14 @@
         336
       ],
       "type": "n8n-nodes-base.notionTool",
-      "typeVersion": 2.2
+      "typeVersion": 2.2,
+      "onError": "continueRegularOutput"
     },
     {
       "id": "3dd6841e-248a-4edb-82ba-e37e348cd394",
       "name": "착수 파서",
       "parameters": {
-        "jsonSchemaExample": "{ \"brief\": \"## 작업 개요\\n...\\n## 결정 사항\\n- (사람 판단 필요, 없으면 없음)\", \"summary\": \"슬랙 통보용 1줄\" }"
+        "jsonSchemaExample": "{ \"brief\": \"## 작업 개요\\n...\\n## 결정 사항\\n- (사람 판단 필요, 없으면 없음)\", \"summary\": \"슬랙 통보용 1줄\", \"process\": \"이 지시서를 작성하며 거친 사고·검토·판단을 솔직히: 조회한 Hub카드/Figma node/GitLab 파일과 그 결과, 핵심 가정, 화면이 캡처라 확인 어려웠던 부분과 추측한 점\" }"
       },
       "position": [
         1376,
@@ -1017,13 +1018,14 @@
           "id": "OKR5k0AAH8p23JJj",
           "name": "Figma PAT"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "id": "c7942cb9-51cc-45c0-a4da-f2cbaaf4b9ab",
       "name": "본문 청크",
       "parameters": {
-        "jsCode": "const brief = (($('착수준비 게이트').first().json.output) || {}).brief || '';\nconst pageId = $('서브태스크 생성').first().json.id;\n\nfunction inline(s) {\n  s = String(s == null ? '' : s);\n  const out = [];\n  const re = /(\\*\\*([^*]+)\\*\\*|`([^`]+)`)/g;\n  let last = 0, m;\n  while ((m = re.exec(s)) !== null) {\n    if (m.index > last) out.push({ type: 'text', text: { content: s.slice(last, m.index) } });\n    if (m[2] !== undefined) out.push({ type: 'text', text: { content: m[2] }, annotations: { bold: true } });\n    else if (m[3] !== undefined) out.push({ type: 'text', text: { content: m[3] }, annotations: { code: true } });\n    last = re.lastIndex;\n  }\n  if (last < s.length) out.push({ type: 'text', text: { content: s.slice(last) } });\n  if (!out.length) out.push({ type: 'text', text: { content: '' } });\n  const split = [];\n  out.forEach(function (rt) {\n    const c = rt.text.content;\n    if (c.length <= 2000) { split.push(rt); return; }\n    for (let j = 0; j < c.length; j += 2000) {\n      split.push({ type: 'text', text: { content: c.slice(j, j + 2000) }, annotations: rt.annotations });\n    }\n  });\n  return split;\n}\nfunction cells(line) {\n  const parts = line.split('|');\n  if (parts.length && parts[0].trim() === '') parts.shift();\n  if (parts.length && parts[parts.length - 1].trim() === '') parts.pop();\n  return parts.map(function (c) { return c.trim(); });\n}\n\nconst lines = brief.split('\\n');\nconst blocks = [];\nlet i = 0;\nwhile (i < lines.length) {\n  const line = lines[i];\n  if (line.trim().indexOf('```') === 0) {\n    const buf = []; i++;\n    while (i < lines.length && lines[i].trim().indexOf('```') !== 0) { buf.push(lines[i]); i++; }\n    i++;\n    let code = buf.join('\\n'); if (code.length > 2000) code = code.slice(0, 2000);\n    blocks.push({ object: 'block', type: 'code', code: { rich_text: [{ type: 'text', text: { content: code || ' ' } }], language: 'plain text' } });\n    continue;\n  }\n  if (line.trim().indexOf('|') === 0 && i + 1 < lines.length && /^[\\s|:-]+$/.test(lines[i + 1]) && lines[i + 1].indexOf('-') !== -1) {\n    const header = cells(line);\n    const width = header.length;\n    const rows = [header];\n    i += 2;\n    while (i < lines.length && lines[i].trim().indexOf('|') === 0) { rows.push(cells(lines[i])); i++; }\n    const children = rows.map(function (r) {\n      const c = [];\n      for (let k = 0; k < width; k++) c.push(inline(r[k] || ''));\n      return { object: 'block', type: 'table_row', table_row: { cells: c } };\n    });\n    blocks.push({ object: 'block', type: 'table', table: { table_width: width, has_column_header: true, has_row_header: false, children: children } });\n    continue;\n  }\n  const hm = line.match(/^(#{1,3})\\s+(.*)$/);\n  if (hm) {\n    const key = 'heading_' + hm[1].length;\n    const b = { object: 'block', type: key }; b[key] = { rich_text: inline(hm[2]) };\n    blocks.push(b); i++; continue;\n  }\n  const bm = line.match(/^\\s*[-*]\\s+(.*)$/);\n  if (bm) { blocks.push({ object: 'block', type: 'bulleted_list_item', bulleted_list_item: { rich_text: inline(bm[1]) } }); i++; continue; }\n  const nm = line.match(/^\\s*\\d+\\.\\s+(.*)$/);\n  if (nm) { blocks.push({ object: 'block', type: 'numbered_list_item', numbered_list_item: { rich_text: inline(nm[1]) } }); i++; continue; }\n  if (line.trim() === '---' || line.trim() === '***') { blocks.push({ object: 'block', type: 'divider', divider: {} }); i++; continue; }\n  if (line.trim() === '') { i++; continue; }\n  blocks.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: inline(line) } });\n  i++;\n}\nif (!blocks.length) blocks.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: '(본문 없음)' } }] } });\n\nconst groups = [];\nfor (let g = 0; g < blocks.length; g += 90) groups.push(blocks.slice(g, g + 90));\nreturn groups.map(function (gr) { return { json: { pageId: pageId, children: gr } }; });\n"
+        "jsCode": "const brief = (($('착수준비 게이트').first().json.output) || {}).brief || '';\nconst pageId = $('서브태스크 생성').first().json.id;\n\nfunction inline(s) {\n  s = String(s == null ? '' : s);\n  const out = [];\n  const re = /(\\*\\*([^*]+)\\*\\*|`([^`]+)`)/g;\n  let last = 0, m;\n  while ((m = re.exec(s)) !== null) {\n    if (m.index > last) out.push({ type: 'text', text: { content: s.slice(last, m.index) } });\n    if (m[2] !== undefined) out.push({ type: 'text', text: { content: m[2] }, annotations: { bold: true } });\n    else if (m[3] !== undefined) out.push({ type: 'text', text: { content: m[3] }, annotations: { code: true } });\n    last = re.lastIndex;\n  }\n  if (last < s.length) out.push({ type: 'text', text: { content: s.slice(last) } });\n  if (!out.length) out.push({ type: 'text', text: { content: '' } });\n  const split = [];\n  out.forEach(function (rt) {\n    const c = rt.text.content;\n    if (c.length <= 2000) { split.push(rt); return; }\n    for (let j = 0; j < c.length; j += 2000) {\n      split.push({ type: 'text', text: { content: c.slice(j, j + 2000) }, annotations: rt.annotations });\n    }\n  });\n  return split;\n}\nfunction cells(line) {\n  const parts = line.split('|');\n  if (parts.length && parts[0].trim() === '') parts.shift();\n  if (parts.length && parts[parts.length - 1].trim() === '') parts.pop();\n  return parts.map(function (c) { return c.trim(); });\n}\n\nconst lines = brief.split('\\n');\nconst blocks = [];\nlet i = 0;\nwhile (i < lines.length) {\n  const line = lines[i];\n  if (line.trim().indexOf('```') === 0) {\n    const buf = []; i++;\n    while (i < lines.length && lines[i].trim().indexOf('```') !== 0) { buf.push(lines[i]); i++; }\n    i++;\n    let code = buf.join('\\n'); if (code.length > 2000) code = code.slice(0, 2000);\n    blocks.push({ object: 'block', type: 'code', code: { rich_text: [{ type: 'text', text: { content: code || ' ' } }], language: 'plain text' } });\n    continue;\n  }\n  if (line.trim().indexOf('|') === 0 && i + 1 < lines.length && /^[\\s|:-]+$/.test(lines[i + 1]) && lines[i + 1].indexOf('-') !== -1) {\n    const header = cells(line);\n    const width = header.length;\n    const rows = [header];\n    i += 2;\n    while (i < lines.length && lines[i].trim().indexOf('|') === 0) { rows.push(cells(lines[i])); i++; }\n    const children = rows.map(function (r) {\n      const c = [];\n      for (let k = 0; k < width; k++) c.push(inline(r[k] || ''));\n      return { object: 'block', type: 'table_row', table_row: { cells: c } };\n    });\n    blocks.push({ object: 'block', type: 'table', table: { table_width: width, has_column_header: true, has_row_header: false, children: children } });\n    continue;\n  }\n  const hm = line.match(/^(#{1,3})\\s+(.*)$/);\n  if (hm) {\n    const key = 'heading_' + hm[1].length;\n    const b = { object: 'block', type: key }; b[key] = { rich_text: inline(hm[2]) };\n    blocks.push(b); i++; continue;\n  }\n  const bm = line.match(/^\\s*[-*]\\s+(.*)$/);\n  if (bm) { blocks.push({ object: 'block', type: 'bulleted_list_item', bulleted_list_item: { rich_text: inline(bm[1]) } }); i++; continue; }\n  const nm = line.match(/^\\s*\\d+\\.\\s+(.*)$/);\n  if (nm) { blocks.push({ object: 'block', type: 'numbered_list_item', numbered_list_item: { rich_text: inline(nm[1]) } }); i++; continue; }\n  if (line.trim() === '---' || line.trim() === '***') { blocks.push({ object: 'block', type: 'divider', divider: {} }); i++; continue; }\n  if (line.trim() === '') { i++; continue; }\n  blocks.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: inline(line) } });\n  i++;\n}\nif (!blocks.length) blocks.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: '(본문 없음)' } }] } });\n\n// CoT 작업과정 토글(맨 위·접힘) — 사고/검토/판단 투명화\nconst proc = ((($('착수준비 게이트').first().json.output) || {}).process || '').trim();\nif (proc) {\n  const procChildren = [];\n  proc.split('\\n').forEach(function (ln) {\n    if (ln.trim() === '') return;\n    let t = ln; if (t.length > 2000) t = t.slice(0, 2000);\n    procChildren.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: inline(t) } });\n  });\n  if (procChildren.length) {\n    blocks.unshift({ object: 'block', type: 'toggle', toggle: { rich_text: [{ type: 'text', text: { content: '🤔 AI 작업 과정 (사고·검토·판단 근거) — 펼쳐보기' } }], children: procChildren.slice(0, 45) } });\n  }\n}\n\nconst groups = [];\nfor (let g = 0; g < blocks.length; g += 90) groups.push(blocks.slice(g, g + 90));\nreturn groups.map(function (gr) { return { json: { pageId: pageId, children: gr } }; });\n"
       },
       "position": [
         1760,
@@ -1058,7 +1060,13 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1
+            }
+          }
+        }
       },
       "position": [
         1960,
@@ -1114,7 +1122,8 @@
           "id": "KfGsGBBxzggLur5X",
           "name": "Gitlab PAT"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "id": "gitlab-readfile-tool-001",
@@ -1159,7 +1168,8 @@
           "id": "KfGsGBBxzggLur5X",
           "name": "Gitlab PAT"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
