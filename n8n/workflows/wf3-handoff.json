@@ -680,6 +680,28 @@
           }
         ]
       ]
+    },
+    "GitLab Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "착수준비 게이트",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GitLab File": {
+      "ai_tool": [
+        [
+          {
+            "node": "착수준비 게이트",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2026-06-17T10:39:41.650Z",
@@ -783,7 +805,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": Figma node 구조 조회(fileKey + node id). 보맵 앱 컴포넌트·토큰·전 화면이 모두 BDS 파일 3Ifh58l7EWLXapWRys0vjf 에 있음 — 특히 화면취합 노드 11095-53827 에 5탭 전 화면이 취합됨(화면 참조는 이 노드). 태스크에 Figma 링크(node-id)가 있으면 1순위. 큰 노드는 응답이 잘리니 구체 node로 좁혀 조회. 디자인 무관이면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
+          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": Figma node 구조 조회(fileKey + node id). 보맵 앱 컴포넌트·토큰·전 화면이 모두 BDS 파일 3Ifh58l7EWLXapWRys0vjf 에 있음 — 특히 화면취합 노드 11095-53827 에 5탭 전 화면이 취합됨(화면 참조는 이 노드). 태스크에 Figma 링크(node-id)가 있으면 1순위. 큰 노드는 응답이 잘리니 구체 node로 좁혀 조회. 디자인 무관이면 호출 금지.\n- 도구 \"GitLab Search\"(코드검색)/\"GitLab File\"(파일읽기): 코드·문서를 GitLab에서 직접 조회(개발/QA 스펙, 또는 디자인 마스터 없는 앱은 코드로 확인). projectId=`bomapp%2F<레포명>`(예 bomapp%2Fnext-backend); 서비스↔레포 매핑·docs는 `bomapp%2Fovermind`의 services.yaml/docs 에서 파악. ref=대부분 main, next-backend·bomapp-aos=prod, legacy-backend·bomapp-homepage=master. 파일경로는 URL-encode(슬래시 %2F). 검색으로 관련 파일 찾고→파일 읽기로 내용 확인. 불필요하면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
         },
         "promptType": "define",
         "text": "=직무: {{ $json.persona }} / 단계: {{ $json.stage }}\n제목: {{ $json.title }}\n기획 page id: {{ $json.pageId }}\n\n정리된 기획 브리프:\n{{ $json.brief }}\n\n기획 단계 질문·답변(이미 결정된 사실):\n{{ $json.qa }}"
@@ -1044,6 +1066,100 @@
       ],
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4
+    },
+    {
+      "id": "gitlab-search-tool-0001",
+      "name": "GitLab Search",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1480,
+        500
+      ],
+      "parameters": {
+        "toolDescription": "GitLab 프로젝트에서 코드·문서를 키워드로 검색(scope=blobs). 매칭 파일 경로+스니펫 반환.",
+        "method": "GET",
+        "url": "=https://gitlab.bomapp.co.kr/api/v4/projects/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('projectId', 'GitLab 프로젝트 URL-encoded path 예 bomapp%2Fnext-backend, 카탈로그는 bomapp%2Fovermind', 'string') }}/search",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "scope",
+              "value": "blobs"
+            },
+            {
+              "name": "search",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', '검색 키워드', 'string') }}"
+            }
+          ]
+        },
+        "optimizeResponse": true,
+        "responseType": "text",
+        "truncateResponse": true,
+        "maxLength": 6000,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "KfGsGBBxzggLur5X",
+          "name": "Gitlab PAT"
+        }
+      }
+    },
+    {
+      "id": "gitlab-readfile-tool-001",
+      "name": "GitLab File",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1640,
+        500
+      ],
+      "parameters": {
+        "toolDescription": "GitLab 프로젝트의 특정 파일 raw 내용 조회.",
+        "method": "GET",
+        "url": "=https://gitlab.bomapp.co.kr/api/v4/projects/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('projectId', 'GitLab 프로젝트 URL-encoded path 예 bomapp%2Fnext-backend', 'string') }}/repository/files/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('filePath', '파일경로 URL-encoded, 슬래시는 %2F 예 docs%2Fservices%2Fnext-backend.md', 'string') }}/raw",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ref', '브랜치: 대부분 main, next-backend·bomapp-aos=prod, legacy-backend·bomapp-homepage=master', 'string') }}"
+            }
+          ]
+        },
+        "optimizeResponse": true,
+        "responseType": "text",
+        "truncateResponse": true,
+        "maxLength": 10000,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "KfGsGBBxzggLur5X",
+          "name": "Gitlab PAT"
+        }
+      }
     }
   ],
   "pinData": {},
