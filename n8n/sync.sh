@@ -17,7 +17,7 @@ wf_id() {
     wf1-context-gate) echo "Y74XMZpTEUejToOQ" ;;
     wf2-listener)     echo "3LyKi5A20HoPrP0p" ;;
     wf-snooze)        echo "PpZ7nC12PWWet4DB" ;;
-    wf3-handoff)      echo "mjyDgdVWnrJjsKBN" ;;
+    wf3-handoff)      echo "m6YGNNCEP5RI3SSF" ;;
     *) echo "알 수 없는 워크플로우: $1 (가능: ${WF_NAMES})" >&2; return 1 ;;
   esac
 }

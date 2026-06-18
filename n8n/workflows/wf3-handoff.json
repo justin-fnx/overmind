@@ -1,7 +1,423 @@
 {
-  "active": false,
-  "activeVersion": null,
-  "activeVersionId": null,
+  "active": true,
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": false,
+    "connections": {
+      "WF3 시작": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "스테이지·페르소나 결정",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "서브태스크 생성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수 통보 메시지",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "스테이지·페르소나 결정": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수 허브 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "착수 Hub 읽기": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "착수준비 게이트",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "착수 Sonnet": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "착수준비 게이트",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "착수 카드 메뉴": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수 컨텍스트",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "착수 컨텍스트": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수준비 게이트",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "착수 통보 메시지": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수 통보",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "착수 파서": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "착수준비 게이트",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "착수 허브 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "착수 카드 메뉴",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "착수준비 게이트": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "서브태스크 생성",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-06-17T10:39:41.650Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "787909b4-d4d1-46cc-b3bc-6b9f465b1e10",
+        "name": "WF3 시작",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+            "noResponseBody": true
+          },
+          "path": "wf3-handoff"
+        },
+        "position": [
+          0,
+          112
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "webhookId": "3e2e471b-5c7d-4d65-a7b4-00313a33231d"
+      },
+      {
+        "id": "d4929ee7-3eb0-46dd-b7b2-f8403f4eaa50",
+        "name": "스테이지·페르소나 결정",
+        "parameters": {
+          "jsCode": "const ri=$json.body||$json;const roles=ri.roles||[];const ORDER=['리서치','디자인','개발','QA','마케팅'];const P={'리서치':'UX 리서처','디자인':'시니어 프로덕트 디자이너','개발':'시니어 소프트웨어 개발자','QA':'QA 엔지니어','마케팅':'그로스 마케터'};const norm=roles.map(function(r){return String(r).split('/')[0].trim();});const ordered=ORDER.filter(function(s){return norm.indexOf(s)!==-1;});const first=ordered.length?ordered[0]:(norm[0]||'개발');return [{json:{stage:first,persona:(P[first]||first+' 담당자'),pipeline:ordered.join(' → '),pageId:ri.pageId,title:ri.title,threadTs:ri.threadTs,channelId:ri.channelId,brief:ri.brief,qa:ri.qa}}];"
+        },
+        "position": [
+          224,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "67226555-05c6-4151-a51a-c602bbbd3a15",
+        "name": "착수 허브 조회",
+        "parameters": {
+          "databaseId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "3a6975952ad54380bc580901e079a7f7"
+          },
+          "operation": "getAll",
+          "options": {},
+          "resource": "databasePage",
+          "returnAll": true,
+          "simple": false
+        },
+        "position": [
+          448,
+          112
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "f28237f8-b99f-42c8-ac1c-b2a65063a1da",
+        "name": "착수 카드 메뉴",
+        "parameters": {
+          "jsCode": "const all=$('착수 허브 조회').all();const menu=all.map(function(c){var p=c.json.properties||{};var s=(p.주제&&p.주제.title&&p.주제.title[0])?p.주제.title[0].plain_text:'';var a=(p.영역&&p.영역.select)?p.영역.select.name:'';var t=(p.계층&&p.계층.select)?p.계층.select.name:'';return s?('- ['+s+'] 영역:'+a+' / '+t+' / id:'+c.json.id):'';}).filter(Boolean).join('\\n');return [{json:{menu:menu}}];"
+        },
+        "position": [
+          672,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "cc9858c5-6ed5-4c12-87f3-34bafeb3cbba",
+        "name": "착수 컨텍스트",
+        "parameters": {
+          "jsCode": "const st=$('스테이지·페르소나 결정').first().json;const wh=$('WF3 시작').first().json.body||{};return [{json:{stage:st.stage,persona:st.persona,pipeline:st.pipeline,title:st.title,pageId:st.pageId,brief:st.brief,channelId:st.channelId,threadTs:st.threadTs,qa:wh.qa||'',menu:$('착수 카드 메뉴').first().json.menu}}];"
+        },
+        "position": [
+          896,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "9c9d17bc-90be-41df-93af-5b52fde98446",
+        "name": "착수준비 게이트",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- Figma 화면 링크는 디자인 카드에 적힌 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
+          },
+          "promptType": "define",
+          "text": "=직무: {{ $json.persona }} / 단계: {{ $json.stage }}\n제목: {{ $json.title }}\n기획 page id: {{ $json.pageId }}\n\n정리된 기획 브리프:\n{{ $json.brief }}\n\n기획 단계 질문·답변(이미 결정된 사실):\n{{ $json.qa }}"
+        },
+        "position": [
+          1184,
+          112
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "aws": {
+            "id": "GftVHJqfxQshQZ4P",
+            "name": "AWS (IAM) account"
+          }
+        },
+        "id": "df69cf3e-47d4-47a0-b499-afc890cc5dea",
+        "name": "착수 Sonnet",
+        "parameters": {
+          "model": "global.anthropic.claude-sonnet-4-6",
+          "modelSource": "inferenceProfile",
+          "options": {
+            "maxTokensToSample": 8000,
+            "temperature": 0.2
+          }
+        },
+        "position": [
+          1120,
+          336
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "e77048bb-b3f7-471d-b794-9d37357a7bf4",
+        "name": "착수 Hub 읽기",
+        "parameters": {
+          "blockId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cardId', '읽을 Notion page id (메뉴의 카드 id 또는 기획 page id)') }}"
+          },
+          "descriptionType": "manual",
+          "operation": "getAll",
+          "resource": "block",
+          "returnAll": true,
+          "toolDescription": "Context Hub 카드나 기획 태스크 본문을 Notion page id로 읽는다"
+        },
+        "position": [
+          1248,
+          336
+        ],
+        "type": "n8n-nodes-base.notionTool",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "3dd6841e-248a-4edb-82ba-e37e348cd394",
+        "name": "착수 파서",
+        "parameters": {
+          "jsonSchemaExample": "{ \"brief\": \"## 작업 개요\\n...\\n## 결정 사항\\n- (사람 판단 필요, 없으면 없음)\", \"summary\": \"슬랙 통보용 1줄\" }"
+        },
+        "position": [
+          1376,
+          336
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "08bf7fad-683b-49da-942c-1d7c65beedbe",
+        "name": "서브태스크 생성",
+        "parameters": {
+          "blockUi": {
+            "blockValues": [
+              {
+                "textContent": "={{ $('착수준비 게이트').first().json.output.brief }}",
+                "type": "paragraph"
+              }
+            ]
+          },
+          "databaseId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
+          },
+          "operation": "create",
+          "options": {},
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "타입|select",
+                "selectValue": "={{ $('스테이지·페르소나 결정').first().json.stage }}"
+              },
+              {
+                "key": "관계된 ✅ TASK|relation",
+                "relationValue": [
+                  "={{ $('스테이지·페르소나 결정').first().json.pageId }}"
+                ]
+              }
+            ]
+          },
+          "resource": "databasePage",
+          "title": "=[{{ $('스테이지·페르소나 결정').first().json.stage }}] {{ $('스테이지·페르소나 결정').first().json.title }}"
+        },
+        "position": [
+          1584,
+          112
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "dc28234e-a315-4714-a9bf-a47021e045a4",
+        "name": "착수 통보 메시지",
+        "parameters": {
+          "jsCode": "const st=$('스테이지·페르소나 결정').first().json;const out=$('착수준비 게이트').first().json.output||{};const sub=$('서브태스크 생성').first().json;const url=(sub&&sub.url)?sub.url:'';const text='[' + st.stage + '] 착수 준비가 생성됐어요 — '+st.persona+' 관점\\n파이프라인: '+(st.pipeline||st.stage)+'\\n'+(out.summary||'')+(url?('\\n서브태스크: '+url):'');return [{json:{body:{channel:st.channelId,thread_ts:st.threadTs,text:text}}}];"
+        },
+        "position": [
+          1808,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "edc36d91-eae1-49f9-8577-a40af0ee8a27",
+        "name": "착수 통보",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          2032,
+          112
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      }
+    ],
+    "updatedAt": "2026-06-17T10:39:41.650Z",
+    "versionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
+    "workflowId": "m6YGNNCEP5RI3SSF",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-17T10:40:44.270Z",
+        "event": "activated",
+        "id": 65,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
+        "workflowId": "m6YGNNCEP5RI3SSF"
+      },
+      {
+        "createdAt": "2026-06-18T01:19:28.843Z",
+        "event": "deactivated",
+        "id": 66,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
+        "workflowId": "m6YGNNCEP5RI3SSF"
+      },
+      {
+        "createdAt": "2026-06-18T01:19:28.875Z",
+        "event": "activated",
+        "id": 67,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
+        "workflowId": "m6YGNNCEP5RI3SSF"
+      }
+    ]
+  },
+  "activeVersionId": "03785778-32d7-4727-9b2f-7cd8ec677819",
   "connections": {
     "WF3 시작": {
       "main": [
@@ -18,9 +434,9 @@
       "main": [
         [
           {
-            "index": 0,
-            "node": "착수 통보 메시지",
-            "type": "main"
+            "node": "본문 청크",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -32,17 +448,6 @@
             "index": 0,
             "node": "착수 허브 조회",
             "type": "main"
-          }
-        ]
-      ]
-    },
-    "착수 Figma 조회": {
-      "ai_tool": [
-        [
-          {
-            "index": 0,
-            "node": "착수준비 게이트",
-            "type": "ai_tool"
           }
         ]
       ]
@@ -70,6 +475,17 @@
       ]
     },
     "착수 카드 메뉴": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "착수 컨텍스트",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "착수 컨텍스트": {
       "main": [
         [
           {
@@ -123,37 +539,78 @@
           }
         ]
       ]
+    },
+    "착수 Figma 조회": {
+      "ai_tool": [
+        [
+          {
+            "node": "착수준비 게이트",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문 청크": {
+      "main": [
+        [
+          {
+            "node": "본문 추가",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "본문 추가": {
+      "main": [
+        [
+          {
+            "node": "착수 통보 메시지",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "createdAt": "2026-06-17T07:30:01.235Z",
-  "description": null,
-  "id": "mjyDgdVWnrJjsKBN",
+  "createdAt": "2026-06-17T10:39:41.650Z",
+  "description": "WF2 통과 시 호출되는 다음 단계 태스크 생성기. 웹훅 수신→스테이지 결정→Context Hub 로드→에이전트형 착수준비 게이트(Sonnet+파서+Hub툴)가 디자인/개발 스펙 작성→서브태스크 생성(본문)→Slack 통보.",
+  "id": "m6YGNNCEP5RI3SSF",
   "isArchived": false,
-  "meta": null,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
   "name": "Overmind WF3 · 다음 단계 태스크 생성",
   "nodes": [
     {
-      "id": "0c9976d5-c619-46bb-8076-f7eeb3615e21",
+      "id": "787909b4-d4d1-46cc-b3bc-6b9f465b1e10",
       "name": "WF3 시작",
       "parameters": {
-        "inputSource": "passthrough"
+        "httpMethod": "POST",
+        "options": {
+          "noResponseBody": true
+        },
+        "path": "wf3-handoff"
       },
       "position": [
         0,
-        300
+        112
       ],
-      "type": "n8n-nodes-base.executeWorkflowTrigger",
-      "typeVersion": 1.1
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "3e2e471b-5c7d-4d65-a7b4-00313a33231d"
     },
     {
-      "id": "31698a12-0a4f-453f-b8be-2bca307be38c",
+      "id": "d4929ee7-3eb0-46dd-b7b2-f8403f4eaa50",
       "name": "스테이지·페르소나 결정",
       "parameters": {
-        "jsCode": "const ri = $json;\nconst roles = ri.roles || [];\nconst ORDER = [\"리서치\", \"디자인\", \"개발\", \"QA\", \"마케팅\"];\nconst PERSONA = { \"리서치\": \"UX 리서처\", \"디자인\": \"시니어 프로덕트 디자이너\", \"개발\": \"시니어 소프트웨어 개발자\", \"QA\": \"QA 엔지니어\", \"마케팅\": \"그로스 마케터\" };\nconst norm = roles.map(function (r) { return String(r).split(\"/\")[0].trim(); });\nconst ordered = ORDER.filter(function (s) { return norm.indexOf(s) !== -1; });\nconst first = ordered.length ? ordered[0] : (norm[0] || \"개발\");\nconst persona = PERSONA[first] || (first + \" 담당자\");\nreturn [{ json: { stage: first, persona: persona, pipeline: ordered.join(\" \\u2192 \"), pageId: ri.pageId, title: ri.title, threadTs: ri.threadTs, channelId: ri.channelId, brief: ri.brief } }];"
+        "jsCode": "const ri=$json.body||$json;const roles=ri.roles||[];const ORDER=['리서치','디자인','개발','QA','마케팅'];const P={'리서치':'UX 리서처','디자인':'시니어 프로덕트 디자이너','개발':'시니어 소프트웨어 개발자','QA':'QA 엔지니어','마케팅':'그로스 마케터'};const norm=roles.map(function(r){return String(r).split('/')[0].trim();});const ordered=ORDER.filter(function(s){return norm.indexOf(s)!==-1;});const first=ordered.length?ordered[0]:(norm[0]||'개발');return [{json:{stage:first,persona:(P[first]||first+' 담당자'),pipeline:ordered.join(' → '),pageId:ri.pageId,title:ri.title,threadTs:ri.threadTs,channelId:ri.channelId,brief:ri.brief,qa:ri.qa}}];"
       },
       "position": [
-        240,
-        300
+        224,
+        112
       ],
       "type": "n8n-nodes-base.code",
       "typeVersion": 2
@@ -165,7 +622,7 @@
           "name": "Notion account"
         }
       },
-      "id": "29422b92-94de-4525-965c-6506b250eae8",
+      "id": "67226555-05c6-4151-a51a-c602bbbd3a15",
       "name": "착수 허브 조회",
       "parameters": {
         "databaseId": {
@@ -180,39 +637,52 @@
         "simple": false
       },
       "position": [
-        480,
-        300
+        448,
+        112
       ],
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2
     },
     {
-      "id": "2ac5f54a-8591-42fb-9e0f-12fc95c99435",
+      "id": "f28237f8-b99f-42c8-ac1c-b2a65063a1da",
       "name": "착수 카드 메뉴",
       "parameters": {
-        "jsCode": "const all = $(\"착수 허브 조회\").all();\nconst menu = all.map(function(c){ var p=c.json.properties||{}; var subj=(p.주제&&p.주제.title&&p.주제.title[0])?p.주제.title[0].plain_text:\"\"; var area=(p.영역&&p.영역.select)?p.영역.select.name:\"\"; var tier=(p.계층&&p.계층.select)?p.계층.select.name:\"\"; return subj ? (\"- [\"+subj+\"] 영역:\"+area+\" / \"+tier+\" / id:\"+c.json.id) : \"\"; }).filter(Boolean).join(\"\\n\");\nreturn [{ json: { menu: menu } }];"
+        "jsCode": "const all=$('착수 허브 조회').all();const menu=all.map(function(c){var p=c.json.properties||{};var s=(p.주제&&p.주제.title&&p.주제.title[0])?p.주제.title[0].plain_text:'';var a=(p.영역&&p.영역.select)?p.영역.select.name:'';var t=(p.계층&&p.계층.select)?p.계층.select.name:'';return s?('- ['+s+'] 영역:'+a+' / '+t+' / id:'+c.json.id):'';}).filter(Boolean).join('\\n');return [{json:{menu:menu}}];"
       },
       "position": [
-        720,
-        300
+        672,
+        112
       ],
       "type": "n8n-nodes-base.code",
       "typeVersion": 2
     },
     {
-      "id": "0d9c9255-6e6f-4804-af92-b0cde432fe44",
+      "id": "cc9858c5-6ed5-4c12-87f3-34bafeb3cbba",
+      "name": "착수 컨텍스트",
+      "parameters": {
+        "jsCode": "const st=$('스테이지·페르소나 결정').first().json;const wh=$('WF3 시작').first().json.body||{};return [{json:{stage:st.stage,persona:st.persona,pipeline:st.pipeline,title:st.title,pageId:st.pageId,brief:st.brief,channelId:st.channelId,threadTs:st.threadTs,qa:wh.qa||'',menu:$('착수 카드 메뉴').first().json.menu}}];"
+      },
+      "position": [
+        896,
+        112
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "9c9d17bc-90be-41df-93af-5b52fde98446",
       "name": "착수준비 게이트",
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "당신은 {{ $(\"스테이지·페르소나 결정\").first().json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 \"무엇을 어떻게\" 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id): {{ $(\"착수 카드 메뉴\").first().json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음(디자인 시스템·토큰·컴포넌트·기획 본문 확인). 위 메뉴 id 또는 기획 page id 사용.\n- 도구 \"착수 Figma 조회\": Figma 디자인시스템 파일 node id로 화면/컴포넌트 구조 확인(예 화면취합 11095:53827, Button 11175:12235, Text Input 11176:12716, Dropdown 11180:13302).\n원칙: 추측하지 말고 도구로 실제를 확인해 근거 있는 지시를 쓰세요. 디자인시스템 컴포넌트/토큰은 실제 이름으로 지정. 기획 본문에 링크/멘션이 있으면 관련된 것을 읽어 반영.\n\n# 출력 형식(단계별)\n공통 규칙: 마지막에 \"## 🤔 결정 사항\" — 도구로도 확정 못한, **사람 판단이 필요한 것만**(없으면 \"없음\"). **일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.**\n\n[디자인 단계]\n## 🎯 작업 개요 — 무엇을 만드는지 1~2줄\n## 🎨 화면별 작업 — 화면마다 구체적 변경 사항. 관련 기존 화면이 Figma에 있으면 찾아서 링크(https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>). 기존 화면이 없으면 그 화면에 \"## 🖼 와이어프레임(ASCII)\" 로 레이아웃 안을 그려 제시.\n## 🔀 인터랙션 & 플로우 — [버튼/요소]→다음 화면/동작. 버튼·입력 종류는 디자인시스템 컴포넌트명으로 지정(예 Button/Primary/Large, Dropdown, Text Input). 영역/크기 힌트 포함.\n\n[개발 단계] ## 🎯 작업 개요 / ## 🔧 구현 항목(데이터·API·로직: 무엇을 어떻게) / ## ⚠️ 예외·엣지 케이스 / ## 🔗 의존성.\n[QA 단계] ## 🎯 작업 개요 / ## ✅ 인수 기준 / ## 🧪 테스트 시나리오(경계값 포함).\n[그 외 직무] 그 직무가 바로 착수 가능한 구체 지시 + 🤔 결정 사항.\n\nsummary 는 슬랙 통보용 1줄 요약. 반드시 지정 JSON 스키마로만 답하세요."
+          "systemMessage": "=당신은 {{ $json.persona }} 입니다. 통과된 기획을 받아, 이 단계 실무자가 무엇을 어떻게 해야 하는지 바로 착수할 수 있을 만큼 구체적이고 실행가능한 작업 지시서(brief, 마크다운)를 작성합니다.\n\n# 활용 지식/도구\n- 컨텍스트 카드 메뉴(주제/영역/계층/id):\n{{ $json.menu }}\n- 도구 \"착수 Hub 읽기\": Context Hub 카드 또는 기획 태스크 본문을 Notion page id로 읽음. 디자인 작업이면 메뉴에서 디자인 시스템·디자인 토큰·디자인 컴포넌트 카탈로그 카드를 반드시 읽어 실제 컴포넌트명·토큰·화면(Figma node id)을 확인하세요. 기획 page id로 기획 본문도 읽을 수 있습니다.\n- 도구 \"착수 Figma 조회\": 디자인 카드에 적힌 Figma node id(예 11095:53827)를 넣어 실제 화면/컴포넌트 구조를 조회·검증. 디자인 작업이면 화면 링크를 쓰기 전에 이 도구로 node를 확인하세요. 디자인 무관이면 호출 금지.\\n- Figma 화면 링크는 확인한 node id로 구성: https://www.figma.com/file/3Ifh58l7EWLXapWRys0vjf/?node-id=<id>.\n원칙: 추측하지 말고 Hub 카드로 확인해 근거 있게 쓰세요. 정보 부족하면 결정 사항에 남기세요.\n\n# 출력 형식(단계별)\n공통: 마지막에 ## 결정 사항 — 사람 판단이 필요한 것만(없으면 없음). 일정·소요시간 추정 금지. 이미 Q&A로 결정된 것 재나열 금지. 착수 전 체크리스트/착수 계획 섹션 만들지 말 것.\n[디자인] ## 작업 개요 / ## 화면별 작업(화면마다 구체 변경+가능하면 Figma 링크, 없으면 ## 와이어프레임(ASCII)) / ## 인터랙션 & 플로우([버튼]→다음 화면, DS 컴포넌트명, 크기).\n[개발] ## 작업 개요 / ## 구현 항목 / ## 예외·엣지 / ## 의존성.\n[QA] ## 작업 개요 / ## 인수 기준 / ## 테스트 시나리오.\nsummary는 슬랙 통보용 1줄. 반드시 지정 JSON 스키마로만 답하세요."
         },
         "promptType": "define",
-        "text": "=직무: {{ $(\"스테이지·페르소나 결정\").first().json.persona }} / 단계: {{ $(\"스테이지·페르소나 결정\").first().json.stage }}\n제목: {{ $(\"스테이지·페르소나 결정\").first().json.title }}\n기획 태스크 page id(필요시 본문 조회): {{ $(\"WF3 시작\").first().json.pageId }}\n\n정리된 기획 브리프:\n{{ $(\"스테이지·페르소나 결정\").first().json.brief }}\n\n기획 단계 질문·답변(이미 결정된 사실):\n{{ $(\"WF3 시작\").first().json.qa }}"
+        "text": "=직무: {{ $json.persona }} / 단계: {{ $json.stage }}\n제목: {{ $json.title }}\n기획 page id: {{ $json.pageId }}\n\n정리된 기획 브리프:\n{{ $json.brief }}\n\n기획 단계 질문·답변(이미 결정된 사실):\n{{ $json.qa }}"
       },
       "position": [
-        960,
-        200
+        1184,
+        112
       ],
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1
@@ -224,7 +694,7 @@
           "name": "AWS (IAM) account"
         }
       },
-      "id": "755f1a13-c64b-40f7-9975-1c467065c3ec",
+      "id": "df69cf3e-47d4-47a0-b499-afc890cc5dea",
       "name": "착수 Sonnet",
       "parameters": {
         "model": "global.anthropic.claude-sonnet-4-6",
@@ -235,21 +705,49 @@
         }
       },
       "position": [
-        840,
-        460
+        1120,
+        336
       ],
       "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
       "typeVersion": 1.1
     },
     {
-      "id": "670fad93-574f-4910-af0d-a434be716ed7",
-      "name": "착수 파서",
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "e77048bb-b3f7-471d-b794-9d37357a7bf4",
+      "name": "착수 Hub 읽기",
       "parameters": {
-        "jsonSchemaExample": "{\"brief\": \"## 🎯 작업 개요\\n...\\n## 🤔 결정 사항\\n- (사람 판단 필요 항목, 없으면 없음)\", \"summary\": \"슬랙 통보용 1줄 요약\"}"
+        "blockId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('cardId', '읽을 Notion page id (메뉴의 카드 id 또는 기획 page id)') }}"
+        },
+        "descriptionType": "manual",
+        "operation": "getAll",
+        "resource": "block",
+        "returnAll": true,
+        "toolDescription": "Context Hub 카드나 기획 태스크 본문을 Notion page id로 읽는다"
       },
       "position": [
-        1000,
-        460
+        1248,
+        336
+      ],
+      "type": "n8n-nodes-base.notionTool",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "3dd6841e-248a-4edb-82ba-e37e348cd394",
+      "name": "착수 파서",
+      "parameters": {
+        "jsonSchemaExample": "{ \"brief\": \"## 작업 개요\\n...\\n## 결정 사항\\n- (사람 판단 필요, 없으면 없음)\", \"summary\": \"슬랙 통보용 1줄\" }"
+      },
+      "position": [
+        1376,
+        336
       ],
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3
@@ -261,89 +759,9 @@
           "name": "Notion account"
         }
       },
-      "id": "d2baca8f-4f95-4361-8415-8fb0d1ee9e63",
-      "name": "착수 Hub 읽기",
-      "parameters": {
-        "blockId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "={{ $fromAI('cardId', '읽을 Context Hub 카드의 Notion page id') }}"
-        },
-        "descriptionType": "manual",
-        "operation": "getAll",
-        "resource": "block",
-        "returnAll": true,
-        "toolDescription": "Context Hub 카드 본문을 page id로 읽는다"
-      },
-      "position": [
-        1140,
-        460
-      ],
-      "type": "n8n-nodes-base.notionTool",
-      "typeVersion": 2.2
-    },
-    {
-      "credentials": {
-        "figmaApi": {
-          "id": "Rg6fKjWcdHHj0e1O",
-          "name": "Figma account"
-        }
-      },
-      "id": "b9aa53fa-cee1-4a5e-a95d-6db6f5660a17",
-      "name": "착수 Figma 조회",
-      "parameters": {
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "figmaApi",
-        "parametersQuery": {
-          "values": [
-            {
-              "name": "ids"
-            },
-            {
-              "name": "depth",
-              "value": "1",
-              "valueProvider": "fieldValue"
-            }
-          ]
-        },
-        "placeholderDefinitions": {
-          "values": [
-            {
-              "description": "조회할 Figma node id (예 \"11095:53827\")",
-              "name": "ids",
-              "type": "string"
-            }
-          ]
-        },
-        "sendQuery": true,
-        "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
-        "url": "https://api.figma.com/v1/files/3Ifh58l7EWLXapWRys0vjf/nodes"
-      },
-      "position": [
-        1280,
-        460
-      ],
-      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
-      "typeVersion": 1.1
-    },
-    {
-      "credentials": {
-        "notionApi": {
-          "id": "b03vHUApw6s0O5jS",
-          "name": "Notion account"
-        }
-      },
-      "id": "b0e728ba-5d52-45cc-a038-c4e34b5f2618",
+      "id": "08bf7fad-683b-49da-942c-1d7c65beedbe",
       "name": "서브태스크 생성",
       "parameters": {
-        "blockUi": {
-          "blockValues": [
-            {
-              "textContent": "={{ $(\"착수준비 게이트\").first().json.output.brief }}",
-              "type": "paragraph"
-            }
-          ]
-        },
         "databaseId": {
           "__rl": true,
           "mode": "id",
@@ -354,35 +772,36 @@
           "propertyValues": [
             {
               "key": "타입|select",
-              "selectValue": "={{ $(\"스테이지·페르소나 결정\").first().json.stage }}"
+              "selectValue": "={{ $('스테이지·페르소나 결정').first().json.stage }}"
             },
             {
               "key": "관계된 ✅ TASK|relation",
               "relationValue": [
-                "={{ $(\"스테이지·페르소나 결정\").first().json.pageId }}"
+                "={{ $('스테이지·페르소나 결정').first().json.pageId }}"
               ]
             }
           ]
         },
         "resource": "databasePage",
-        "title": "=[{{ $(\"스테이지·페르소나 결정\").first().json.stage }}] {{ $(\"스테이지·페르소나 결정\").first().json.title }}"
+        "title": "=[{{ $('스테이지·페르소나 결정').first().json.stage }}] {{ $('스테이지·페르소나 결정').first().json.title }}",
+        "operation": "create"
       },
       "position": [
-        1200,
-        200
+        1584,
+        112
       ],
       "type": "n8n-nodes-base.notion",
       "typeVersion": 2.2
     },
     {
-      "id": "07251efc-c3a0-4760-8cd3-f0b87ce9fcba",
+      "id": "dc28234e-a315-4714-a9bf-a47021e045a4",
       "name": "착수 통보 메시지",
       "parameters": {
-        "jsCode": "const st = $(\"스테이지·페르소나 결정\").first().json;\nconst out = $(\"착수준비 게이트\").first().json.output || {};\nconst sub = $(\"서브태스크 생성\").first().json;\nconst url = (sub && sub.url) ? sub.url : \"\";\nconst text = \"🛠 *[\" + st.stage + \"] 착수 준비가 생성됐어요* — \" + st.persona + \" 관점\\n파이프라인: \" + (st.pipeline || st.stage) + \"\\n\" + (out.summary || \"\") + (url ? (\"\\n📄 서브태스크: \" + url) : \"\");\nreturn [{ json: { body: { channel: st.channelId, thread_ts: st.threadTs, text: text } } }];"
+        "jsCode": "const st=$('스테이지·페르소나 결정').first().json;const out=$('착수준비 게이트').first().json.output||{};const sub=$('서브태스크 생성').first().json;const url=(sub&&sub.url)?sub.url:'';const text='[' + st.stage + '] 착수 준비가 생성됐어요 — '+st.persona+' 관점\\n파이프라인: '+(st.pipeline||st.stage)+'\\n'+(out.summary||'')+(url?('\\n서브태스크: '+url):'');return [{json:{body:{channel:st.channelId,thread_ts:st.threadTs,text:text}}}];"
       },
       "position": [
-        1440,
-        200
+        2200,
+        112
       ],
       "type": "n8n-nodes-base.code",
       "typeVersion": 2
@@ -394,7 +813,7 @@
           "name": "Botmap"
         }
       },
-      "id": "c7d7db35-6cb0-490f-8315-d93598fee104",
+      "id": "edc36d91-eae1-49f9-8577-a40af0ee8a27",
       "name": "착수 통보",
       "parameters": {
         "authentication": "predefinedCredentialType",
@@ -413,20 +832,113 @@
         "url": "https://slack.com/api/chat.postMessage"
       },
       "position": [
-        1680,
-        200
+        2420,
+        112
       ],
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4
+    },
+    {
+      "id": "71462b87-ea0d-4d5b-ba1d-4e0265947247",
+      "name": "착수 Figma 조회",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1480,
+        336
+      ],
+      "parameters": {
+        "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
+        "method": "GET",
+        "url": "https://api.figma.com/v1/files/3Ifh58l7EWLXapWRys0vjf/nodes",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "figmaApi",
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ids",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ids', '조회할 Figma node id (예 11095:53827). 여러 개면 콤마 구분', 'string') }}"
+            },
+            {
+              "name": "depth",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "figmaApi": {
+          "id": "Rg6fKjWcdHHj0e1O",
+          "name": "Figma account"
+        }
+      }
+    },
+    {
+      "id": "c7942cb9-51cc-45c0-a4da-f2cbaaf4b9ab",
+      "name": "본문 청크",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        320
+      ],
+      "parameters": {
+        "jsCode": "const brief=(($('착수준비 게이트').first().json.output)||{}).brief||'';const pageId=$('서브태스크 생성').first().json.id;const MAX=1900;const lines=brief.split('\\n');const chunks=[];let cur='';for(let k=0;k<lines.length;k++){const ln=lines[k];const piece=cur?(cur+'\\n'+ln):ln;if(piece.length>MAX){if(cur){chunks.push(cur);cur='';}if(ln.length>MAX){for(let i=0;i<ln.length;i+=MAX)chunks.push(ln.slice(i,i+MAX));cur='';}else{cur=ln;}}else{cur=piece;}}if(cur)chunks.push(cur);if(!chunks.length)chunks.push('(본문 없음)');return chunks.map(function(c){return {json:{pageId:pageId,text:c}};});"
+      }
+    },
+    {
+      "id": "beadbe04-7763-4466-a0c8-e6fcf922bd5b",
+      "name": "본문 추가",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1960,
+        320
+      ],
+      "parameters": {
+        "resource": "block",
+        "operation": "append",
+        "blockId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.pageId }}"
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "type": "paragraph",
+              "textContent": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      }
     }
   ],
-  "pinData": null,
+  "pinData": {},
   "settings": {
+    "availableInMCP": true,
+    "binaryMode": "separate",
     "executionOrder": "v1"
   },
   "shared": [
     {
-      "createdAt": "2026-06-17T07:30:01.235Z",
+      "createdAt": "2026-06-17T10:39:41.650Z",
       "project": {
         "createdAt": "2026-05-27T07:22:23.960Z",
         "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
@@ -439,14 +951,14 @@
       },
       "projectId": "501Q7eGEKoHjxZfp",
       "role": "workflow:owner",
-      "updatedAt": "2026-06-17T07:30:01.235Z",
-      "workflowId": "mjyDgdVWnrJjsKBN"
+      "updatedAt": "2026-06-17T10:39:41.650Z",
+      "workflowId": "m6YGNNCEP5RI3SSF"
     }
   ],
   "staticData": null,
   "tags": [],
-  "triggerCount": 0,
-  "updatedAt": "2026-06-17T07:30:01.235Z",
-  "versionCounter": 1,
-  "versionId": "89a01348-8ec5-4038-b44b-54c575e8effd"
+  "triggerCount": 1,
+  "updatedAt": "2026-06-18T01:19:28.747Z",
+  "versionCounter": 8,
+  "versionId": "6c856d21-11d7-4167-a498-1313bc6023ed"
 }
