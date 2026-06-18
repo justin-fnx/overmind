@@ -77,6 +77,11 @@
               "index": 0,
               "node": "본문 청크",
               "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "단계 기록",
+              "type": "main"
             }
           ]
         ]
@@ -192,7 +197,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-18T07:42:04.239Z",
+    "createdAt": "2026-06-18T09:23:24.189Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -218,7 +223,7 @@
         "id": "d4929ee7-3eb0-46dd-b7b2-f8403f4eaa50",
         "name": "스테이지·페르소나 결정",
         "parameters": {
-          "jsCode": "const ri=$json.body||$json;const roles=ri.roles||[];const ORDER=['리서치','디자인','개발','QA','마케팅'];const P={'리서치':'UX 리서처','디자인':'시니어 프로덕트 디자이너','개발':'시니어 소프트웨어 개발자','QA':'QA 엔지니어','마케팅':'그로스 마케터'};const norm=roles.map(function(r){return String(r).split('/')[0].trim();});const ordered=ORDER.filter(function(s){return norm.indexOf(s)!==-1;});const first=ordered.length?ordered[0]:(norm[0]||'개발');return [{json:{stage:first,persona:(P[first]||first+' 담당자'),pipeline:ordered.join(' → '),pageId:ri.pageId,title:ri.title,threadTs:ri.threadTs,channelId:ri.channelId,brief:ri.brief,qa:ri.qa}}];"
+          "jsCode": "const ri=$json.body||$json;const P={'리서치':'UX 리서처','디자인':'시니어 프로덕트 디자이너','개발':'시니어 소프트웨어 개발자','프론트엔드':'시니어 프론트엔드 개발자','백엔드':'시니어 백엔드 개발자','QA':'QA 엔지니어','마케팅':'그로스 마케터'};let stage=ri.stage;if(!stage){const roles=ri.roles||[];const ORDER=['리서치','디자인','개발','QA','마케팅'];const norm=roles.map(function(r){return String(r).split('/')[0].trim();});const ordered=ORDER.filter(function(s){return norm.indexOf(s)!==-1;});stage=ordered.length?ordered[0]:(norm[0]||'개발');}const persona=ri.persona||P[stage]||(stage+' 담당자');return [{json:{stage:stage,persona:persona,pipeline:ri.pipeline||stage,pageId:ri.pageId,title:ri.title,threadTs:ri.threadTs,channelId:ri.channelId,brief:ri.brief,qa:ri.qa}}];"
         },
         "position": [
           224,
@@ -701,47 +706,80 @@
         ],
         "type": "n8n-nodes-base.httpRequestTool",
         "typeVersion": 4.4
+      },
+      {
+        "id": "33da6c03-4def-40c4-b356-8f82a8dbb0d6",
+        "name": "단계 기록",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "depends_on": "[]",
+              "parent_page_id": "={{ $('스테이지·페르소나 결정').first().json.pageId }}",
+              "persona": "={{ $('스테이지·페르소나 결정').first().json.persona }}",
+              "pipeline": "={{ $('스테이지·페르소나 결정').first().json.pipeline }}",
+              "stage": "={{ $('스테이지·페르소나 결정').first().json.stage }}",
+              "status": "created",
+              "subtask_page_id": "={{ $('서브태스크 생성').first().json.id }}",
+              "title": "={{ $('스테이지·페르소나 결정').first().json.title }}"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "16uFko9jgm6gFs0T"
+          },
+          "operation": "insert",
+          "options": {},
+          "resource": "row"
+        },
+        "position": [
+          1760,
+          120
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-18T07:42:04.239Z",
-    "versionId": "ddab55c0-01a6-433e-960d-f52f7ce0fd9e",
+    "updatedAt": "2026-06-18T09:23:24.189Z",
+    "versionId": "5934e32a-06d5-4106-a619-9fb36c73d876",
     "workflowId": "m6YGNNCEP5RI3SSF",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-18T07:42:04.295Z",
+        "createdAt": "2026-06-18T09:23:24.244Z",
         "event": "deactivated",
-        "id": 183,
+        "id": 197,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "ddab55c0-01a6-433e-960d-f52f7ce0fd9e",
+        "versionId": "5934e32a-06d5-4106-a619-9fb36c73d876",
         "workflowId": "m6YGNNCEP5RI3SSF"
       },
       {
-        "createdAt": "2026-06-18T07:42:04.313Z",
+        "createdAt": "2026-06-18T09:23:24.264Z",
         "event": "activated",
-        "id": 184,
+        "id": 198,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "ddab55c0-01a6-433e-960d-f52f7ce0fd9e",
+        "versionId": "5934e32a-06d5-4106-a619-9fb36c73d876",
         "workflowId": "m6YGNNCEP5RI3SSF"
       },
       {
-        "createdAt": "2026-06-18T07:42:11.489Z",
+        "createdAt": "2026-06-18T09:23:31.591Z",
         "event": "deactivated",
-        "id": 185,
+        "id": 199,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "ddab55c0-01a6-433e-960d-f52f7ce0fd9e",
+        "versionId": "5934e32a-06d5-4106-a619-9fb36c73d876",
         "workflowId": "m6YGNNCEP5RI3SSF"
       },
       {
-        "createdAt": "2026-06-18T07:42:11.506Z",
+        "createdAt": "2026-06-18T09:23:31.616Z",
         "event": "activated",
-        "id": 186,
+        "id": 200,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "ddab55c0-01a6-433e-960d-f52f7ce0fd9e",
+        "versionId": "5934e32a-06d5-4106-a619-9fb36c73d876",
         "workflowId": "m6YGNNCEP5RI3SSF"
       }
     ]
   },
-  "activeVersionId": "ddab55c0-01a6-433e-960d-f52f7ce0fd9e",
+  "activeVersionId": "5934e32a-06d5-4106-a619-9fb36c73d876",
   "connections": {
     "Figma Vision": {
       "ai_tool": [
@@ -815,6 +853,11 @@
           {
             "index": 0,
             "node": "본문 청크",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "단계 기록",
             "type": "main"
           }
         ]
@@ -963,7 +1006,7 @@
       "id": "d4929ee7-3eb0-46dd-b7b2-f8403f4eaa50",
       "name": "스테이지·페르소나 결정",
       "parameters": {
-        "jsCode": "const ri=$json.body||$json;const roles=ri.roles||[];const ORDER=['리서치','디자인','개발','QA','마케팅'];const P={'리서치':'UX 리서처','디자인':'시니어 프로덕트 디자이너','개발':'시니어 소프트웨어 개발자','QA':'QA 엔지니어','마케팅':'그로스 마케터'};const norm=roles.map(function(r){return String(r).split('/')[0].trim();});const ordered=ORDER.filter(function(s){return norm.indexOf(s)!==-1;});const first=ordered.length?ordered[0]:(norm[0]||'개발');return [{json:{stage:first,persona:(P[first]||first+' 담당자'),pipeline:ordered.join(' → '),pageId:ri.pageId,title:ri.title,threadTs:ri.threadTs,channelId:ri.channelId,brief:ri.brief,qa:ri.qa}}];"
+        "jsCode": "const ri=$json.body||$json;const P={'리서치':'UX 리서처','디자인':'시니어 프로덕트 디자이너','개발':'시니어 소프트웨어 개발자','프론트엔드':'시니어 프론트엔드 개발자','백엔드':'시니어 백엔드 개발자','QA':'QA 엔지니어','마케팅':'그로스 마케터'};let stage=ri.stage;if(!stage){const roles=ri.roles||[];const ORDER=['리서치','디자인','개발','QA','마케팅'];const norm=roles.map(function(r){return String(r).split('/')[0].trim();});const ordered=ORDER.filter(function(s){return norm.indexOf(s)!==-1;});stage=ordered.length?ordered[0]:(norm[0]||'개발');}const persona=ri.persona||P[stage]||(stage+' 담당자');return [{json:{stage:stage,persona:persona,pipeline:ri.pipeline||stage,pageId:ri.pageId,title:ri.title,threadTs:ri.threadTs,channelId:ri.channelId,brief:ri.brief,qa:ri.qa}}];"
       },
       "position": [
         224,
@@ -1446,6 +1489,39 @@
       ],
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.4
+    },
+    {
+      "id": "33da6c03-4def-40c4-b356-8f82a8dbb0d6",
+      "name": "단계 기록",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "depends_on": "[]",
+            "parent_page_id": "={{ $('스테이지·페르소나 결정').first().json.pageId }}",
+            "persona": "={{ $('스테이지·페르소나 결정').first().json.persona }}",
+            "pipeline": "={{ $('스테이지·페르소나 결정').first().json.pipeline }}",
+            "stage": "={{ $('스테이지·페르소나 결정').first().json.stage }}",
+            "status": "created",
+            "subtask_page_id": "={{ $('서브태스크 생성').first().json.id }}",
+            "title": "={{ $('스테이지·페르소나 결정').first().json.title }}"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "16uFko9jgm6gFs0T"
+        },
+        "operation": "insert",
+        "options": {},
+        "resource": "row"
+      },
+      "position": [
+        1760,
+        120
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
     }
   ],
   "pinData": {},
@@ -1476,7 +1552,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-18T07:42:04.237Z",
-  "versionCounter": 128,
-  "versionId": "ddab55c0-01a6-433e-960d-f52f7ce0fd9e"
+  "updatedAt": "2026-06-18T09:23:24.187Z",
+  "versionCounter": 138,
+  "versionId": "5934e32a-06d5-4106-a619-9fb36c73d876"
 }

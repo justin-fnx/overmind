@@ -103,17 +103,6 @@
           ]
         ]
       },
-      "서브태스크 생성": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "착수 통보 메시지",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "스누즈 기록": {
         "main": [
           [
@@ -131,17 +120,6 @@
             {
               "index": 0,
               "node": "프롬프트 잠금·스누즈",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "스테이지·페르소나 결정": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "착수준비 게이트",
               "type": "main"
             }
           ]
@@ -241,6 +219,17 @@
           ]
         ]
       },
+      "인계 입력": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Dispatch 호출",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "인터랙션 파싱": {
         "main": [
           [
@@ -325,50 +314,6 @@
           ]
         ]
       },
-      "착수 Sonnet": {
-        "ai_languageModel": [
-          [
-            {
-              "index": 0,
-              "node": "착수준비 게이트",
-              "type": "ai_languageModel"
-            }
-          ]
-        ]
-      },
-      "착수 통보 메시지": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "착수 통보",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "착수 파서": {
-        "ai_outputParser": [
-          [
-            {
-              "index": 0,
-              "node": "착수준비 게이트",
-              "type": "ai_outputParser"
-            }
-          ]
-        ]
-      },
-      "착수준비 게이트": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "서브태스크 생성",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "통과 기록": {
         "main": [
           [
@@ -396,7 +341,7 @@
           [
             {
               "index": 0,
-              "node": "스테이지·페르소나 결정",
+              "node": "인계 입력",
               "type": "main"
             }
           ]
@@ -458,7 +403,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-17T10:13:34.814Z",
+    "createdAt": "2026-06-18T09:14:07.363Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -1050,167 +995,6 @@
         "typeVersion": 4.4
       },
       {
-        "id": "2711360e-305b-4e53-9ee7-06940deecb05",
-        "name": "스테이지·페르소나 결정",
-        "parameters": {
-          "jsCode": "const out = $(\"재평가 게이트\").first().json.output || {};\nconst ri = $(\"답변 병합·제출\").first().json;\nconst roles = out.roles || [];\nconst ORDER = [\"리서치\", \"디자인\", \"개발\", \"QA\", \"마케팅\"];\nconst PERSONA = { \"리서치\": \"UX 리서처\", \"디자인\": \"시니어 프로덕트 디자이너\", \"개발\": \"시니어 소프트웨어 개발자\", \"QA\": \"QA 엔지니어\", \"마케팅\": \"그로스 마케터\" };\nconst norm = roles.map(function (r) { return String(r).split(\"/\")[0].trim(); });\nconst ordered = ORDER.filter(function (s) { return norm.indexOf(s) !== -1; });\nconst first = ordered.length ? ordered[0] : (norm[0] || \"개발\");\nconst persona = PERSONA[first] || (first + \" 담당자\");\nreturn [{ json: { stage: first, persona: persona, pipeline: ordered.join(\" → \"), pageId: ri.pageId, title: ri.title, threadTs: ri.threadTs, channelId: ri.channelId, brief: out.brief || \"\" } }];"
-        },
-        "position": [
-          3488,
-          112
-        ],
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2
-      },
-      {
-        "id": "a9fd2be5-6c69-41f7-a7e9-9804dbc207c8",
-        "name": "착수준비 게이트",
-        "parameters": {
-          "hasOutputParser": true,
-          "options": {
-            "systemMessage": "당신은 해당 직무의 시니어 실무자입니다. 통과된 기획을 받아, 이 단계 작업을 *시작하기 전에* 준비/결정해 두면 좋을 것을 그 직무 관점에서 구체적이고 실행가능하게 작성합니다.\n\n\\u26a0\\ufe0f 아래 \"기획 단계 질문·답변\"은 이전 단계에서 이미 결정된 사실입니다. 그 결정들을 전제로 삼으세요. 이미 답변/결정된 사항을 체크리스트나 열린 결정사항에 다시 넣지 마세요(중복 금지) — 그 결정들 위에서 아직 준비/결정되지 않은 것만 다룹니다.\n\nbrief(마크다운)에 정확히 3개 섹션:\n## \\u2705 착수 전 체크리스트 — 결정된 사항을 전제로, 실무 착수에 필요한 새 준비·확인 항목만(불릿)\n## \\ud83d\\udd00 열린 결정사항 — Q&A로도 아직 안 풀려 이 단계에서 결정/확인이 필요한 것만(불릿). 없으면 \"없음\".\n## \\ud83d\\uddfa 착수 계획 — 어떤 순서로 접근할지 3~5줄. 소요 시간·일정 추정은 넣지 마세요.\n\nsummary 는 슬랙 통보용 1줄 요약.\n반드시 지정된 JSON 스키마로만 답하세요."
-          },
-          "promptType": "define",
-          "text": "=당신은 {{ $(\"스테이지·페르소나 결정\").first().json.persona }} 입니다. 아래 통과된 기획을 받아, {{ $(\"스테이지·페르소나 결정\").first().json.stage }} 단계 작업을 시작하기 전에 정리해 두면 좋을 착수 준비물을 작성하세요.\n\n제목: {{ $(\"스테이지·페르소나 결정\").first().json.title }}\n\n정리된 기획 브리프:\n{{ $(\"스테이지·페르소나 결정\").first().json.brief }}\n\n기획 단계 질문·답변:\n{{ $(\"답변 병합·제출\").first().json.qa }}"
-        },
-        "position": [
-          3712,
-          0
-        ],
-        "type": "@n8n/n8n-nodes-langchain.agent",
-        "typeVersion": 3.1
-      },
-      {
-        "credentials": {
-          "aws": {
-            "id": "GftVHJqfxQshQZ4P",
-            "name": "AWS (IAM) account"
-          }
-        },
-        "id": "55b677cf-b3e2-4909-88a2-90c345160c1e",
-        "name": "착수 Sonnet",
-        "parameters": {
-          "model": "global.anthropic.claude-sonnet-4-6",
-          "modelSource": "inferenceProfile",
-          "options": {
-            "maxTokensToSample": 8000,
-            "temperature": 0.2
-          }
-        },
-        "position": [
-          3728,
-          224
-        ],
-        "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
-        "typeVersion": 1.1
-      },
-      {
-        "id": "3ad58dc8-c4b7-43e0-92f6-b3f93f59f858",
-        "name": "착수 파서",
-        "parameters": {
-          "jsonSchemaExample": "{ \"brief\": \"## ✅ 착수 전 체크리스트\\n- 항목1\\n- 항목2\\n\\n## 🔀 열린 결정사항\\n- 결정1\\n\\n## 🗺 착수 계획\\n1) ...\\n2) ...\", \"summary\": \"한 줄 요약\" }"
-        },
-        "position": [
-          3856,
-          224
-        ],
-        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-        "typeVersion": 1.3
-      },
-      {
-        "credentials": {
-          "notionApi": {
-            "id": "b03vHUApw6s0O5jS",
-            "name": "Notion account"
-          }
-        },
-        "id": "80c64245-cbef-4e0d-8640-d1a7ac6e7120",
-        "name": "서브태스크 생성",
-        "parameters": {
-          "blockUi": {
-            "blockValues": [
-              {
-                "textContent": "={{ $(\"착수준비 게이트\").first().json.output.brief }}",
-                "type": "paragraph"
-              }
-            ]
-          },
-          "databaseId": {
-            "__rl": true,
-            "mode": "id",
-            "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
-          },
-          "options": {},
-          "propertiesUi": {
-            "propertyValues": [
-              {
-                "key": "타입|select",
-                "selectValue": "={{ $(\"스테이지·페르소나 결정\").first().json.stage }}"
-              },
-              {
-                "key": "관계된 ✅ TASK|relation",
-                "relationValue": [
-                  "={{ $(\"스테이지·페르소나 결정\").first().json.pageId }}"
-                ]
-              }
-            ]
-          },
-          "resource": "databasePage",
-          "title": "=[{{ $(\"스테이지·페르소나 결정\").first().json.stage }}] {{ $(\"스테이지·페르소나 결정\").first().json.title }}"
-        },
-        "position": [
-          4064,
-          112
-        ],
-        "type": "n8n-nodes-base.notion",
-        "typeVersion": 2.2
-      },
-      {
-        "id": "022b5d9f-0335-4108-9b95-bb80cb45f968",
-        "name": "착수 통보 메시지",
-        "parameters": {
-          "jsCode": "const st = $(\"스테이지·페르소나 결정\").first().json;\nconst out = $(\"착수준비 게이트\").first().json.output || {};\nconst sub = $(\"서브태스크 생성\").first().json;\nconst url = (sub && sub.url) ? sub.url : \"\";\nconst text = \"🛠 *[\" + st.stage + \"] 착수 준비가 생성됐어요* — \" + st.persona + \" 관점\\n파이프라인: \" + (st.pipeline || st.stage) + \"\\n\" + (out.summary || \"\") + (url ? (\"\\n📄 서브태스크: \" + url) : \"\");\nreturn [{ json: { body: { channel: st.channelId, thread_ts: st.threadTs, text: text } } }];"
-        },
-        "position": [
-          4288,
-          112
-        ],
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2
-      },
-      {
-        "credentials": {
-          "slackApi": {
-            "id": "bjozecrw9OnFT8Lf",
-            "name": "Botmap"
-          }
-        },
-        "id": "adb75884-2a7f-49cb-a3dd-31be7e512768",
-        "name": "착수 통보",
-        "parameters": {
-          "authentication": "predefinedCredentialType",
-          "jsonBody": "={{ $json.body }}",
-          "method": "POST",
-          "nodeCredentialType": "slackApi",
-          "options": {
-            "response": {
-              "response": {
-                "neverError": true
-              }
-            }
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "url": "https://slack.com/api/chat.postMessage"
-        },
-        "position": [
-          4512,
-          112
-        ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4
-      },
-      {
         "id": "8dd823ef-56b0-4cc5-a2dc-93dece32ebd8",
         "name": "라운드 판정",
         "parameters": {
@@ -1750,31 +1534,84 @@
         ],
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.4
+      },
+      {
+        "id": "97ff15e0-62a1-4bfe-b798-7eb37673657a",
+        "name": "인계 입력",
+        "parameters": {
+          "jsCode": "const out=($(\"재평가 게이트\").first().json.output)||{};const ri=$(\"답변 병합·제출\").first().json;return [{json:{pageId:ri.pageId,title:ri.title,brief:out.brief||\"\",qa:ri.qa,roles:out.roles||[],channelId:ri.channelId,threadTs:ri.threadTs}}];"
+        },
+        "position": [
+          2900,
+          640
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "2bf88262-d939-4cd5-ba4a-7071e476127e",
+        "name": "Dispatch 호출",
+        "parameters": {
+          "jsonBody": "={{ $json }}",
+          "method": "POST",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://n8n-webhook.bomapp.co.kr/webhook/wf-dispatch"
+        },
+        "position": [
+          3120,
+          640
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-17T10:13:34.814Z",
-    "versionId": "c82731dd-6bed-44cf-8d0e-f68ebaecaaf5",
+    "updatedAt": "2026-06-18T09:14:07.363Z",
+    "versionId": "9b27e8bb-2106-4e2c-a3d5-b9e6756ad3c5",
     "workflowId": "3LyKi5A20HoPrP0p",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-17T10:13:34.920Z",
+        "createdAt": "2026-06-18T09:14:07.424Z",
         "event": "deactivated",
-        "id": 59,
+        "id": 192,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "c82731dd-6bed-44cf-8d0e-f68ebaecaaf5",
+        "versionId": "9b27e8bb-2106-4e2c-a3d5-b9e6756ad3c5",
         "workflowId": "3LyKi5A20HoPrP0p"
       },
       {
-        "createdAt": "2026-06-17T10:13:34.951Z",
+        "createdAt": "2026-06-18T09:14:07.451Z",
         "event": "activated",
-        "id": 60,
+        "id": 193,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "c82731dd-6bed-44cf-8d0e-f68ebaecaaf5",
+        "versionId": "9b27e8bb-2106-4e2c-a3d5-b9e6756ad3c5",
+        "workflowId": "3LyKi5A20HoPrP0p"
+      },
+      {
+        "createdAt": "2026-06-18T09:14:45.291Z",
+        "event": "deactivated",
+        "id": 194,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "9b27e8bb-2106-4e2c-a3d5-b9e6756ad3c5",
+        "workflowId": "3LyKi5A20HoPrP0p"
+      },
+      {
+        "createdAt": "2026-06-18T09:14:45.317Z",
+        "event": "activated",
+        "id": 195,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "9b27e8bb-2106-4e2c-a3d5-b9e6756ad3c5",
         "workflowId": "3LyKi5A20HoPrP0p"
       }
     ]
   },
-  "activeVersionId": "c82731dd-6bed-44cf-8d0e-f68ebaecaaf5",
+  "activeVersionId": "9b27e8bb-2106-4e2c-a3d5-b9e6756ad3c5",
   "connections": {
     "Slack 인터랙션 수신": {
       "main": [
@@ -1991,6 +1828,17 @@
         ]
       ]
     },
+    "인계 입력": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Dispatch 호출",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "인터랙션 파싱": {
       "main": [
         [
@@ -2101,9 +1949,9 @@
       "main": [
         [
           {
+            "index": 0,
             "node": "인계 입력",
-            "type": "main",
-            "index": 0
+            "type": "main"
           }
         ]
       ]
@@ -2159,17 +2007,6 @@
             "index": 0,
             "node": "모달 뷰 생성",
             "type": "main"
-          }
-        ]
-      ]
-    },
-    "인계 입력": {
-      "main": [
-        [
-          {
-            "node": "WF3 호출",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -3316,39 +3153,39 @@
     {
       "id": "97ff15e0-62a1-4bfe-b798-7eb37673657a",
       "name": "인계 입력",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const out=($(\"재평가 게이트\").first().json.output)||{};const ri=$(\"답변 병합·제출\").first().json;return [{json:{pageId:ri.pageId,title:ri.title,brief:out.brief||\"\",qa:ri.qa,roles:out.roles||[],channelId:ri.channelId,threadTs:ri.threadTs}}];"
+      },
       "position": [
         2900,
         640
       ],
-      "parameters": {
-        "jsCode": "const out=($(\"재평가 게이트\").first().json.output)||{};const ri=$(\"답변 병합·제출\").first().json;return [{json:{pageId:ri.pageId,title:ri.title,brief:out.brief||\"\",qa:ri.qa,roles:out.roles||[],channelId:ri.channelId,threadTs:ri.threadTs}}];"
-      }
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     },
     {
       "id": "2bf88262-d939-4cd5-ba4a-7071e476127e",
-      "name": "WF3 호출",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        3120,
-        640
-      ],
+      "name": "Dispatch 호출",
       "parameters": {
-        "method": "POST",
-        "url": "https://n8n-webhook.bomapp.co.kr/webhook/wf3-handoff",
-        "sendBody": true,
-        "specifyBody": "json",
         "jsonBody": "={{ $json }}",
+        "method": "POST",
         "options": {
           "response": {
             "response": {
               "neverError": true
             }
           }
-        }
-      }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://n8n-webhook.bomapp.co.kr/webhook/wf-dispatch"
+      },
+      "position": [
+        3120,
+        640
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
     }
   ],
   "pinData": {},
@@ -3379,7 +3216,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-17T10:13:34.812Z",
-  "versionCounter": 67,
-  "versionId": "c82731dd-6bed-44cf-8d0e-f68ebaecaaf5"
+  "updatedAt": "2026-06-18T09:14:07.361Z",
+  "versionCounter": 77,
+  "versionId": "9b27e8bb-2106-4e2c-a3d5-b9e6756ad3c5"
 }
