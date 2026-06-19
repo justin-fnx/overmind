@@ -116,7 +116,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-19T01:24:45.688Z",
+    "createdAt": "2026-06-19T06:58:39.992Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -317,6 +317,7 @@
             "value": {
               "brief": "={{ $json.brief }}",
               "channel_id": "={{ $json.channelId }}",
+              "created_at": "={{ $now.toISO() }}",
               "depends_on": "={{ $json.dependsOn }}",
               "parent_page_id": "={{ $json.pageId }}",
               "persona": "={{ $json.persona }}",
@@ -390,29 +391,29 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-19T01:24:45.688Z",
-    "versionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6",
+    "updatedAt": "2026-06-19T06:58:39.992Z",
+    "versionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa",
     "workflowId": "0KSWtN1SPermSuFw",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-19T01:24:45.729Z",
+        "createdAt": "2026-06-19T06:58:40.032Z",
         "event": "deactivated",
-        "id": 212,
+        "id": 234,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6",
+        "versionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa",
         "workflowId": "0KSWtN1SPermSuFw"
       },
       {
-        "createdAt": "2026-06-19T01:24:45.745Z",
+        "createdAt": "2026-06-19T06:58:40.046Z",
         "event": "activated",
-        "id": 213,
+        "id": 235,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6",
+        "versionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa",
         "workflowId": "0KSWtN1SPermSuFw"
       }
     ]
   },
-  "activeVersionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6",
+  "activeVersionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa",
   "connections": {
     "Dispatch 시작": {
       "main": [
@@ -730,6 +731,7 @@
           "value": {
             "brief": "={{ $json.brief }}",
             "channel_id": "={{ $json.channelId }}",
+            "created_at": "={{ $now.toISO() }}",
             "depends_on": "={{ $json.dependsOn }}",
             "parent_page_id": "={{ $json.pageId }}",
             "persona": "={{ $json.persona }}",
@@ -805,6 +807,7 @@
   ],
   "pinData": {},
   "settings": {
+    "availableInMCP": true,
     "binaryMode": "separate",
     "executionOrder": "v1"
   },
@@ -830,7 +833,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-19T01:24:45.686Z",
-  "versionCounter": 16,
-  "versionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6"
+  "updatedAt": "2026-06-19T06:58:39.990Z",
+  "versionCounter": 20,
+  "versionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa"
 }
