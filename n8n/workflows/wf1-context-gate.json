@@ -59,6 +59,28 @@
           ]
         ]
       },
+      "과거 유사 태스크 조회": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "권한 요청": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
       "담당자 Slack 조회": {
         "main": [
           [
@@ -265,7 +287,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-19T03:05:45.449Z",
+    "createdAt": "2026-06-19T07:42:59.533Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -574,7 +596,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
+            "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요. 기획 본문이 다른 Notion 페이지(멘션·링크·하위 페이지)를 참조하고 그 내용이 기획 이해에 필요하면 그 page id를 넣어 읽어도 된다.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n- \"과거 유사 태스크 조회\": 지금 기획이 과거에 다룬 적 있는 주제(같은 화면·같은 알림톡·같은 기능)처럼 보이면, 핵심 키워드로 과거 태스크를 조회해 그때의 결정/맥락을 참고하라. 스스로 판단해 도움될 때만 호출. 찾은 과거 맥락은 브리핑/질문에 자연스럽게 반영하고 context_used에도 남겨라.\n- \"권한 요청\": 기획 본문이 참조하는 Notion 페이지를 읽으려다 권한 오류(접근 불가)로 실패하면, 이 툴로 담당 채널에 접근권한 요청을 보내라(어떤 기획에서 어떤 페이지인지 명시). 같은 페이지는 한 번만 요청.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드/과거 태스크만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
           },
           "promptType": "define",
           "text": "=아래는 노션에 새로 등록된 \"기획\" 태스크입니다.\n\n제목: {{ $(\"맥락 수집\").first().json.title }}\n프로덕트: {{ $(\"맥락 수집\").first().json.product }}\n우선순위: {{ $(\"맥락 수집\").first().json.priority }}\n본문:\n{{ $(\"맥락 수집\").first().json.body }}"
@@ -596,6 +618,7 @@
         },
         "id": "ae74a4dd-fc05-48e2-ae70-6f3891845c2c",
         "name": "Hub 카드 읽기",
+        "onError": "continueRegularOutput",
         "parameters": {
           "blockId": {
             "__rl": true,
@@ -606,7 +629,7 @@
           "operation": "getAll",
           "resource": "block",
           "returnAll": true,
-          "toolDescription": "Context Hub 카드 본문을 page id로 읽는다"
+          "toolDescription": "Context Hub 카드 본문, 또는 기획 본문이 참조하는 Notion 페이지를 page id로 읽는다"
         },
         "position": [
           2128,
@@ -1004,31 +1027,121 @@
         ],
         "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
         "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "similar-task-tool-001",
+        "name": "과거 유사 태스크 조회",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "jsonBody": "={{ JSON.stringify({ filter: { property: '테스크명', title: { contains: /*n8n-auto-generated-fromAI-override*/ $fromAI('keyword', '과거 유사 태스크를 찾을 핵심 키워드 한 단어(화면명·기능명·알림톡 종류 등)', 'string') } }, page_size: 5, sorts: [{ timestamp: 'created_time', direction: 'descending' }] }) }}",
+          "maxLength": 9000,
+          "method": "POST",
+          "nodeCredentialType": "notionApi",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "responseType": "text",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "specifyHeaders": "keypair",
+          "toolDescription": "지금 기획과 비슷한 '과거에 진행된 태스크'를 Notion TASK DB에서 키워드로 조회한다. 같은 화면·같은 알림톡·같은 기능에 대한 과거 기획·디자인·개발·QA 태스크가 있었는지 확인할 때 사용. keyword에는 화면명/기능명/알림톡 종류 같은 핵심어 하나를 넣어라. 반환: 제목·타입·상태·정리된 브리프 등.",
+          "truncateResponse": true,
+          "url": "https://api.notion.com/v1/databases/fd91ec8d-1025-4439-9d56-71af49eecac2/query"
+        },
+        "position": [
+          2128,
+          620
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "access-request-tool-001",
+        "name": "권한 요청",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "jsonBody": "={{ JSON.stringify({ channel: 'C0B9LE2FF36', text: '⚠️ *[Notion 접근권한 요청]* ' + /*n8n-auto-generated-fromAI-override*/ $fromAI('message', '어느 기획을 분석하다 어떤 Notion 페이지(URL 또는 page id)에 접근이 막혔는지와 Overmind 통합에 공유해 달라는 요청을 한국어 한두 문장으로', 'string') }) }}",
+          "maxLength": 500,
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "responseType": "text",
+          "sendBody": true,
+          "specifyBody": "json",
+          "toolDescription": "기획/프로젝트 문서를 따라가다 Overmind가 접근할 수 없는(권한 없는) Notion 페이지를 만났을 때 담당 Slack 채널에 접근권한 요청을 보낸다. Notion 페이지 읽기가 권한 오류로 실패한 경우에만 사용. message에는 어떤 기획에서 어떤 페이지(URL/id)에 왜 접근이 필요한지 적어라. 같은 페이지는 한 실행에서 한 번만 요청.",
+          "truncateResponse": true,
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          2128,
+          760
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-19T03:05:45.449Z",
-    "versionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b",
+    "updatedAt": "2026-06-19T07:42:59.533Z",
+    "versionId": "7cf2f36c-b6de-4bec-baa8-f959eb428094",
     "workflowId": "Y74XMZpTEUejToOQ",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-19T03:05:45.567Z",
+        "createdAt": "2026-06-19T07:42:59.603Z",
         "event": "deactivated",
-        "id": 220,
+        "id": 243,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b",
+        "versionId": "7cf2f36c-b6de-4bec-baa8-f959eb428094",
         "workflowId": "Y74XMZpTEUejToOQ"
       },
       {
-        "createdAt": "2026-06-19T03:05:45.597Z",
+        "createdAt": "2026-06-19T07:42:59.625Z",
         "event": "activated",
-        "id": 221,
+        "id": 244,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b",
+        "versionId": "7cf2f36c-b6de-4bec-baa8-f959eb428094",
         "workflowId": "Y74XMZpTEUejToOQ"
       }
     ]
   },
-  "activeVersionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b",
+  "activeVersionId": "7cf2f36c-b6de-4bec-baa8-f959eb428094",
   "connections": {
     "AWS Bedrock Chat Model": {
       "ai_languageModel": [
@@ -1081,6 +1194,28 @@
             "index": 0,
             "node": "맥락 충분성 게이트",
             "type": "ai_outputParser"
+          }
+        ]
+      ]
+    },
+    "과거 유사 태스크 조회": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "맥락 충분성 게이트",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
+    "권한 요청": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "맥락 충분성 게이트",
+            "type": "ai_tool"
           }
         ]
       ]
@@ -1607,7 +1742,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
+          "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요. 기획 본문이 다른 Notion 페이지(멘션·링크·하위 페이지)를 참조하고 그 내용이 기획 이해에 필요하면 그 page id를 넣어 읽어도 된다.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n- \"과거 유사 태스크 조회\": 지금 기획이 과거에 다룬 적 있는 주제(같은 화면·같은 알림톡·같은 기능)처럼 보이면, 핵심 키워드로 과거 태스크를 조회해 그때의 결정/맥락을 참고하라. 스스로 판단해 도움될 때만 호출. 찾은 과거 맥락은 브리핑/질문에 자연스럽게 반영하고 context_used에도 남겨라.\n- \"권한 요청\": 기획 본문이 참조하는 Notion 페이지를 읽으려다 권한 오류(접근 불가)로 실패하면, 이 툴로 담당 채널에 접근권한 요청을 보내라(어떤 기획에서 어떤 페이지인지 명시). 같은 페이지는 한 번만 요청.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드/과거 태스크만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
         },
         "promptType": "define",
         "text": "=아래는 노션에 새로 등록된 \"기획\" 태스크입니다.\n\n제목: {{ $(\"맥락 수집\").first().json.title }}\n프로덕트: {{ $(\"맥락 수집\").first().json.product }}\n우선순위: {{ $(\"맥락 수집\").first().json.priority }}\n본문:\n{{ $(\"맥락 수집\").first().json.body }}"
@@ -1629,6 +1764,7 @@
       },
       "id": "ae74a4dd-fc05-48e2-ae70-6f3891845c2c",
       "name": "Hub 카드 읽기",
+      "onError": "continueRegularOutput",
       "parameters": {
         "blockId": {
           "__rl": true,
@@ -1639,7 +1775,7 @@
         "operation": "getAll",
         "resource": "block",
         "returnAll": true,
-        "toolDescription": "Context Hub 카드 본문을 page id로 읽는다"
+        "toolDescription": "Context Hub 카드 본문, 또는 기획 본문이 참조하는 Notion 페이지를 page id로 읽는다"
       },
       "position": [
         2128,
@@ -2037,6 +2173,96 @@
       ],
       "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
       "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "similar-task-tool-001",
+      "name": "과거 유사 태스크 조회",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "={{ JSON.stringify({ filter: { property: '테스크명', title: { contains: /*n8n-auto-generated-fromAI-override*/ $fromAI('keyword', '과거 유사 태스크를 찾을 핵심 키워드 한 단어(화면명·기능명·알림톡 종류 등)', 'string') } }, page_size: 5, sorts: [{ timestamp: 'created_time', direction: 'descending' }] }) }}",
+        "maxLength": 9000,
+        "method": "POST",
+        "nodeCredentialType": "notionApi",
+        "optimizeResponse": true,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "responseType": "text",
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "keypair",
+        "toolDescription": "지금 기획과 비슷한 '과거에 진행된 태스크'를 Notion TASK DB에서 키워드로 조회한다. 같은 화면·같은 알림톡·같은 기능에 대한 과거 기획·디자인·개발·QA 태스크가 있었는지 확인할 때 사용. keyword에는 화면명/기능명/알림톡 종류 같은 핵심어 하나를 넣어라. 반환: 제목·타입·상태·정리된 브리프 등.",
+        "truncateResponse": true,
+        "url": "https://api.notion.com/v1/databases/fd91ec8d-1025-4439-9d56-71af49eecac2/query"
+      },
+      "position": [
+        2128,
+        620
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "access-request-tool-001",
+      "name": "권한 요청",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "jsonBody": "={{ JSON.stringify({ channel: 'C0B9LE2FF36', text: '⚠️ *[Notion 접근권한 요청]* ' + /*n8n-auto-generated-fromAI-override*/ $fromAI('message', '어느 기획을 분석하다 어떤 Notion 페이지(URL 또는 page id)에 접근이 막혔는지와 Overmind 통합에 공유해 달라는 요청을 한국어 한두 문장으로', 'string') }) }}",
+        "maxLength": 500,
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "optimizeResponse": true,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "responseType": "text",
+        "sendBody": true,
+        "specifyBody": "json",
+        "toolDescription": "기획/프로젝트 문서를 따라가다 Overmind가 접근할 수 없는(권한 없는) Notion 페이지를 만났을 때 담당 Slack 채널에 접근권한 요청을 보낸다. Notion 페이지 읽기가 권한 오류로 실패한 경우에만 사용. message에는 어떤 기획에서 어떤 페이지(URL/id)에 왜 접근이 필요한지 적어라. 같은 페이지는 한 실행에서 한 번만 요청.",
+        "truncateResponse": true,
+        "url": "https://slack.com/api/chat.postMessage"
+      },
+      "position": [
+        2128,
+        760
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4
     }
   ],
   "pinData": {},
@@ -2077,7 +2303,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-19T03:05:45.433Z",
-  "versionCounter": 140,
-  "versionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b"
+  "updatedAt": "2026-06-19T07:42:59.531Z",
+  "versionCounter": 143,
+  "versionId": "7cf2f36c-b6de-4bec-baa8-f959eb428094"
 }
