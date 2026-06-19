@@ -265,7 +265,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-18T02:29:03.375Z",
+    "createdAt": "2026-06-19T03:05:45.449Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -574,7 +574,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획이 '무엇을' 하려는지 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n직무당 최대 3개, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
+            "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
           },
           "promptType": "define",
           "text": "=아래는 노션에 새로 등록된 \"기획\" 태스크입니다.\n\n제목: {{ $(\"맥락 수집\").first().json.title }}\n프로덕트: {{ $(\"맥락 수집\").first().json.product }}\n우선순위: {{ $(\"맥락 수집\").first().json.priority }}\n본문:\n{{ $(\"맥락 수집\").first().json.body }}"
@@ -616,16 +616,25 @@
         "typeVersion": 2.2
       },
       {
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "OKR5k0AAH8p23JJj",
+            "name": "Figma PAT"
+          }
+        },
         "id": "b2490dd0-d3bf-4717-8101-24951d2a7098",
         "name": "Figma 노드 조회",
         "parameters": {
           "authentication": "genericCredentialType",
           "genericAuthType": "httpHeaderAuth",
+          "maxLength": 12000,
           "method": "GET",
+          "optimizeResponse": true,
           "options": {
             "response": {
               "response": {
-                "neverError": true
+                "neverError": true,
+                "responseFormat": "text"
               }
             }
           },
@@ -641,10 +650,12 @@
               }
             ]
           },
+          "responseType": "text",
           "sendQuery": true,
           "specifyQuery": "keypair",
           "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
-          "url": "https://api.figma.com/v1/files/3Ifh58l7EWLXapWRys0vjf/nodes"
+          "truncateResponse": true,
+          "url": "=https://api.figma.com/v1/files/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fileKey', '조회할 Figma 파일 key (figma.com/design/<KEY>/... 의 KEY). DS 컴포넌트·토큰·화면취합 개요는 3Ifh58l7EWLXapWRys0vjf, 기능별 실제 화면은 태스크/Hub 카드에 링크된 파일 키 사용', 'string') }}/nodes"
         },
         "position": [
           2272,
@@ -809,7 +820,7 @@
         "id": "de5ac7d6-83e6-4a30-aec6-665bfa6c5b6f",
         "name": "부모 블록 생성",
         "parameters": {
-          "jsCode": "const title = $(\"맥락 수집\").first().json.title;\nconst out = $(\"맥락 충분성 게이트\").first().json.output || {};\nconst b = out.briefing || {};\nconst used = Array.isArray(out.context_used) ? out.context_used : [];\nconst lookup = $(\"담당자 Slack 조회\").first().json;\nconst slackId = (lookup && lookup.user && lookup.user.id) ? lookup.user.id : null;\nconst mention = slackId ? (\"<@\" + slackId + \">\") : \"담당자\";\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: mention + \" 님, 기획 검토 요청이에요.\\n*📋 \" + title + \"*\" } },\n  { type: \"divider\" }\n];\nconst parts = [\"*🧭 제가 이해한 기획 의도*\"];\nif (b.summary) { parts.push(\"*무엇을*\\n\" + b.summary); }\nif (b.scope) { parts.push(\"*닿는 곳*\\n\" + b.scope); }\nconst flows = Array.isArray(b.flows) ? b.flows.filter(Boolean) : [];\nif (flows.length) { parts.push(\"*흐름*\\n\" + flows.map(function(f){ return \"•  \" + f; }).join(\"\\n\")); }\nif (b.unclear) { parts.push(\"*아직 불명확*\\n\" + b.unclear); }\nif (parts.length === 1 && out.intent_briefing) { parts.push(out.intent_briefing); }\nblocks.push({ type: \"section\", text: { type: \"mrkdwn\", text: parts.join(\"\\n\\n\") } });\nif (used.length) {\n  blocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"📚 *참고한 지식*\\n\" + used.map(function(u){ return \"•  \" + u; }).join(\"\\n\") }] });\n}\nblocks.push({ type: \"divider\" });\nblocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"👇 위 이해가 맞는지 확인하고 스레드에서 답변해 주세요. 다르면 정정해 주셔도 돼요.\" }] });\nreturn [{ json: { body: { channel: \"C0B9LE2FF36\", text: mention + \" 님, 기획 검토 요청\", blocks: blocks } } }];"
+          "jsCode": "const title = $(\"맥락 수집\").first().json.title;\nconst out = $(\"맥락 충분성 게이트\").first().json.output || {};\nconst b = out.briefing || {};\nconst used = Array.isArray(out.context_used) ? out.context_used : [];\nconst lookup = $(\"담당자 Slack 조회\").first().json;\nconst slackId = (lookup && lookup.user && lookup.user.id) ? lookup.user.id : null;\nconst mention = slackId ? (\"<@\" + slackId + \">\") : \"담당자\";\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: mention + \" 님, 기획 검토 요청이에요.\\n*📋 \" + title + \"*\" } },\n  { type: \"divider\" }\n];\nconst parts = [\"*🧭 제가 이해한 기획 의도*\"];\nif (b.summary) { parts.push(\"*목적*\\n\" + b.summary); }\nif (b.scope) { parts.push(\"*대상*\\n\" + b.scope); }\nconst flows = Array.isArray(b.flows) ? b.flows.filter(Boolean) : [];\nif (flows.length) { parts.push(\"*흐름*\\n\" + flows.map(function(f){ return \"•  \" + f; }).join(\"\\n\")); }\nif (b.unclear) { parts.push(\"*확인 필요*\\n\" + b.unclear); }\nif (parts.length === 1 && out.intent_briefing) { parts.push(out.intent_briefing); }\nblocks.push({ type: \"section\", text: { type: \"mrkdwn\", text: parts.join(\"\\n\\n\") } });\nif (used.length) {\n  blocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"📚 *참고한 지식*\\n\" + used.map(function(u){ return \"•  \" + u; }).join(\"\\n\") }] });\n}\nblocks.push({ type: \"divider\" });\nblocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"👇 위 이해가 맞는지 확인하고 스레드에서 답변해 주세요. 다르면 정정해 주셔도 돼요.\" }] });\nreturn [{ json: { body: { channel: \"C0B9LE2FF36\", text: mention + \" 님, 기획 검토 요청\", blocks: blocks } } }];"
         },
         "position": [
           3136,
@@ -995,45 +1006,29 @@
         "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-18T02:29:03.375Z",
-    "versionId": "44f2717a-1e57-485a-8c7c-196e1ba700f0",
+    "updatedAt": "2026-06-19T03:05:45.449Z",
+    "versionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b",
     "workflowId": "Y74XMZpTEUejToOQ",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-18T02:29:03.424Z",
+        "createdAt": "2026-06-19T03:05:45.567Z",
         "event": "deactivated",
-        "id": 86,
+        "id": 220,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "44f2717a-1e57-485a-8c7c-196e1ba700f0",
+        "versionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b",
         "workflowId": "Y74XMZpTEUejToOQ"
       },
       {
-        "createdAt": "2026-06-18T02:29:03.447Z",
+        "createdAt": "2026-06-19T03:05:45.597Z",
         "event": "activated",
-        "id": 87,
+        "id": 221,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "44f2717a-1e57-485a-8c7c-196e1ba700f0",
-        "workflowId": "Y74XMZpTEUejToOQ"
-      },
-      {
-        "createdAt": "2026-06-18T02:29:15.465Z",
-        "event": "deactivated",
-        "id": 88,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "44f2717a-1e57-485a-8c7c-196e1ba700f0",
-        "workflowId": "Y74XMZpTEUejToOQ"
-      },
-      {
-        "createdAt": "2026-06-18T02:29:15.491Z",
-        "event": "activated",
-        "id": 89,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "44f2717a-1e57-485a-8c7c-196e1ba700f0",
+        "versionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b",
         "workflowId": "Y74XMZpTEUejToOQ"
       }
     ]
   },
-  "activeVersionId": "44f2717a-1e57-485a-8c7c-196e1ba700f0",
+  "activeVersionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b",
   "connections": {
     "AWS Bedrock Chat Model": {
       "ai_languageModel": [
@@ -1612,7 +1607,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획이 '무엇을' 하려는지 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n직무당 최대 3개, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
+          "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
         },
         "promptType": "define",
         "text": "=아래는 노션에 새로 등록된 \"기획\" 태스크입니다.\n\n제목: {{ $(\"맥락 수집\").first().json.title }}\n프로덕트: {{ $(\"맥락 수집\").first().json.product }}\n우선순위: {{ $(\"맥락 수집\").first().json.priority }}\n본문:\n{{ $(\"맥락 수집\").first().json.body }}"
@@ -1654,12 +1649,20 @@
       "typeVersion": 2.2
     },
     {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OKR5k0AAH8p23JJj",
+          "name": "Figma PAT"
+        }
+      },
       "id": "b2490dd0-d3bf-4717-8101-24951d2a7098",
       "name": "Figma 노드 조회",
       "parameters": {
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
+        "maxLength": 12000,
         "method": "GET",
+        "optimizeResponse": true,
         "options": {
           "response": {
             "response": {
@@ -1680,27 +1683,19 @@
             }
           ]
         },
+        "responseType": "text",
         "sendQuery": true,
         "specifyQuery": "keypair",
         "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
-        "url": "=https://api.figma.com/v1/files/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fileKey', '조회할 Figma 파일 key (figma.com/design/<KEY>/... 의 KEY). DS 컴포넌트·토큰·화면취합 개요는 3Ifh58l7EWLXapWRys0vjf, 기능별 실제 화면은 태스크/Hub 카드에 링크된 파일 키 사용', 'string') }}/nodes",
-        "optimizeResponse": true,
-        "responseType": "text",
         "truncateResponse": true,
-        "maxLength": 12000
+        "url": "=https://api.figma.com/v1/files/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fileKey', '조회할 Figma 파일 key (figma.com/design/<KEY>/... 의 KEY). DS 컴포넌트·토큰·화면취합 개요는 3Ifh58l7EWLXapWRys0vjf, 기능별 실제 화면은 태스크/Hub 카드에 링크된 파일 키 사용', 'string') }}/nodes"
       },
       "position": [
         2272,
         464
       ],
       "type": "n8n-nodes-base.httpRequestTool",
-      "typeVersion": 4.4,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "OKR5k0AAH8p23JJj",
-          "name": "Figma PAT"
-        }
-      }
+      "typeVersion": 4.4
     },
     {
       "id": "61d1606d-7d63-4091-ba66-6017dacfb951",
@@ -1858,7 +1853,7 @@
       "id": "de5ac7d6-83e6-4a30-aec6-665bfa6c5b6f",
       "name": "부모 블록 생성",
       "parameters": {
-        "jsCode": "const title = $(\"맥락 수집\").first().json.title;\nconst out = $(\"맥락 충분성 게이트\").first().json.output || {};\nconst b = out.briefing || {};\nconst used = Array.isArray(out.context_used) ? out.context_used : [];\nconst lookup = $(\"담당자 Slack 조회\").first().json;\nconst slackId = (lookup && lookup.user && lookup.user.id) ? lookup.user.id : null;\nconst mention = slackId ? (\"<@\" + slackId + \">\") : \"담당자\";\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: mention + \" 님, 기획 검토 요청이에요.\\n*📋 \" + title + \"*\" } },\n  { type: \"divider\" }\n];\nconst parts = [\"*🧭 제가 이해한 기획 의도*\"];\nif (b.summary) { parts.push(\"*무엇을*\\n\" + b.summary); }\nif (b.scope) { parts.push(\"*닿는 곳*\\n\" + b.scope); }\nconst flows = Array.isArray(b.flows) ? b.flows.filter(Boolean) : [];\nif (flows.length) { parts.push(\"*흐름*\\n\" + flows.map(function(f){ return \"•  \" + f; }).join(\"\\n\")); }\nif (b.unclear) { parts.push(\"*아직 불명확*\\n\" + b.unclear); }\nif (parts.length === 1 && out.intent_briefing) { parts.push(out.intent_briefing); }\nblocks.push({ type: \"section\", text: { type: \"mrkdwn\", text: parts.join(\"\\n\\n\") } });\nif (used.length) {\n  blocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"📚 *참고한 지식*\\n\" + used.map(function(u){ return \"•  \" + u; }).join(\"\\n\") }] });\n}\nblocks.push({ type: \"divider\" });\nblocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"👇 위 이해가 맞는지 확인하고 스레드에서 답변해 주세요. 다르면 정정해 주셔도 돼요.\" }] });\nreturn [{ json: { body: { channel: \"C0B9LE2FF36\", text: mention + \" 님, 기획 검토 요청\", blocks: blocks } } }];"
+        "jsCode": "const title = $(\"맥락 수집\").first().json.title;\nconst out = $(\"맥락 충분성 게이트\").first().json.output || {};\nconst b = out.briefing || {};\nconst used = Array.isArray(out.context_used) ? out.context_used : [];\nconst lookup = $(\"담당자 Slack 조회\").first().json;\nconst slackId = (lookup && lookup.user && lookup.user.id) ? lookup.user.id : null;\nconst mention = slackId ? (\"<@\" + slackId + \">\") : \"담당자\";\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: mention + \" 님, 기획 검토 요청이에요.\\n*📋 \" + title + \"*\" } },\n  { type: \"divider\" }\n];\nconst parts = [\"*🧭 제가 이해한 기획 의도*\"];\nif (b.summary) { parts.push(\"*목적*\\n\" + b.summary); }\nif (b.scope) { parts.push(\"*대상*\\n\" + b.scope); }\nconst flows = Array.isArray(b.flows) ? b.flows.filter(Boolean) : [];\nif (flows.length) { parts.push(\"*흐름*\\n\" + flows.map(function(f){ return \"•  \" + f; }).join(\"\\n\")); }\nif (b.unclear) { parts.push(\"*확인 필요*\\n\" + b.unclear); }\nif (parts.length === 1 && out.intent_briefing) { parts.push(out.intent_briefing); }\nblocks.push({ type: \"section\", text: { type: \"mrkdwn\", text: parts.join(\"\\n\\n\") } });\nif (used.length) {\n  blocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"📚 *참고한 지식*\\n\" + used.map(function(u){ return \"•  \" + u; }).join(\"\\n\") }] });\n}\nblocks.push({ type: \"divider\" });\nblocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"👇 위 이해가 맞는지 확인하고 스레드에서 답변해 주세요. 다르면 정정해 주셔도 돼요.\" }] });\nreturn [{ json: { body: { channel: \"C0B9LE2FF36\", text: mention + \" 님, 기획 검토 요청\", blocks: blocks } } }];"
       },
       "position": [
         3136,
@@ -2082,7 +2077,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-18T02:29:03.373Z",
-  "versionCounter": 122,
-  "versionId": "44f2717a-1e57-485a-8c7c-196e1ba700f0"
+  "updatedAt": "2026-06-19T03:05:45.433Z",
+  "versionCounter": 140,
+  "versionId": "ba78c7f2-91dd-4edd-acd6-675967c15e1b"
 }
