@@ -116,7 +116,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-18T10:25:53.316Z",
+    "createdAt": "2026-06-19T01:24:45.688Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -390,29 +390,29 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-18T10:25:53.316Z",
-    "versionId": "e23659f8-d4b8-4325-ae0a-f9210d1e1a5e",
+    "updatedAt": "2026-06-19T01:24:45.688Z",
+    "versionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6",
     "workflowId": "0KSWtN1SPermSuFw",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-18T10:25:53.375Z",
+        "createdAt": "2026-06-19T01:24:45.729Z",
         "event": "deactivated",
-        "id": 206,
+        "id": 212,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "e23659f8-d4b8-4325-ae0a-f9210d1e1a5e",
+        "versionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6",
         "workflowId": "0KSWtN1SPermSuFw"
       },
       {
-        "createdAt": "2026-06-18T10:25:53.391Z",
+        "createdAt": "2026-06-19T01:24:45.745Z",
         "event": "activated",
-        "id": 207,
+        "id": 213,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "e23659f8-d4b8-4325-ae0a-f9210d1e1a5e",
+        "versionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6",
         "workflowId": "0KSWtN1SPermSuFw"
       }
     ]
   },
-  "activeVersionId": "e23659f8-d4b8-4325-ae0a-f9210d1e1a5e",
+  "activeVersionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6",
   "connections": {
     "Dispatch 시작": {
       "main": [
@@ -803,8 +803,9 @@
       "typeVersion": 4.4
     }
   ],
-  "pinData": null,
+  "pinData": {},
   "settings": {
+    "binaryMode": "separate",
     "executionOrder": "v1"
   },
   "shared": [
@@ -829,7 +830,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-18T10:25:53.314Z",
-  "versionCounter": 6,
-  "versionId": "e23659f8-d4b8-4325-ae0a-f9210d1e1a5e"
+  "updatedAt": "2026-06-19T01:24:45.686Z",
+  "versionCounter": 16,
+  "versionId": "827af95e-3f21-4ea3-8025-e7a4e340f8e6"
 }
