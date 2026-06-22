@@ -71,7 +71,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-22T05:33:42.751Z",
+    "createdAt": "2026-06-22T05:40:40.834Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -169,7 +169,7 @@
         "id": "91e7e1de-2754-40d8-8c58-33c5ae851bb7",
         "name": "디스패치 판정",
         "parameters": {
-          "jsCode": "const completed=new Set();$('완료 조회').all().forEach(function(it){var id=String(it.json.id||'').replace(/-/g,'');if(id)completed.add(id);});const createdMap={};$('created 조회').all().forEach(function(it){var r=it.json;if(r.subtask_page_id){createdMap[String(r.parent_page_id||'').replace(/-/g,'')+'|'+r.stage]=String(r.subtask_page_id).replace(/-/g,'');}});const out=[];const seen={};$('pending 조회').all().forEach(function(it){var row=it.json;var parent=String(row.parent_page_id||'').replace(/-/g,'');var key=parent+'|'+row.stage;if(createdMap[key])return;if(seen[key])return;var deps=[];try{deps=JSON.parse(row.depends_on||'[]');}catch(e){deps=[];}var ready=deps.length>0&&deps.every(function(dep){var sid=createdMap[parent+'|'+dep];return sid&&completed.has(sid);});if(ready){seen[key]=1;out.push({json:{rowId:row.id,parentPageId:row.parent_page_id,stage:row.stage,persona:row.persona,pipeline:row.pipeline,pageId:row.parent_page_id,title:row.title,brief:row.brief,qa:row.qa,channelId:row.channel_id,threadTs:row.thread_ts}});}});return out;"
+          "jsCode": "const completed=new Set();$('완료 조회').all().forEach(function(it){var id=String(it.json.id||'').replace(/-/g,'');if(id)completed.add(id);});const createdMap={};$('created 조회').all().forEach(function(it){var r=it.json;if(r.subtask_page_id){createdMap[String(r.parent_page_id||'').replace(/-/g,'')+'|'+r.stage]=String(r.subtask_page_id).replace(/-/g,'');}});const priorMap={};$('created 조회').all().forEach(function(it){var r=it.json;var p=String(r.parent_page_id||'').replace(/-/g,'');if(!priorMap[p])priorMap[p]={};if(r.stage_brief&&!priorMap[p][r.stage])priorMap[p][r.stage]=r.stage_brief;});const out=[];const seen={};$('pending 조회').all().forEach(function(it){var row=it.json;var parent=String(row.parent_page_id||'').replace(/-/g,'');var key=parent+'|'+row.stage;if(createdMap[key])return;if(seen[key])return;var deps=[];try{deps=JSON.parse(row.depends_on||'[]');}catch(e){deps=[];}var ready=deps.length>0&&deps.every(function(dep){var sid=createdMap[parent+'|'+dep];return sid&&completed.has(sid);});if(ready){seen[key]=1;var pc=Object.keys(priorMap[parent]||{}).map(function(s){return '## ['+s+'] \\uc791\\uc5c5 \\uc9c0\\uc2dc\\uc11c\\n'+priorMap[parent][s];}).join('\\n\\n');out.push({json:{rowId:row.id,priorContext:pc,parentPageId:row.parent_page_id,stage:row.stage,persona:row.persona,pipeline:row.pipeline,pageId:row.parent_page_id,title:row.title,brief:row.brief,qa:row.qa,channelId:row.channel_id,threadTs:row.thread_ts}});}});return out;"
         },
         "position": [
           660,
@@ -182,7 +182,7 @@
         "id": "626c5c87-e396-4666-80a0-ef26aaac4ba2",
         "name": "WF3 호출",
         "parameters": {
-          "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs} }}",
+          "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs,priorContext:$json.priorContext} }}",
           "method": "POST",
           "options": {
             "response": {
@@ -279,29 +279,29 @@
         "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-22T05:33:42.751Z",
-    "versionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d",
+    "updatedAt": "2026-06-22T05:40:40.834Z",
+    "versionId": "f6dd536a-0ead-479a-9e6a-5a284bf60f11",
     "workflowId": "Nivu3hdSDVlL5LrR",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-22T05:33:42.786Z",
+        "createdAt": "2026-06-22T05:40:40.866Z",
         "event": "deactivated",
-        "id": 253,
+        "id": 257,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d",
+        "versionId": "f6dd536a-0ead-479a-9e6a-5a284bf60f11",
         "workflowId": "Nivu3hdSDVlL5LrR"
       },
       {
-        "createdAt": "2026-06-22T05:33:42.808Z",
+        "createdAt": "2026-06-22T05:40:40.880Z",
         "event": "activated",
-        "id": 254,
+        "id": 258,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d",
+        "versionId": "f6dd536a-0ead-479a-9e6a-5a284bf60f11",
         "workflowId": "Nivu3hdSDVlL5LrR"
       }
     ]
   },
-  "activeVersionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d",
+  "activeVersionId": "f6dd536a-0ead-479a-9e6a-5a284bf60f11",
   "connections": {
     "WF3 호출": {
       "main": [
@@ -471,7 +471,7 @@
       "id": "91e7e1de-2754-40d8-8c58-33c5ae851bb7",
       "name": "디스패치 판정",
       "parameters": {
-        "jsCode": "const completed=new Set();$('완료 조회').all().forEach(function(it){var id=String(it.json.id||'').replace(/-/g,'');if(id)completed.add(id);});const createdMap={};$('created 조회').all().forEach(function(it){var r=it.json;if(r.subtask_page_id){createdMap[String(r.parent_page_id||'').replace(/-/g,'')+'|'+r.stage]=String(r.subtask_page_id).replace(/-/g,'');}});const out=[];const seen={};$('pending 조회').all().forEach(function(it){var row=it.json;var parent=String(row.parent_page_id||'').replace(/-/g,'');var key=parent+'|'+row.stage;if(createdMap[key])return;if(seen[key])return;var deps=[];try{deps=JSON.parse(row.depends_on||'[]');}catch(e){deps=[];}var ready=deps.length>0&&deps.every(function(dep){var sid=createdMap[parent+'|'+dep];return sid&&completed.has(sid);});if(ready){seen[key]=1;out.push({json:{rowId:row.id,parentPageId:row.parent_page_id,stage:row.stage,persona:row.persona,pipeline:row.pipeline,pageId:row.parent_page_id,title:row.title,brief:row.brief,qa:row.qa,channelId:row.channel_id,threadTs:row.thread_ts}});}});return out;"
+        "jsCode": "const completed=new Set();$('완료 조회').all().forEach(function(it){var id=String(it.json.id||'').replace(/-/g,'');if(id)completed.add(id);});const createdMap={};$('created 조회').all().forEach(function(it){var r=it.json;if(r.subtask_page_id){createdMap[String(r.parent_page_id||'').replace(/-/g,'')+'|'+r.stage]=String(r.subtask_page_id).replace(/-/g,'');}});const priorMap={};$('created 조회').all().forEach(function(it){var r=it.json;var p=String(r.parent_page_id||'').replace(/-/g,'');if(!priorMap[p])priorMap[p]={};if(r.stage_brief&&!priorMap[p][r.stage])priorMap[p][r.stage]=r.stage_brief;});const out=[];const seen={};$('pending 조회').all().forEach(function(it){var row=it.json;var parent=String(row.parent_page_id||'').replace(/-/g,'');var key=parent+'|'+row.stage;if(createdMap[key])return;if(seen[key])return;var deps=[];try{deps=JSON.parse(row.depends_on||'[]');}catch(e){deps=[];}var ready=deps.length>0&&deps.every(function(dep){var sid=createdMap[parent+'|'+dep];return sid&&completed.has(sid);});if(ready){seen[key]=1;var pc=Object.keys(priorMap[parent]||{}).map(function(s){return '## ['+s+'] \\uc791\\uc5c5 \\uc9c0\\uc2dc\\uc11c\\n'+priorMap[parent][s];}).join('\\n\\n');out.push({json:{rowId:row.id,priorContext:pc,parentPageId:row.parent_page_id,stage:row.stage,persona:row.persona,pipeline:row.pipeline,pageId:row.parent_page_id,title:row.title,brief:row.brief,qa:row.qa,channelId:row.channel_id,threadTs:row.thread_ts}});}});return out;"
       },
       "position": [
         660,
@@ -484,7 +484,7 @@
       "id": "626c5c87-e396-4666-80a0-ef26aaac4ba2",
       "name": "WF3 호출",
       "parameters": {
-        "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs} }}",
+        "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs,priorContext:$json.priorContext} }}",
         "method": "POST",
         "options": {
           "response": {
@@ -612,7 +612,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-22T05:33:42.749Z",
-  "versionCounter": 17,
-  "versionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d"
+  "updatedAt": "2026-06-22T05:40:40.833Z",
+  "versionCounter": 20,
+  "versionId": "f6dd536a-0ead-479a-9e6a-5a284bf60f11"
 }

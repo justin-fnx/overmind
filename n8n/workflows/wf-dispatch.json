@@ -116,7 +116,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-19T06:58:39.992Z",
+    "createdAt": "2026-06-22T05:40:40.979Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -288,7 +288,7 @@
         "id": "17f1201d-07a1-43ee-a0af-387f30eb99b3",
         "name": "WF3 호출",
         "parameters": {
-          "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs} }}",
+          "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs,priorContext:''} }}",
           "method": "POST",
           "options": {
             "response": {
@@ -391,29 +391,29 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-19T06:58:39.992Z",
-    "versionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa",
+    "updatedAt": "2026-06-22T05:40:40.979Z",
+    "versionId": "d5923dd4-38a6-4ddf-9ab8-d561cff9967a",
     "workflowId": "0KSWtN1SPermSuFw",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-19T06:58:40.032Z",
+        "createdAt": "2026-06-22T05:40:41.012Z",
         "event": "deactivated",
-        "id": 234,
+        "id": 259,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa",
+        "versionId": "d5923dd4-38a6-4ddf-9ab8-d561cff9967a",
         "workflowId": "0KSWtN1SPermSuFw"
       },
       {
-        "createdAt": "2026-06-19T06:58:40.046Z",
+        "createdAt": "2026-06-22T05:40:41.025Z",
         "event": "activated",
-        "id": 235,
+        "id": 260,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa",
+        "versionId": "d5923dd4-38a6-4ddf-9ab8-d561cff9967a",
         "workflowId": "0KSWtN1SPermSuFw"
       }
     ]
   },
-  "activeVersionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa",
+  "activeVersionId": "d5923dd4-38a6-4ddf-9ab8-d561cff9967a",
   "connections": {
     "Dispatch 시작": {
       "main": [
@@ -702,7 +702,7 @@
       "id": "17f1201d-07a1-43ee-a0af-387f30eb99b3",
       "name": "WF3 호출",
       "parameters": {
-        "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs} }}",
+        "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs,priorContext:''} }}",
         "method": "POST",
         "options": {
           "response": {
@@ -833,7 +833,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-19T06:58:39.990Z",
-  "versionCounter": 20,
-  "versionId": "4ebf93ab-a393-45cf-b136-ae16f4e23aaa"
+  "updatedAt": "2026-06-22T05:40:40.978Z",
+  "versionCounter": 23,
+  "versionId": "d5923dd4-38a6-4ddf-9ab8-d561cff9967a"
 }

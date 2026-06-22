@@ -147,7 +147,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-19T08:25:14.669Z",
+    "createdAt": "2026-06-22T05:40:41.137Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -252,7 +252,7 @@
         "id": "enrich-judge-001",
         "name": "완료 기획 판정",
         "parameters": {
-          "jsCode": "var pipe = $('파이프라인 조회').all().map(function(i){return i.json;});\nvar logRows = $('풍부화 로그 조회').all().map(function(i){return i.json;});\nvar enriched = {};\nlogRows.forEach(function(r){ if(r && r.parent_page_id) enriched[r.parent_page_id]=1; });\nvar cards = $('허브 목록 조회').all().map(function(i){return i.json;});\nvar menuLines = [];\ncards.forEach(function(c){\n  if(!c || !c.properties) return;\n  var p = c.properties;\n  var subj = (p['주제'] && p['주제'].title && p['주제'].title[0]) ? p['주제'].title[0].plain_text : '';\n  if(!subj) return;\n  var area = (p['영역'] && p['영역'].select) ? p['영역'].select.name : '';\n  var tier = (p['계층'] && p['계층'].select) ? p['계층'].select.name : '';\n  var trust = (p['신뢰등급'] && p['신뢰등급'].select) ? p['신뢰등급'].select.name : '';\n  menuLines.push('- [' + area + '/' + tier + '/' + trust + '] ' + subj + ' (id: ' + c.id + ')');\n});\nvar hubMenu = menuLines.join('\\n');\n\nvar byParent = {};\npipe.forEach(function(r){\n  if(!r || !r.parent_page_id) return;\n  if(!byParent[r.parent_page_id]) byParent[r.parent_page_id]=[];\n  byParent[r.parent_page_id].push(r);\n});\nvar out = [];\nObject.keys(byParent).forEach(function(pid){\n  if(enriched[pid]) return;\n  var rows = byParent[pid];\n  if(!rows.length) return;\n  var allCreated = rows.every(function(r){ return r.status === 'created'; });\n  if(!allCreated) return;\n  var first = rows[0];\n  var stagesText = rows.map(function(r){ return r.stage + (r.persona ? '(' + r.persona + ')' : ''); }).join(', ');\n  out.push({ json: {\n    pageId: pid,\n    title: first.title || '',\n    brief: first.brief || '',\n    qa: first.qa || '',\n    pipeline: first.pipeline || '',\n    stagesText: stagesText,\n    channelId: first.channel_id || 'C0B9LE2FF36',\n    threadTs: first.thread_ts || '',\n    pageUrl: 'https://www.notion.so/' + String(pid).replace(/-/g, ''),\n    hubMenu: hubMenu\n  }});\n});\nreturn out;"
+          "jsCode": "var pipe = $('파이프라인 조회').all().map(function(i){return i.json;});\nvar logRows = $('풍부화 로그 조회').all().map(function(i){return i.json;});\nvar enriched = {};\nlogRows.forEach(function(r){ if(r && r.parent_page_id) enriched[r.parent_page_id]=1; });\nvar cards = $('허브 목록 조회').all().map(function(i){return i.json;});\nvar menuLines = [];\ncards.forEach(function(c){\n  if(!c || !c.properties) return;\n  var p = c.properties;\n  var subj = (p['주제'] && p['주제'].title && p['주제'].title[0]) ? p['주제'].title[0].plain_text : '';\n  if(!subj) return;\n  var area = (p['영역'] && p['영역'].select) ? p['영역'].select.name : '';\n  var tier = (p['계층'] && p['계층'].select) ? p['계층'].select.name : '';\n  var trust = (p['신뢰등급'] && p['신뢰등급'].select) ? p['신뢰등급'].select.name : '';\n  menuLines.push('- [' + area + '/' + tier + '/' + trust + '] ' + subj + ' (id: ' + c.id + ')');\n});\nvar hubMenu = menuLines.join('\\n');\n\nvar byParent = {};\npipe.forEach(function(r){\n  if(!r || !r.parent_page_id) return;\n  if(!byParent[r.parent_page_id]) byParent[r.parent_page_id]=[];\n  byParent[r.parent_page_id].push(r);\n});\nvar out = [];\nObject.keys(byParent).forEach(function(pid){\n  if(enriched[pid]) return;\n  var rows = byParent[pid];\n  if(!rows.length) return;\n  var allCreated = rows.every(function(r){ return r.status !== 'pending'; });\n  if(!allCreated) return;\n  var first = rows[0];\n  var stagesText = rows.map(function(r){ return r.stage + (r.persona ? '(' + r.persona + ')' : ''); }).join(', ');\n  out.push({ json: {\n    pageId: pid,\n    title: first.title || '',\n    brief: first.brief || '',\n    qa: first.qa || '',\n    pipeline: first.pipeline || '',\n    stagesText: stagesText,\n    channelId: first.channel_id || 'C0B9LE2FF36',\n    threadTs: first.thread_ts || '',\n    pageUrl: 'https://www.notion.so/' + String(pid).replace(/-/g, ''),\n    hubMenu: hubMenu\n  }});\n});\nreturn out;"
         },
         "position": [
           780,
@@ -620,21 +620,29 @@
         "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-19T08:25:14.669Z",
-    "versionId": "2baf34b3-e3f2-4e42-9d1d-c17e452dcce0",
+    "updatedAt": "2026-06-22T05:40:41.137Z",
+    "versionId": "becee83f-ffaf-40a5-b321-f3a40f1da786",
     "workflowId": "bPNVUvuHpaograNX",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-22T01:28:54.461Z",
-        "event": "activated",
-        "id": 247,
+        "createdAt": "2026-06-22T05:40:41.177Z",
+        "event": "deactivated",
+        "id": 261,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "2baf34b3-e3f2-4e42-9d1d-c17e452dcce0",
+        "versionId": "becee83f-ffaf-40a5-b321-f3a40f1da786",
+        "workflowId": "bPNVUvuHpaograNX"
+      },
+      {
+        "createdAt": "2026-06-22T05:40:41.199Z",
+        "event": "activated",
+        "id": 262,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "becee83f-ffaf-40a5-b321-f3a40f1da786",
         "workflowId": "bPNVUvuHpaograNX"
       }
     ]
   },
-  "activeVersionId": "2baf34b3-e3f2-4e42-9d1d-c17e452dcce0",
+  "activeVersionId": "becee83f-ffaf-40a5-b321-f3a40f1da786",
   "connections": {
     "라우팅": {
       "main": [
@@ -887,7 +895,7 @@
       "id": "enrich-judge-001",
       "name": "완료 기획 판정",
       "parameters": {
-        "jsCode": "var pipe = $('파이프라인 조회').all().map(function(i){return i.json;});\nvar logRows = $('풍부화 로그 조회').all().map(function(i){return i.json;});\nvar enriched = {};\nlogRows.forEach(function(r){ if(r && r.parent_page_id) enriched[r.parent_page_id]=1; });\nvar cards = $('허브 목록 조회').all().map(function(i){return i.json;});\nvar menuLines = [];\ncards.forEach(function(c){\n  if(!c || !c.properties) return;\n  var p = c.properties;\n  var subj = (p['주제'] && p['주제'].title && p['주제'].title[0]) ? p['주제'].title[0].plain_text : '';\n  if(!subj) return;\n  var area = (p['영역'] && p['영역'].select) ? p['영역'].select.name : '';\n  var tier = (p['계층'] && p['계층'].select) ? p['계층'].select.name : '';\n  var trust = (p['신뢰등급'] && p['신뢰등급'].select) ? p['신뢰등급'].select.name : '';\n  menuLines.push('- [' + area + '/' + tier + '/' + trust + '] ' + subj + ' (id: ' + c.id + ')');\n});\nvar hubMenu = menuLines.join('\\n');\n\nvar byParent = {};\npipe.forEach(function(r){\n  if(!r || !r.parent_page_id) return;\n  if(!byParent[r.parent_page_id]) byParent[r.parent_page_id]=[];\n  byParent[r.parent_page_id].push(r);\n});\nvar out = [];\nObject.keys(byParent).forEach(function(pid){\n  if(enriched[pid]) return;\n  var rows = byParent[pid];\n  if(!rows.length) return;\n  var allCreated = rows.every(function(r){ return r.status === 'created'; });\n  if(!allCreated) return;\n  var first = rows[0];\n  var stagesText = rows.map(function(r){ return r.stage + (r.persona ? '(' + r.persona + ')' : ''); }).join(', ');\n  out.push({ json: {\n    pageId: pid,\n    title: first.title || '',\n    brief: first.brief || '',\n    qa: first.qa || '',\n    pipeline: first.pipeline || '',\n    stagesText: stagesText,\n    channelId: first.channel_id || 'C0B9LE2FF36',\n    threadTs: first.thread_ts || '',\n    pageUrl: 'https://www.notion.so/' + String(pid).replace(/-/g, ''),\n    hubMenu: hubMenu\n  }});\n});\nreturn out;"
+        "jsCode": "var pipe = $('파이프라인 조회').all().map(function(i){return i.json;});\nvar logRows = $('풍부화 로그 조회').all().map(function(i){return i.json;});\nvar enriched = {};\nlogRows.forEach(function(r){ if(r && r.parent_page_id) enriched[r.parent_page_id]=1; });\nvar cards = $('허브 목록 조회').all().map(function(i){return i.json;});\nvar menuLines = [];\ncards.forEach(function(c){\n  if(!c || !c.properties) return;\n  var p = c.properties;\n  var subj = (p['주제'] && p['주제'].title && p['주제'].title[0]) ? p['주제'].title[0].plain_text : '';\n  if(!subj) return;\n  var area = (p['영역'] && p['영역'].select) ? p['영역'].select.name : '';\n  var tier = (p['계층'] && p['계층'].select) ? p['계층'].select.name : '';\n  var trust = (p['신뢰등급'] && p['신뢰등급'].select) ? p['신뢰등급'].select.name : '';\n  menuLines.push('- [' + area + '/' + tier + '/' + trust + '] ' + subj + ' (id: ' + c.id + ')');\n});\nvar hubMenu = menuLines.join('\\n');\n\nvar byParent = {};\npipe.forEach(function(r){\n  if(!r || !r.parent_page_id) return;\n  if(!byParent[r.parent_page_id]) byParent[r.parent_page_id]=[];\n  byParent[r.parent_page_id].push(r);\n});\nvar out = [];\nObject.keys(byParent).forEach(function(pid){\n  if(enriched[pid]) return;\n  var rows = byParent[pid];\n  if(!rows.length) return;\n  var allCreated = rows.every(function(r){ return r.status !== 'pending'; });\n  if(!allCreated) return;\n  var first = rows[0];\n  var stagesText = rows.map(function(r){ return r.stage + (r.persona ? '(' + r.persona + ')' : ''); }).join(', ');\n  out.push({ json: {\n    pageId: pid,\n    title: first.title || '',\n    brief: first.brief || '',\n    qa: first.qa || '',\n    pipeline: first.pipeline || '',\n    stagesText: stagesText,\n    channelId: first.channel_id || 'C0B9LE2FF36',\n    threadTs: first.thread_ts || '',\n    pageUrl: 'https://www.notion.so/' + String(pid).replace(/-/g, ''),\n    hubMenu: hubMenu\n  }});\n});\nreturn out;"
       },
       "position": [
         780,
@@ -1285,7 +1293,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-19T08:25:14.669Z",
-  "versionCounter": 4,
-  "versionId": "2baf34b3-e3f2-4e42-9d1d-c17e452dcce0"
+  "updatedAt": "2026-06-22T05:40:41.135Z",
+  "versionCounter": 7,
+  "versionId": "becee83f-ffaf-40a5-b321-f3a40f1da786"
 }
