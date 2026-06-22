@@ -71,7 +71,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-18T09:55:16.674Z",
+    "createdAt": "2026-06-22T05:33:42.751Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -222,12 +222,12 @@
               {
                 "condition": "eq",
                 "keyName": "parent_page_id",
-                "keyValue": "={{ $json.parentPageId }}"
+                "keyValue": "={{ $('디스패치 판정').item.json.parentPageId }}"
               },
               {
                 "condition": "eq",
                 "keyName": "stage",
-                "keyValue": "={{ $json.stage }}"
+                "keyValue": "={{ $('디스패치 판정').item.json.stage }}"
               },
               {
                 "condition": "eq",
@@ -279,21 +279,29 @@
         "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-18T09:55:16.674Z",
-    "versionId": "613931ca-dea0-4e87-889e-1a04fbb66f25",
+    "updatedAt": "2026-06-22T05:33:42.751Z",
+    "versionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d",
     "workflowId": "Nivu3hdSDVlL5LrR",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-22T04:58:40.421Z",
-        "event": "activated",
-        "id": 252,
+        "createdAt": "2026-06-22T05:33:42.786Z",
+        "event": "deactivated",
+        "id": 253,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "613931ca-dea0-4e87-889e-1a04fbb66f25",
+        "versionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d",
+        "workflowId": "Nivu3hdSDVlL5LrR"
+      },
+      {
+        "createdAt": "2026-06-22T05:33:42.808Z",
+        "event": "activated",
+        "id": 254,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d",
         "workflowId": "Nivu3hdSDVlL5LrR"
       }
     ]
   },
-  "activeVersionId": "613931ca-dea0-4e87-889e-1a04fbb66f25",
+  "activeVersionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d",
   "connections": {
     "WF3 호출": {
       "main": [
@@ -516,12 +524,12 @@
             {
               "condition": "eq",
               "keyName": "parent_page_id",
-              "keyValue": "={{ $json.parentPageId }}"
+              "keyValue": "={{ $('디스패치 판정').item.json.parentPageId }}"
             },
             {
               "condition": "eq",
               "keyName": "stage",
-              "keyValue": "={{ $json.stage }}"
+              "keyValue": "={{ $('디스패치 판정').item.json.stage }}"
             },
             {
               "condition": "eq",
@@ -604,7 +612,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-19T04:48:31.935Z",
-  "versionCounter": 14,
-  "versionId": "613931ca-dea0-4e87-889e-1a04fbb66f25"
+  "updatedAt": "2026-06-22T05:33:42.749Z",
+  "versionCounter": 17,
+  "versionId": "b86a359c-ed33-45aa-b0bf-ebde8e26284d"
 }
