@@ -300,3 +300,14 @@ mydata-mgmts-api (구 bomapp_my_data; SB 3.4/Java 21, 마이데이터 표준 mgm
 - **마이데이터 인증서(`auth.bomapp.co.kr`) 연 1회 갱신**: DigiCert EV 인증서로 매년 6월 10일경 만기. 발급은 UCERT를 통해 수동 진행하며, 인바운드(ACM/ALB) + 아웃바운드(JKS, mydata-agent/mydata-api/next-backend/mydata-batch) 양쪽 교체 필요. 만기 누락 시 마이데이터 연동 전체 다운 위험.
   - Runbook: `../infra/docs/mydata-cert-renewal-runbook.md`
   - 영향 서비스: `mydata-agent`, `next-backend`(bomapp-external/mydata 모듈), `bomapp-env`(Dockerfile/entrypoint), `mydata-api`, `mydata-batch`, `prod-alb`
+
+- **마이데이터 호출이력 파티션 정리 (BOM-217)**: `log_my_data_api_request_v2` 는 신용정보법 시행령 제18조의6 제10항상 보관의무 대상이며 금감원이 월/분기/연 단위로 자료를 요청한다. `created_at` 월별 RANGE 파티셔닝 — 매월 1일 신규 파티션 생성 + 내부기준 **5년 경과 파티션 `DROP PARTITION`** 자동화. v1(`log_my_data_api_request`)은 적재 중단된 구버전이나 보관의무 대상이라 드롭 불가. 보관기간 5년은 내부 추정치 → 보안팀/마데 운영 컨펌 필요.
+  - 상세: `docs/db-table-cleanup.md`, `docs/services/mydata-platform.md §9`
+
+### DB 테이블 정리 시 주의 (BOM-207)
+
+- **"정적 코드 참조 미존재 ≠ 드롭 가능"** — 테이블 드롭 판정 시 다음을 반드시 교차 검증한다.
+  1. **법적 보관의무**: 코드 미참조여도 법령상 보관 대상인 호출이력(마이데이터 등)은 드롭 불가.
+  2. **런타임 dead code 잔재**: 정적 참조는 있으나(KEEP처럼 보이나) 그 참조 코드가 죽은 코드면 실제 드롭 대상 (예: PLA-118 `saas_*` — wings 보안 폴백·상담 external 이 dead).
+  3. **사용자 노출 잔존**: 과거 발송 콘텐츠를 사용자가 재열람할 수 있어 유지 필요 (예: `alimtalk_total_paid_payload` 알림톡 게이트페이지).
+  - 판정 결과 카탈로그: `docs/db-table-cleanup.md`

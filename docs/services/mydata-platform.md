@@ -262,7 +262,24 @@ mydata-api / mydata-batch
 
 ---
 
-## 9. 관련 문서
+## 9. 마이데이터 호출이력 보관 정책 (BOM-217)
+
+마이데이터 API 호출이력은 **신용정보법 시행령 제18조의6 제10항**(개인신용정보 제공·이용 기록 작성·보관)에 따른 **법적 보관의무 대상**이다. 금감원이 월·분기·연도별로 호출이력 자료를 요청한다.
+
+| 테이블 | 상태 | 처리 |
+|---|---|---|
+| `log_my_data_api_request` (v1) | 응답속도 이슈로 v2 신설 후 적재 중단된 구버전. 금감원 보고 쿼리(노션 DW013/DW014) 직접 참조 없음 | 코드 미참조여도 **법적 보관의무 대상 → 드롭 불가** |
+| `log_my_data_api_request_v2` | 현재 적재·운영. **금감원 보고 DW013/DW014가 전부 v2 참조** | **파티셔닝 + 주기적 정리 실타겟** |
+| `my_data_insurance_transaction_old`, `my_data_org_20240701` | 호출이력 아닌 **백업 스냅샷** | 삭제 무관 |
+| `log_insurance_guarantee_request_240613_archived` | 신화(보장분석) 호출이력 | 보관 정책 확인 필요 |
+
+- **보관기간**: 법령 미명시 → **내부기준 5년(보수적)** 권고. ⚠️ 보안팀/마데 운영 컨펌 필요.
+- **파티셔닝**(BOM-217 권고): `created_at` 월별 RANGE, hot 13개월 유지, 5년 경과분 `DROP PARTITION`, 매월 신규 생성+만료 삭제 자동화.
+- 상세: [`../db-table-cleanup.md`](../db-table-cleanup.md).
+
+---
+
+## 10. 관련 문서
 
 - [`./mydata-agent.md`](./mydata-agent.md) — mydata-agent 단독 페이지
 - [`./mydata-mgmts-api.md`](./mydata-mgmts-api.md) — 종합포털 수신 서버 단독 페이지
@@ -270,7 +287,7 @@ mydata-api / mydata-batch
 - [`../runtime-verification.md`](../runtime-verification.md) §10 — `auth.bomapp.co.kr` 라우팅 라이브 검증
 - [`../architecture.md`](../architecture.md) — 전체 서비스 그래프
 
-## 10. 메모
+## 11. 메모
 
 - 2026-06-09 작성. 이번 cert 갱신(BOM-129) 작업 중 4종 서비스 호출 관계를 명확히 정리.
 - 발견 사실: **NextMyDataApiClient URL은 prod에서 빈 값** = prod 위임 비활성. dev/stg에서만 mgmts-api가 next-backend로 위임.
