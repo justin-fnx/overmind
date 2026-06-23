@@ -288,7 +288,7 @@ done
 
 ## 10. `auth.bomapp.co.kr` ↔ `bomapp_oauth` ↔ `bomapp_my_data` 관계 (2026-06-04 검증)
 
-> **⚠️ 2026-06 갱신**: `bomapp_my_data` 는 이후 BOM-113 으로 현대화(SB 2.3→3.4.5/Java 11→21/jjwt 0.12)되고 BOM-121 으로 리네임됨 — repo `bomapp_my_data`→**`mydata-mgmts-api`**, 패키지 `kr.co.bomapp.auth.bomappmydata`→`kr.co.bomapp.mydata.mgmts`, artifact `bomappmydata`→`mydata-mgmts-api`. **단 PROD 미컷오버** — 아래 §10 본문의 리포·패키지·jar 명(`bomappmydata-0.0.1-SNAPSHOT.jar`)은 **2026-06-04 검증 시점의 실측(구 코드)** 으로 그대로 둔다.
+> **⚠️ 2026-06 갱신**: `bomapp_my_data` 는 이후 BOM-113 으로 현대화(SB 2.3→3.4.5/Java 11→21/jjwt 0.12)되고 BOM-121 으로 리네임됨 — repo `bomapp_my_data`→**`mydata-mgmts-api`**, 패키지 `kr.co.bomapp.auth.bomappmydata`→`kr.co.bomapp.mydata.mgmts`, artifact `bomappmydata`→`mydata-mgmts-api`. 아래 §10 본문의 리포·패키지·jar 명(`bomappmydata-0.0.1-SNAPSHOT.jar`)은 **2026-06-04 검증 시점(당시 PROD 미컷오버)의 실측(구 코드)** 으로 그대로 둔다. 현재 운영 상태는 신규 ECS 100% 컷오버 완료(2026-06-11)이며, 본 섹션의 후속 갱신 문단을 우선한다.
 
 > 검증 방법: 라이브 AWS(`describe-rules`/`describe-target-groups`/`describe-target-health` — **TF 아닌 콘솔 상태 직접**), CloudWatch `RequestCountPerTarget`, ALB access log grep, 노션 작업기록, 로컬 리포 코드 grep. PROD-BACK 은 손으로 jar 를 띄우고 리스너도 콘솔 직접수정 가능한 패턴이므로 TF 만으로 판단하지 않음.
 
