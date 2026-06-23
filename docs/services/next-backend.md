@@ -305,7 +305,7 @@ graph LR
 |------|------|
 | Dockerfile | 없음 (Jib 으로 OCI 이미지 직접 빌드) |
 | 빌드 | `./gradlew :bomapp-server-{app}:jib` |
-| CI | **과도기 듀얼 CI**: GitHub Actions (`.github/workflows/build.yml`, `build-and-deploy.yml`, `ecs-deploy.yml`, `pr-check.yml`) + GitLab CI (`.gitlab-ci.yml`, 사내 `gitlab.bomapp.co.kr` 이전 대비). 양쪽 동일 동작(Jib→ECR→ECS). GitLab 측은 정적 AWS 키(OIDC 불가)·`amazon/aws-cli` entrypoint 우회·AWS CLI v2 번들 설치·ECR 직접 push(artifact 미사용). Claude 리뷰/봇 워크플로우(`claude-code-review.yml`, `claude.yml`)는 제거(양쪽 모두 미운영). [PR #462](https://github.com/bomapp-inc/next-backend/pull/462) |
+| CI | **GitLab CI 정본**: `.gitlab-ci.yml` 은 GitLab dev 에 머지됨(MR !1) + api 소스 영구 허용(MR !2). Jib→ECR→ECS 흐름. GitLab 측 제약은 정적 AWS 키(OIDC 불가), `amazon/aws-cli` entrypoint 우회, AWS CLI v2 번들 설치, ECR 직접 push, ref_protected 러너. GitHub Actions/PR #462 는 레거시 미러·비긴급 보류로 취급 |
 | 배포 | ECR push → ECS update-service |
 | 환경 분리 | `application-{profile}.yml` (dev/stg/prod) |
 | 시크릿 | AWS Secrets Manager (Spring Cloud AWS) |
@@ -329,7 +329,7 @@ graph LR
 | 2026-04 | 채팅 이미지 S3 저장 (#284) |
 | 2026-04 | ElastiCache Serverless 엔드포인트 TLS 활성화 |
 | 2026-05 | 채팅 시스템 스케일링, prod server.port 8107 → 8080 정상화 |
-| 2026-06 | GitLab(`gitlab.bomapp.co.kr`) 이전 대비 `.gitlab-ci.yml` 추가 (GitHub Actions 와 과도기 공존), Claude 리뷰/봇 워크플로우 제거 ([PR #462](https://github.com/bomapp-inc/next-backend/pull/462)) |
+| 2026-06 | GitLab(`gitlab.bomapp.co.kr/bomapp/next-backend`) 정본 이전 완료. `.gitlab-ci.yml` GitLab dev 머지(MR !1), api 소스 허용(MR !2), 이후 작업은 GitLab MR 기준 |
 
 ---
 

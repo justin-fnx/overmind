@@ -5,10 +5,10 @@
 | 항목 | 값 |
 |------|----|
 | 경로 | `../next-frontend` |
-| 리포 | `gitlab.bomapp.co.kr` 추정 (CI 가 GitLab) |
+| 리포 | `gitlab.bomapp.co.kr/bomapp/next-frontend` (project id 14, default `main`) |
 | 언어/플랫폼 | TypeScript 5.8 / Vue 3.5 / Vite 7 / Yarn workspaces |
 | 첫 커밋 | 2023-06-16 |
-| 최신 커밋 | 2026-04-30 |
+| main 커밋(2026-06-23 조회) | `e5e50fed` (2026-06-23, `fix(planner): 채팅 소켓 백그라운드 전환 시 isConnecting 고아로 재연결 불가 수정 (PLA-122)`) |
 | 총 커밋 수 | 2,936 |
 | 최근 6개월 | 619 커밋 |
 | 주요 브랜치 | `main`(HEAD), `prod`, `staging`, `develop` |
@@ -109,6 +109,8 @@ next-frontend/
   - `/users/*` — 사용자 관리
   - `/templates/*` — 컨텐츠 관리
 - 호출 백엔드: `wings-api`
+
+> `planner-admin` 은 설계사/플래너 도구 영역의 어드민이다. 레거시 redmin 대체용 내부 운영 콘솔은 별도 리포 [`bomapp-backoffice`](./bomapp-backoffice.md) 로 관리한다.
 
 ### 3.6 nextjs-bds-web (BDS 웹)
 

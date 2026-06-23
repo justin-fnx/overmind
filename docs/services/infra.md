@@ -5,10 +5,10 @@
 | 항목 | 값 |
 |------|----|
 | 경로 | `../infra` |
-| 리포 | `gitlab.bomapp.co.kr/bomapp/infra` (CLAUDE.md 명시) |
+| 리포 | `gitlab.bomapp.co.kr/bomapp/infra` (project id 34, default `main`) |
 | 도구 | Terraform 1.5.7 / AWS Provider 5.100.0 |
 | 첫 커밋 | 2026-04-10 |
-| 최신 커밋 | 2026-05-06 |
+| main 커밋(2026-06-23 조회) | `7a59e086` (2026-06-23, `msc/bom-209-backoffice-infra` merge / infra MR !54) |
 | 총 커밋 수 | 50 |
 | 활동 상태 | 활발 (수동 인프라 → Terraform 코드화 진행 중) |
 
@@ -108,6 +108,8 @@ infra/
 ### 4.5 CloudFront / S3
 정적 프론트엔드 6개 앱(DEV/STG 분리), OAC 적용. PROD 정적 리소스(`cloudfront.bomapp.co.kr`, `market.bomapp.co.kr`, `image.planner.bomapp.co.kr` 등)는 별도 distribution.
 
+infra MR !54(BOM-209)로 `bomapp-backoffice` frontend S3+CloudFront(`dev-admin.bomapp.co.kr`, `admin.bomapp.co.kr`)와 backend ECS/ALB 리소스(`SVC-ECS-{ENV}-bomapp-backoffice`, `dev-admin-api`, `admin-api`)가 Terraform 관리 대상에 추가되었다. backoffice 앱 배포 파이프라인은 별도 `bomapp/backoffice` MR !7 기준이며, 2026-06-23 조회 시점에는 MR !7 pipeline 693이 failed 상태였다.
+
 ---
 
 ## 5. 네트워크
@@ -177,6 +179,7 @@ RDS, MSK, S3 일부, WAF, VPC 라우팅 테이블, NAT Gateway, IGW, 일부 ACM,
 - **2026-04** ECS 클러스터·서비스, ALB/NLB, ElastiCache, ECR, Route53 import
 - **2026-04-06** ECS 감사 리포트 작성 (P0~P3 이슈 명세화)
 - **2026-05-06** 미사용 Target Group 29개 정리, ASG 정상화
+- **2026-06-23** backoffice 인프라 리소스 main 반영(infra MR !54): backend ECR/IAM/Secrets/log/SG/TG/listener/Route53/ECS service + frontend S3/CloudFront
 
 ---
 

@@ -135,9 +135,9 @@ mydata-agent (POST /post 또는 /auth/post)
   │  HTTPS + mTLS
   │  POST /v2/mgmts/consents · /v2/mgmts/agreements 등
   ▼
-Route53 alias → prod-nlb:5443 → prod-alb:5443 (default cert) → TG `prod-back-ecs-host-2-http-11000`
+Route53 alias → prod-nlb:5443 → prod-alb:5443 prio-100 host rule(`auth.bomapp.co.kr`) → TG `prod-mydata-mgmts-api-ip-8080`
   ▼
-[현재 PROD] PROD-BACK 공용 WAS 컨테이너 내 jar `bomappmydata-0.0.1-SNAPSHOT.jar` (PID 15890, port 11000) — 구 jar(미컷오버)
+[현재 PROD] ECS `PROD-Cluster / SVC-ECS-PROD-mydata-mgmts-api` (port 8080, 2026-06-11 신규 ECS 100% 컷오버 완료)
   │
   ├──────────────── prod: 자체 처리 (NextMyDataApiClient URL 빈 값 = 위임 없음)
   └──────────────── dev: NextMyDataApiClient → next-backend mydata-api 위임
@@ -146,7 +146,7 @@ Route53 alias → prod-nlb:5443 → prod-alb:5443 (default cert) → TG `prod-ba
 
 **핵심 사실**:
 - `mydata-mgmts-api/src/main/resources/application-product.properties` 에 `bomapp.api.url=` (**빈 값**). 즉 **PROD에서는 next-backend로 위임하지 않고 mgmts-api가 자체 처리**.
-- BOM-113 현대화는 코드 완료(Java 21/SB 3.4.5)지만 PROD는 미컷오버 → 여전히 구 jar.
+- BOM-113 현대화(Java 21/SB 3.4.5) + BOM-121 리네임 이후 **2026-06-11 PROD 신규 ECS 100% 컷오버 완료**. 구 11000 jar 는 weight 0 롤백 stub 으로 잔존.
 - ~150 req/일 (2026-06 측정). 규제필수, 임의 중단 금지.
 
 ### Flow D — 보맵 → 종합포털 (송신, 사업자 지원 API)
@@ -224,7 +224,7 @@ mydata-api / mydata-batch
 
 | 용도 | 도메인 / 경로 | 비고 |
 |---|---|---|
-| 종합포털 인바운드 수신 (mTLS) | `auth.bomapp.co.kr:5443` | route53 → prod-nlb → prod-alb default → TG 11000 → mydata-mgmts-api 구 jar |
+| 종합포털 인바운드 수신 (mTLS) | `auth.bomapp.co.kr:5443` | route53 → prod-nlb → prod-alb prio-100 host rule → TG `prod-mydata-mgmts-api-ip-8080` → 신규 ECS mydata-mgmts-api. 구 11000 jar 는 weight 0 롤백 stub |
 | mydata-api 내부 (next-backend) | `int-mapi.bomapp.co.kr:8080` | prod-internal-alb. mydata-batch가 OpenFeign으로 호출 |
 | mydata-agent 내부 | `magent.bomapp.co.kr:8080` | prod-internal-alb. mydata-api가 평문 HTTP로 호출 |
 | 종합포털 (외부) | `https://api.mydatacenter.or.kr:7443` | 송수신 양방향 |
@@ -250,15 +250,15 @@ mydata-api / mydata-batch
 
 ---
 
-## 8. 현재 운영 상태 / 컷오버 미완
+## 8. 현재 운영 상태 / 컷오버
 
 | 항목 | 상태 |
 |---|---|
 | mydata-api PROD | ECS PROD-Cluster + PROD-MYDATA-API-240522-ARM (이중) — 트래픽 분배 미검증 |
-| mydata-agent PROD | ECS PROD-MYDATA-AGENT-240523-ARM (Fargate ARM64) running 2 |
+| mydata-agent PROD | **PROD-Cluster 단일 가동**. 구 `PROD-MYDATA-AGENT-240523-ARM` 클러스터는 2026-06-11 폐기 |
 | mydata-batch PROD | PROD-Cluster running 1 |
-| mydata-mgmts-api PROD | **구 jar (`bomappmydata-0.0.1-SNAPSHOT.jar`, PID 15890, port 11000)** — 미컷오버. BOM-113 현대화 코드는 머지됨 |
-| 인바운드 mTLS (`5443`) | prod-alb default cert = `auth.bomapp.co.kr_20260610` (6/10 만기) — **인증서 갱신 BOM-129 진행 중** |
+| mydata-mgmts-api PROD | **✅ 2026-06-11 신규 ECS 100% 컷오버 완료**. 현재 `PROD-Cluster/SVC-ECS-PROD-mydata-mgmts-api`, TG `prod-mydata-mgmts-api-ip-8080`, port 8080. 구 jar(`bomappmydata-0.0.1-SNAPSHOT.jar`, 11000)는 weight 0 롤백 stub |
+| 인바운드 mTLS (`5443`) | prod-alb prio-100 host rule(`auth.bomapp.co.kr`) → 신규 ECS TG. 상세는 [`mydata-mgmts-api.md`](./mydata-mgmts-api.md) 참조 |
 
 ---
 

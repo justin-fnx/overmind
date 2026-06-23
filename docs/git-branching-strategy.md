@@ -29,10 +29,10 @@
 
 이 절의 규칙은 Git Flow 기본 규칙보다 **우선한다**.
 
-### 규칙 1. 피쳐 브랜치는 PR 전 반드시 `dev` HEAD로 리베이스한다
+### 규칙 1. 피쳐 브랜치는 MR 전 반드시 `dev` HEAD로 리베이스한다
 
 - 머지 커밋(`git merge dev`)이 아니라 **리베이스(`git rebase origin/dev`)** 를 사용한다.
-- 목적: `dev` 히스토리를 선형으로 유지하고, PR diff에 무관한 머지 커밋이 섞이지 않도록 한다.
+- 목적: `dev` 히스토리를 선형으로 유지하고, MR diff에 무관한 머지 커밋이 섞이지 않도록 한다.
 - 충돌 해결 책임은 피쳐 브랜치 작성자에게 있다.
 
 ```bash
@@ -47,10 +47,10 @@ git push --force-with-lease
 
 ### 규칙 2. 피쳐 브랜치는 스쿼시 머지(squash merge)할 수 있다
 
-- 피쳐 PR을 `dev`에 머지할 때 **squash merge**를 허용한다.
-- 단일 PR이 단일 의미 단위의 커밋이 되므로 `dev` 히스토리가 깔끔하게 유지된다.
+- 피쳐 MR을 `dev`에 머지할 때 **squash merge**를 허용한다.
+- 단일 MR이 단일 의미 단위의 커밋이 되므로 `dev` 히스토리가 깔끔하게 유지된다.
 - 작업 도중 만들어진 “wip”, “fix typo” 등의 잡 커밋이 영구 히스토리에 남지 않는다.
-- 스쿼시 커밋 메시지는 PR 제목/본문을 기준으로 정리한다.
+- 스쿼시 커밋 메시지는 MR 제목/본문을 기준으로 정리한다.
 
 > 머지 후 로컬/원격 피쳐 브랜치는 즉시 삭제한다.
 
@@ -63,7 +63,7 @@ git push --force-with-lease
 - QA가 통과되면 **`dev` 브랜치를 그대로 `prod` 로 머지**하여 배포한다.
   - 이유: `rc` 머지 시점 이후 `dev`에 핫픽스성 후속 커밋이 들어갈 수 있고, 진실 공급원(single source of truth)은 항상 `dev`이기 때문이다.
 - QA 중 `rc/*` 에서 발견된 버그는
-  1. `dev`에 먼저 수정 PR을 머지하고,
+  1. `dev`에 먼저 수정 MR을 머지하고,
   2. 해당 커밋(들)을 `rc/*` 로 cherry-pick 하여 재검증한다.
 - 릴리즈 완료 후 `rc/*` 브랜치는 삭제한다.
 
@@ -133,12 +133,12 @@ gitGraph
 
 ## 5. 운영상 체크리스트
 
-PR 머지 전:
+MR 머지 전:
 
 - [ ] 피쳐 브랜치가 `origin/dev` HEAD로 리베이스되어 있는가?
 - [ ] CI(테스트/빌드) 통과 여부 확인
 - [ ] 리뷰 승인 1인 이상
-- [ ] 스쿼시 머지 시 커밋 메시지(=PR 제목/본문)가 의미 단위로 정리되어 있는가?
+- [ ] 스쿼시 머지 시 커밋 메시지(=MR 제목/본문)가 의미 단위로 정리되어 있는가?
 
 릴리즈(prod 머지) 전:
 
@@ -156,7 +156,7 @@ PR 머지 전:
 git fetch origin
 git checkout -b feature/BOM-123-foo origin/dev
 
-# 2) PR 전 dev 리베이스
+# 2) MR 전 dev 리베이스
 git fetch origin
 git rebase origin/dev
 git push --force-with-lease

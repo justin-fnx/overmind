@@ -12,7 +12,7 @@
 | 빌드 시스템 | Gradle + Jib (containerizingMode=packaged) — Docker daemon 미사용, ECR direct push |
 | 패키징 | OCI image (arm64) |
 | 소스 리포 | [`bomapp-inc/bomapp-vkey`](https://github.com/bomapp-inc/bomapp-vkey) (GitHub) — 옛 PoC repo [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) 는 deprecated |
-| BV 마이그레이션 | **2026-05-19 ~ 2026-06-08 완료**. 옛 PROD-BACK 공용 Tomcat WAR (next-backend-was:1.1, `i-03f0178089f760c6f`, PID 1205) → 독립 ECS service. 2026-06-08 17:28 KST priority 10 의 100% 트래픽 전환. BV-7 silent decode fail 회고: [infra runbook](../../../infra/docs/runbooks/bv-7-silent-decode-failure.md), [PR #13](https://github.com/bomapp-inc/bomapp-vkey/pull/13) |
+| BV 마이그레이션 | **2026-05-19 ~ 2026-06-08 완료**. 옛 PROD-BACK 공용 Tomcat WAR (next-backend-was:1.1, `i-03f0178089f760c6f`, PID 1205) → 독립 ECS service. 2026-06-08 17:28 KST priority 10 의 100% 트래픽 전환. BV-7 silent decode fail 회고: [infra runbook](https://gitlab.bomapp.co.kr/bomapp/infra/-/blob/739daa0fa86c53978a30dcfacf74d7a6834cca88/docs/runbooks/bv-7-silent-decode-failure.md), [PR #13](https://github.com/bomapp-inc/bomapp-vkey/pull/13) |
 
 ---
 
