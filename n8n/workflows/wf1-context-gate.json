@@ -287,7 +287,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-23T04:25:26.606Z",
+    "createdAt": "2026-06-23T04:45:44.859Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -609,32 +609,44 @@
         "typeVersion": 3.1
       },
       {
-        "credentials": {
-          "notionApi": {
-            "id": "b03vHUApw6s0O5jS",
-            "name": "Notion account"
-          }
-        },
         "id": "ae74a4dd-fc05-48e2-ae70-6f3891845c2c",
         "name": "Hub 카드 읽기",
         "onError": "continueRegularOutput",
         "parameters": {
-          "blockId": {
+          "description": "Context Hub 카드 본문, 또는 기획 본문이 참조하는 Notion 페이지를 page id 로 읽는다. Notion API 직접 호출로 본문 전체를 가져오며 표(table) 셀 내용까지 마크다운으로 반환한다. 접근 불가 페이지면 \"[읽기 실패]\" 안내를 반환하니, 그 경우 권한 요청(access) 툴로 접근권한을 요청하라.",
+          "workflowId": {
             "__rl": true,
+            "cachedResultName": "Overmind · Notion 페이지 전문 읽기(표 포함)",
             "mode": "id",
-            "value": "={{ $fromAI('cardId', '읽을 Context Hub 카드의 Notion page id') }}"
+            "value": "QHVMJ3uFEwlzumw3"
           },
-          "descriptionType": "manual",
-          "operation": "getAll",
-          "resource": "block",
-          "returnAll": true,
-          "toolDescription": "Context Hub 카드 본문, 또는 기획 본문이 참조하는 Notion 페이지를 page id로 읽는다"
+          "workflowInputs": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pageId",
+                "id": "pageId",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "pageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('pageId', '읽을 Notion 페이지/블록 id (하이픈 포함 36자 또는 32 hex)', 'string') }}"
+            }
+          }
         },
         "position": [
           2128,
           464
         ],
-        "type": "n8n-nodes-base.notionTool",
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
         "typeVersion": 2.2
       },
       {
@@ -1118,29 +1130,29 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-23T04:25:26.606Z",
-    "versionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4",
+    "updatedAt": "2026-06-23T04:45:44.859Z",
+    "versionId": "ecabc0a8-f4e9-477b-bd8d-391146d287c2",
     "workflowId": "Y74XMZpTEUejToOQ",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-23T04:25:26.724Z",
+        "createdAt": "2026-06-23T04:45:44.937Z",
         "event": "deactivated",
-        "id": 265,
+        "id": 268,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4",
+        "versionId": "ecabc0a8-f4e9-477b-bd8d-391146d287c2",
         "workflowId": "Y74XMZpTEUejToOQ"
       },
       {
-        "createdAt": "2026-06-23T04:25:26.774Z",
+        "createdAt": "2026-06-23T04:45:44.962Z",
         "event": "activated",
-        "id": 266,
+        "id": 269,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4",
+        "versionId": "ecabc0a8-f4e9-477b-bd8d-391146d287c2",
         "workflowId": "Y74XMZpTEUejToOQ"
       }
     ]
   },
-  "activeVersionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4",
+  "activeVersionId": "ecabc0a8-f4e9-477b-bd8d-391146d287c2",
   "connections": {
     "AWS Bedrock Chat Model": {
       "ai_languageModel": [
@@ -1754,32 +1766,44 @@
       "typeVersion": 3.1
     },
     {
-      "credentials": {
-        "notionApi": {
-          "id": "b03vHUApw6s0O5jS",
-          "name": "Notion account"
-        }
-      },
       "id": "ae74a4dd-fc05-48e2-ae70-6f3891845c2c",
       "name": "Hub 카드 읽기",
       "onError": "continueRegularOutput",
       "parameters": {
-        "blockId": {
+        "description": "Context Hub 카드 본문, 또는 기획 본문이 참조하는 Notion 페이지를 page id 로 읽는다. Notion API 직접 호출로 본문 전체를 가져오며 표(table) 셀 내용까지 마크다운으로 반환한다. 접근 불가 페이지면 \"[읽기 실패]\" 안내를 반환하니, 그 경우 권한 요청(access) 툴로 접근권한을 요청하라.",
+        "workflowId": {
           "__rl": true,
+          "cachedResultName": "Overmind · Notion 페이지 전문 읽기(표 포함)",
           "mode": "id",
-          "value": "={{ $fromAI('cardId', '읽을 Context Hub 카드의 Notion page id') }}"
+          "value": "QHVMJ3uFEwlzumw3"
         },
-        "descriptionType": "manual",
-        "operation": "getAll",
-        "resource": "block",
-        "returnAll": true,
-        "toolDescription": "Context Hub 카드 본문, 또는 기획 본문이 참조하는 Notion 페이지를 page id로 읽는다"
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "pageId",
+              "id": "pageId",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "pageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('pageId', '읽을 Notion 페이지/블록 id (하이픈 포함 36자 또는 32 hex)', 'string') }}"
+          }
+        }
       },
       "position": [
         2128,
         464
       ],
-      "type": "n8n-nodes-base.notionTool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2
     },
     {
@@ -2301,7 +2325,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-23T04:25:26.604Z",
-  "versionCounter": 152,
-  "versionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4"
+  "updatedAt": "2026-06-23T04:45:44.857Z",
+  "versionCounter": 155,
+  "versionId": "ecabc0a8-f4e9-477b-bd8d-391146d287c2"
 }
