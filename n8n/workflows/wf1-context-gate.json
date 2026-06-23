@@ -1,6 +1,1146 @@
 {
   "active": true,
-  "activeVersionId": "a7dca6cb-e993-4d56-bc7c-68fc8bbcde26",
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": false,
+    "connections": {
+      "AWS Bedrock Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Figma 노드 조회": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "Hub 카드 읽기": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "검토 착수 기록": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "본문 블록 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "게이트 출력 파서": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "과거 유사 태스크 조회(similar)": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "권한 요청(access)": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "담당자 Slack 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "부모 블록 생성",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "담당자 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "담당자 Slack 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "리뷰 폴링": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "리뷰대기 태스크 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "리뷰대기 태스크 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "검토 착수 기록",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "맥락 수집": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "허브 카드 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "맥락 충분성 게이트": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분한가",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "맥락 충분한가": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "통과 기록",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "담당자 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "본문 블록 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "본문 합치기",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "본문 합치기": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 수집",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "부모 메시지 포스트": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "프롬프트 블록 생성",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "부모 블록 생성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "부모 메시지 포스트",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "스레드 저장": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "질문중 기록",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "컨텍스트 합치기": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 충분성 게이트",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "프롬프트 블록 생성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "프롬프트 포스트",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "프롬프트 포스트": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "스레드 저장",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "핵심 본문 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "컨텍스트 합치기",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "핵심 필터": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "핵심 본문 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "허브 카드 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "핵심 필터",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-06-23T04:25:26.606Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "1525248b-af31-4da4-8f7f-a9a70bffef06",
+        "name": "리뷰 폴링",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes",
+                "minutesInterval": 1
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          112
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "84c95d27-3bf2-4b15-9dc5-b86e137dc81d",
+        "name": "리뷰대기 태스크 조회",
+        "parameters": {
+          "databaseId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
+          },
+          "filterType": "manual",
+          "filters": {
+            "conditions": [
+              {
+                "condition": "equals",
+                "key": "타입|select",
+                "selectValue": "기획",
+                "type": "select"
+              },
+              {
+                "condition": "equals",
+                "key": "상태|status",
+                "statusValue": "리뷰대기",
+                "type": "status"
+              },
+              {
+                "condition": "is_empty",
+                "key": "🤖 AI 게이트|select",
+                "type": "select"
+              }
+            ]
+          },
+          "limit": 1,
+          "matchType": "allFilters",
+          "operation": "getAll",
+          "options": {},
+          "resource": "databasePage",
+          "simple": false
+        },
+        "position": [
+          224,
+          112
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "84c1ca5c-cf8a-4e28-b63e-5adae499a80f",
+        "name": "검토 착수 기록",
+        "parameters": {
+          "operation": "update",
+          "options": {},
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.id }}"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "🤖 AI 게이트|select",
+                "selectValue": "미검토"
+              }
+            ]
+          },
+          "resource": "databasePage"
+        },
+        "position": [
+          448,
+          112
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "ca18e76a-4292-4007-a41d-5d9d5a723e2a",
+        "name": "본문 블록 조회",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "method": "GET",
+          "nodeCredentialType": "notionApi",
+          "options": {},
+          "sendHeaders": true,
+          "specifyHeaders": "keypair",
+          "url": "=https://api.notion.com/v1/blocks/{{ $(\"리뷰대기 태스크 조회\").first().json.id }}/children?page_size=100"
+        },
+        "position": [
+          672,
+          112
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "2351c624-5f01-4db5-98ce-2a470c5984ba",
+        "name": "본문 합치기",
+        "parameters": {
+          "jsCode": "var resp = $('본문 블록 조회').first().json;\nvar blocks = (resp && resp.results) || [];\nvar texts = [];\nvar refIds = {};\nfunction scanRich(arr){\n  if(!Array.isArray(arr)) return '';\n  var s = '';\n  for(var i=0;i<arr.length;i++){\n    var t = arr[i]; if(!t) continue;\n    if(t.type==='mention' && t.mention){\n      var mt=t.mention.type;\n      if(mt==='page' && t.mention.page && t.mention.page.id) refIds[t.mention.page.id]=1;\n      else if(mt==='database' && t.mention.database && t.mention.database.id) refIds[t.mention.database.id]=1;\n    }\n    if(t.href){ var m=String(t.href).match(/([0-9a-fA-F]{32})/); if(m && /notion\\./.test(t.href)) refIds[m[1]]=1; }\n    s += (t.plain_text || (t.text && t.text.content)) || '';\n  }\n  return s;\n}\nfor(var j=0;j<blocks.length;j++){\n  var b = blocks[j]; if(!b) continue;\n  var type = b.type;\n  if(type==='link_to_page' && b.link_to_page){\n    if(b.link_to_page.page_id) refIds[b.link_to_page.page_id]=1;\n    if(b.link_to_page.database_id) refIds[b.link_to_page.database_id]=1;\n    texts.push('[링크된 페이지]');\n  } else if(type==='child_page'){\n    if(b.id) refIds[b.id]=1;\n    texts.push('[하위 페이지: '+((b.child_page && b.child_page.title)||'')+']');\n  } else if(type && b[type] && b[type].rich_text){\n    texts.push(scanRich(b[type].rich_text));\n  } else if(typeof b.content==='string'){\n    texts.push(b.content);\n  }\n}\nreturn [{ json: { bodyBlocks: texts, refIds: Object.keys(refIds) } }];"
+        },
+        "position": [
+          896,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "fa563eab-817d-4795-b948-5e715ebcefd5",
+        "name": "맥락 수집",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "title",
+                "type": "string",
+                "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.properties.테스크명.title[0].plain_text }}"
+              },
+              {
+                "id": "a2",
+                "name": "product",
+                "type": "string",
+                "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.properties.프로덕트.select?.name }}"
+              },
+              {
+                "id": "a3",
+                "name": "priority",
+                "type": "string",
+                "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.properties.우선순위.select?.name }}"
+              },
+              {
+                "id": "a4",
+                "name": "pageId",
+                "type": "string",
+                "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.id }}"
+              },
+              {
+                "id": "a6",
+                "name": "body",
+                "type": "string",
+                "value": "={{ (($json.bodyBlocks || []).join(\"\\n\")) + (($json.refIds && $json.refIds.length) ? (\"\\n\\n📎 본문이 참조하는 Notion 페이지 id: \" + $json.refIds.join(\", \")) : \"\") }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "position": [
+          1120,
+          112
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "017121b4-85a0-444b-bf90-100ceaa49081",
+        "name": "허브 카드 조회",
+        "parameters": {
+          "databaseId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "3a6975952ad54380bc580901e079a7f7"
+          },
+          "operation": "getAll",
+          "options": {},
+          "resource": "databasePage",
+          "returnAll": true,
+          "simple": false
+        },
+        "position": [
+          1344,
+          112
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "cdc3bad2-63f8-4043-813c-117660cc13ca",
+        "name": "핵심 필터",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "leftValue": "={{ $json.properties.계층.select.name }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "핵심"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "position": [
+          1568,
+          112
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "5b8b49e6-e1dd-44e0-9760-22fcab95a8ef",
+        "name": "핵심 본문 조회",
+        "parameters": {
+          "blockId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $json.id }}"
+          },
+          "operation": "getAll",
+          "resource": "block",
+          "returnAll": true
+        },
+        "position": [
+          1792,
+          112
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "3347d974-d45c-4428-bdff-4e4c25b36f4b",
+        "name": "컨텍스트 합치기",
+        "parameters": {
+          "jsCode": "const coreItems = $input.all();\nconst coreCards = $('핵심 필터').all().map(function(c){ var p=c.json.properties||{}; return (p.주제 && p.주제.title && p.주제.title[0]) ? p.주제.title[0].plain_text : ''; }).filter(Boolean);\nconst header = '아래는 보맵 핵심 컨텍스트 카드(' + coreCards.join(', ') + ')의 본문입니다.\\n\\n';\nconst coreText = header + coreItems.map(function(b){ return (b.json.content || ''); }).filter(Boolean).join('\\n');\nconst all = $('허브 카드 조회').all();\nconst detail = all.filter(function(c){ var p=c.json.properties||{}; return p.계층 && p.계층.select && p.계층.select.name === '디테일'; });\nconst menu = detail.map(function(c){\n  var p = c.json.properties || {};\n  var subj = (p.주제 && p.주제.title && p.주제.title[0]) ? p.주제.title[0].plain_text : '';\n  var area = (p.영역 && p.영역.select) ? p.영역.select.name : '';\n  var jobsArr = (p['관련 직무'] && p['관련 직무'].multi_select) ? p['관련 직무'].multi_select.map(function(x){ return x.name; }) : [];\n  return '- [' + subj + '] 영역:' + area + ' / 직무:' + jobsArr.join(',') + ' / id:' + c.json.id;\n}).join('\\n');\nreturn [{ json: { coreContext: coreText, detailMenu: menu } }];"
+        },
+        "position": [
+          2016,
+          112
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "0cfc9489-3cf3-42bb-9bb6-909eb408f083",
+        "name": "맥락 충분성 게이트",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(항상 제공)\n{{ $json.coreContext }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요. **본문 끝에 \"📎 본문이 참조하는 Notion 페이지 id\"가 있으면, 기획의 실제 내용이 그 문서에 들어있을 가능성이 높다 — 반드시 그 id를 이 툴에 넣어 읽어 파악하라(본문이 비었다고 단정하지 말 것).** 읽기가 접근 거부/오류로 실패하면 \"권한 요청(access)\" 툴로 접근권한을 요청하라.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n- \"과거 유사 태스크 조회(similar)\": 지금 기획이 과거에 다룬 적 있는 주제(같은 화면·같은 알림톡·같은 기능)처럼 보이면, 핵심 키워드로 과거 태스크를 조회해 그때의 결정/맥락을 참고하라. 스스로 판단해 도움될 때만 호출. 찾은 과거 맥락은 브리핑/질문에 자연스럽게 반영하고 context_used에도 남겨라.\n- \"권한 요청(access)\": 기획 본문이 참조하는 Notion 페이지를 읽으려다 권한 오류(접근 불가)로 실패하면, 이 툴로 담당 채널에 접근권한 요청을 보내라(어떤 기획에서 어떤 페이지인지 명시). 같은 페이지는 한 번만 요청.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드/과거 태스크만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
+          },
+          "promptType": "define",
+          "text": "=아래는 노션에 새로 등록된 \"기획\" 태스크입니다.\n\n제목: {{ $(\"맥락 수집\").first().json.title }}\n프로덕트: {{ $(\"맥락 수집\").first().json.product }}\n우선순위: {{ $(\"맥락 수집\").first().json.priority }}\n본문:\n{{ $(\"맥락 수집\").first().json.body }}"
+        },
+        "position": [
+          2240,
+          112
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "ae74a4dd-fc05-48e2-ae70-6f3891845c2c",
+        "name": "Hub 카드 읽기",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "blockId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $fromAI('cardId', '읽을 Context Hub 카드의 Notion page id') }}"
+          },
+          "descriptionType": "manual",
+          "operation": "getAll",
+          "resource": "block",
+          "returnAll": true,
+          "toolDescription": "Context Hub 카드 본문, 또는 기획 본문이 참조하는 Notion 페이지를 page id로 읽는다"
+        },
+        "position": [
+          2128,
+          464
+        ],
+        "type": "n8n-nodes-base.notionTool",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "OKR5k0AAH8p23JJj",
+            "name": "Figma PAT"
+          }
+        },
+        "id": "b2490dd0-d3bf-4717-8101-24951d2a7098",
+        "name": "Figma 노드 조회",
+        "parameters": {
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "maxLength": 12000,
+          "method": "GET",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "ids",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('ids', '조회할 Figma node id (예 11095:53827). 여러 개면 콤마 구분', 'string') }}"
+              },
+              {
+                "name": "depth",
+                "value": "1"
+              }
+            ]
+          },
+          "responseType": "text",
+          "sendQuery": true,
+          "specifyQuery": "keypair",
+          "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
+          "truncateResponse": true,
+          "url": "=https://api.figma.com/v1/files/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fileKey', '조회할 Figma 파일 key (figma.com/design/<KEY>/... 의 KEY). DS 컴포넌트·토큰·화면취합 개요는 3Ifh58l7EWLXapWRys0vjf, 기능별 실제 화면은 태스크/Hub 카드에 링크된 파일 키 사용', 'string') }}/nodes"
+        },
+        "position": [
+          2272,
+          464
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "61d1606d-7d63-4091-ba66-6017dacfb951",
+        "name": "게이트 출력 파서",
+        "parameters": {
+          "jsonSchemaExample": "{\"briefing\": {\"summary\": \"보맵 앱 분석 탭에서 마이데이터 기반 보장 분석 결과를 보여주는 기능 추가로 이해했어요.\", \"scope\": \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 디자인·개발\", \"flows\": [\"사용자가 분석 탭 진입 → 보장 분석 결과 확인\", \"과잉/부족 보장 항목별 상세 보기\"], \"unclear\": \"분석 결과 정렬 기준과 미연동(빈 데이터) 시 노출 내용이 미정입니다.\"}, \"context_used\": [\"보맵 제품 개요\", \"마이데이터 레이어 상세\"], \"roles\": [\"디자인\", \"개발\"], \"sufficient\": false, \"score\": 40, \"looksLikePlaceholder\": false, \"questions\": [{\"perspective\": \"디자인\", \"text\": \"주요 사용자 플로우는?\", \"options\": [\"A안\", \"B안\", \"미정\"], \"multi\": false}], \"brief\": \"현재까지 정리된 기획 요약\"}"
+        },
+        "position": [
+          1936,
+          464
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3
+      },
+      {
+        "id": "82108706-dd84-452f-a4e4-9bce78c61288",
+        "name": "맥락 충분한가",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "leftValue": "={{ $json.output.sufficient }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "position": [
+          2464,
+          112
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "90f67829-b4d7-49c2-8aa3-2163606d5078",
+        "name": "통과 기록",
+        "parameters": {
+          "operation": "update",
+          "options": {},
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.id }}"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "🤖 AI 게이트|select",
+                "selectValue": "통과"
+              },
+              {
+                "key": "🤖 정리된 브리프|rich_text",
+                "textContent": "={{ $json.output.brief }}"
+              },
+              {
+                "key": "🤖 맥락 점수|number",
+                "numberValue": "={{ $json.output.score }}"
+              }
+            ]
+          },
+          "resource": "databasePage"
+        },
+        "position": [
+          2688,
+          16
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "96c34071-a933-4577-af89-f06f935528d6",
+        "name": "담당자 조회",
+        "parameters": {
+          "operation": "get",
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.id }}"
+          },
+          "resource": "databasePage",
+          "simple": false
+        },
+        "position": [
+          2688,
+          208
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "e0b4a6a5-bc2e-4fef-98cb-c56346cfc107",
+        "name": "담당자 Slack 조회",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "email",
+                "value": "={{ $json.properties.담당자?.people?.[0]?.person?.email }}"
+              }
+            ]
+          },
+          "sendQuery": true,
+          "url": "https://slack.com/api/users.lookupByEmail"
+        },
+        "position": [
+          2912,
+          208
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "de5ac7d6-83e6-4a30-aec6-665bfa6c5b6f",
+        "name": "부모 블록 생성",
+        "parameters": {
+          "jsCode": "const title = $(\"맥락 수집\").first().json.title;\nconst out = $(\"맥락 충분성 게이트\").first().json.output || {};\nconst b = out.briefing || {};\nconst used = Array.isArray(out.context_used) ? out.context_used : [];\nconst lookup = $(\"담당자 Slack 조회\").first().json;\nconst slackId = (lookup && lookup.user && lookup.user.id) ? lookup.user.id : null;\nconst mention = slackId ? (\"<@\" + slackId + \">\") : \"담당자\";\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: mention + \" 님, 기획 검토 요청이에요.\\n*📋 \" + title + \"*\" } },\n  { type: \"divider\" }\n];\nconst parts = [\"*🧭 제가 이해한 기획 의도*\"];\nif (b.summary) { parts.push(\"*목적*\\n\" + b.summary); }\nif (b.scope) { parts.push(\"*대상*\\n\" + b.scope); }\nconst flows = Array.isArray(b.flows) ? b.flows.filter(Boolean) : [];\nif (flows.length) { parts.push(\"*흐름*\\n\" + flows.map(function(f){ return \"•  \" + f; }).join(\"\\n\")); }\nif (b.unclear) { parts.push(\"*확인 필요*\\n\" + b.unclear); }\nif (parts.length === 1 && out.intent_briefing) { parts.push(out.intent_briefing); }\nblocks.push({ type: \"section\", text: { type: \"mrkdwn\", text: parts.join(\"\\n\\n\") } });\nif (used.length) {\n  blocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"📚 *참고한 지식*\\n\" + used.map(function(u){ return \"•  \" + u; }).join(\"\\n\") }] });\n}\nblocks.push({ type: \"divider\" });\nblocks.push({ type: \"context\", elements: [{ type: \"mrkdwn\", text: \"👇 위 이해가 맞는지 확인하고 스레드에서 답변해 주세요. 다르면 정정해 주셔도 돼요.\" }] });\nreturn [{ json: { body: { channel: \"C0B9LE2FF36\", text: mention + \" 님, 기획 검토 요청\", blocks: blocks } } }];"
+        },
+        "position": [
+          3136,
+          208
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "afe67f69-5f6c-4a5c-8193-e3f4828d8a21",
+        "name": "부모 메시지 포스트",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          3360,
+          208
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "cfed8aeb-7c1e-40af-9f2c-89c316380913",
+        "name": "프롬프트 블록 생성",
+        "parameters": {
+          "jsCode": "const out = $(\"맥락 충분성 게이트\").first().json.output || {};\nconst qs = out.questions || [];\nconst roles = out.roles || [];\nconst pageId = $(\"맥락 수집\").first().json.pageId;\nconst parent = $(\"부모 메시지 포스트\").first().json;\nconst roleText = roles.length ? roles.join(\"·\") : \"관련 직무\";\nconst intro = \"📋 이 건은 *\" + roleText + \"* 관점으로 검토했어요. 검토 질문이 \" + qs.length + \"개 있어요. (관점이 다르면 이 스레드에 알려주세요)\";\nconst guide = [\n  \"• *📝 답변하기* — 폼을 열어 질문에 답해요.\",\n  \"• *⏸️ 아직 작성 중* — 지금 정하기 어려우면 눌러주세요. 4시간 뒤 다시 여쭤볼게요.\",\n  \"• *🛑 보류* — 이 건을 멈춰요. 더 묻지 않을게요.\"\n].join(\"\\n\");\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: intro } },\n  { type: \"section\", text: { type: \"mrkdwn\", text: guide } },\n  { type: \"actions\", block_id: \"prompt_actions\", elements: [\n    { type: \"button\", style: \"primary\", text: { type: \"plain_text\", text: \"📝 답변하기\", emoji: true }, action_id: \"open_form\", value: JSON.stringify({ pageId: pageId }) },\n    { type: \"button\", text: { type: \"plain_text\", text: \"⏸️ 아직 작성 중\", emoji: true }, action_id: \"snooze\", value: JSON.stringify({ pageId: pageId }) },\n    { type: \"button\", style: \"danger\", text: { type: \"plain_text\", text: \"🛑 보류\", emoji: true }, action_id: \"hold\", value: JSON.stringify({ pageId: pageId }) }\n  ] }\n];\nreturn [{ json: { body: { channel: parent.channel, thread_ts: parent.ts, text: \"검토 질문\", blocks: blocks } } }];"
+        },
+        "position": [
+          3584,
+          208
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "544fe9d3-b516-4379-8ae6-03e55dc2cfb9",
+        "name": "프롬프트 포스트",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          3808,
+          208
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "e70369bc-7768-4f43-aee5-8656c3071044",
+        "name": "스레드 저장",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "answers_json": "{}",
+              "channel_id": "={{ $(\"부모 메시지 포스트\").first().json.channel }}",
+              "last_question_ts": "={{ $(\"프롬프트 포스트\").first().json.ts }}",
+              "page_id": "={{ $(\"맥락 수집\").first().json.pageId }}",
+              "questions_json": "={{ JSON.stringify($(\"맥락 충분성 게이트\").first().json.output.questions) }}",
+              "round": 0,
+              "snooze_count": 0,
+              "status": "collecting",
+              "task_title": "={{ $(\"맥락 수집\").first().json.title }}",
+              "thread_ts": "={{ $(\"부모 메시지 포스트\").first().json.ts }}"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "options": {}
+        },
+        "position": [
+          4032,
+          208
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "4923571d-4970-4d4f-ba12-b340d7ea01a7",
+        "name": "질문중 기록",
+        "parameters": {
+          "operation": "update",
+          "options": {},
+          "pageId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.id }}"
+          },
+          "propertiesUi": {
+            "propertyValues": [
+              {
+                "key": "🤖 AI 게이트|select",
+                "selectValue": "질문중"
+              },
+              {
+                "key": "🤖 맥락 점수|number",
+                "numberValue": "={{ $(\"맥락 충분성 게이트\").first().json.output.score }}"
+              },
+              {
+                "key": "🤖 미결 질문|rich_text",
+                "textContent": "={{ ($(\"맥락 충분성 게이트\").first().json.output.questions || []).map(function(q){ return (q.perspective ? \"[\" + q.perspective + \"] \" : \"\") + q.text }).join(\"\\n\") }}"
+              }
+            ]
+          },
+          "resource": "databasePage"
+        },
+        "position": [
+          4256,
+          208
+        ],
+        "type": "n8n-nodes-base.notion",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "aws": {
+            "id": "GftVHJqfxQshQZ4P",
+            "name": "AWS (IAM) account"
+          }
+        },
+        "id": "31625989-ebda-4c40-ab62-34b2a32594c2",
+        "name": "AWS Bedrock Chat Model",
+        "parameters": {
+          "model": "global.anthropic.claude-sonnet-4-6",
+          "modelSource": "inferenceProfile",
+          "options": {
+            "maxTokensToSample": 8000,
+            "temperature": 0.2
+          }
+        },
+        "position": [
+          1760,
+          464
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "similar-task-tool-001",
+        "name": "과거 유사 태스크 조회(similar)",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "jsonBody": "={{ JSON.stringify({ filter: { property: '테스크명', title: { contains: /*n8n-auto-generated-fromAI-override*/ $fromAI('keyword', '과거 유사 태스크를 찾을 핵심 키워드 한 단어(화면명·기능명·알림톡 종류 등)', 'string') } }, page_size: 5, sorts: [{ timestamp: 'created_time', direction: 'descending' }] }) }}",
+          "maxLength": 9000,
+          "method": "POST",
+          "nodeCredentialType": "notionApi",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "responseType": "text",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "specifyHeaders": "keypair",
+          "toolDescription": "지금 기획과 비슷한 '과거에 진행된 태스크'를 Notion TASK DB에서 키워드로 조회한다. 같은 화면·같은 알림톡·같은 기능에 대한 과거 기획·디자인·개발·QA 태스크가 있었는지 확인할 때 사용. keyword에는 화면명/기능명/알림톡 종류 같은 핵심어 하나를 넣어라. 반환: 제목·타입·상태·정리된 브리프 등.",
+          "truncateResponse": true,
+          "url": "https://api.notion.com/v1/databases/fd91ec8d-1025-4439-9d56-71af49eecac2/query"
+        },
+        "position": [
+          2128,
+          620
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "access-request-tool-001",
+        "name": "권한 요청(access)",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "jsonBody": "={{ JSON.stringify({ channel: 'C0B9LE2FF36', text: '⚠️ *[Notion 접근권한 요청]* ' + /*n8n-auto-generated-fromAI-override*/ $fromAI('message', '어느 기획을 분석하다 어떤 Notion 페이지(URL 또는 page id)에 접근이 막혔는지와 Overmind 통합에 공유해 달라는 요청을 한국어 한두 문장으로', 'string') }) }}",
+          "maxLength": 500,
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "responseType": "text",
+          "sendBody": true,
+          "specifyBody": "json",
+          "toolDescription": "기획/프로젝트 문서를 따라가다 Overmind가 접근할 수 없는(권한 없는) Notion 페이지를 만났을 때 담당 Slack 채널에 접근권한 요청을 보낸다. Notion 페이지 읽기가 권한 오류로 실패한 경우에만 사용. message에는 어떤 기획에서 어떤 페이지(URL/id)에 왜 접근이 필요한지 적어라. 같은 페이지는 한 실행에서 한 번만 요청.",
+          "truncateResponse": true,
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          2128,
+          760
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      }
+    ],
+    "updatedAt": "2026-06-23T04:25:26.606Z",
+    "versionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4",
+    "workflowId": "Y74XMZpTEUejToOQ",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-23T04:25:26.724Z",
+        "event": "deactivated",
+        "id": 265,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4",
+        "workflowId": "Y74XMZpTEUejToOQ"
+      },
+      {
+        "createdAt": "2026-06-23T04:25:26.774Z",
+        "event": "activated",
+        "id": 266,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4",
+        "workflowId": "Y74XMZpTEUejToOQ"
+      }
+    ]
+  },
+  "activeVersionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4",
   "connections": {
     "AWS Bedrock Chat Model": {
       "ai_languageModel": [
@@ -411,29 +1551,35 @@
       "id": "ca18e76a-4292-4007-a41d-5d9d5a723e2a",
       "name": "본문 블록 조회",
       "parameters": {
-        "blockId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "={{ $(\"리뷰대기 태스크 조회\").first().json.id }}"
+        "authentication": "predefinedCredentialType",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
         },
-        "operation": "getAll",
-        "resource": "block",
-        "returnAll": true,
-        "simple": false
+        "method": "GET",
+        "nodeCredentialType": "notionApi",
+        "options": {},
+        "sendHeaders": true,
+        "specifyHeaders": "keypair",
+        "url": "=https://api.notion.com/v1/blocks/{{ $(\"리뷰대기 태스크 조회\").first().json.id }}/children?page_size=100"
       },
       "position": [
         672,
         112
       ],
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2
     },
     {
       "alwaysOutputData": true,
       "id": "2351c624-5f01-4db5-98ce-2a470c5984ba",
       "name": "본문 합치기",
       "parameters": {
-        "jsCode": "var blocks = $('본문 블록 조회').all().map(function(i){return i.json;});\nvar texts = [];\nvar refIds = {};\nfunction scanRich(arr){\n  if(!Array.isArray(arr)) return '';\n  var s = '';\n  for(var i=0;i<arr.length;i++){\n    var t = arr[i]; if(!t) continue;\n    if(t.type==='mention' && t.mention){\n      var mt=t.mention.type;\n      if(mt==='page' && t.mention.page && t.mention.page.id) refIds[t.mention.page.id]=1;\n      else if(mt==='database' && t.mention.database && t.mention.database.id) refIds[t.mention.database.id]=1;\n    }\n    if(t.href){ var m=String(t.href).match(/([0-9a-fA-F]{32})/); if(m && /notion\\./.test(t.href)) refIds[m[1]]=1; }\n    s += (t.plain_text || (t.text && t.text.content)) || '';\n  }\n  return s;\n}\nfor(var j=0;j<blocks.length;j++){\n  var b = blocks[j]; if(!b) continue;\n  var type = b.type;\n  if(type==='link_to_page' && b.link_to_page){\n    if(b.link_to_page.page_id) refIds[b.link_to_page.page_id]=1;\n    if(b.link_to_page.database_id) refIds[b.link_to_page.database_id]=1;\n    texts.push('[링크된 페이지]');\n  } else if(type==='child_page'){\n    if(b.id) refIds[b.id]=1;\n    texts.push('[하위 페이지: '+((b.child_page && b.child_page.title)||'')+']');\n  } else if(type && b[type] && b[type].rich_text){\n    texts.push(scanRich(b[type].rich_text));\n  } else if(typeof b.content==='string'){\n    texts.push(b.content);\n  }\n}\nreturn [{ json: { bodyBlocks: texts, refIds: Object.keys(refIds) } }];"
+        "jsCode": "var resp = $('본문 블록 조회').first().json;\nvar blocks = (resp && resp.results) || [];\nvar texts = [];\nvar refIds = {};\nfunction scanRich(arr){\n  if(!Array.isArray(arr)) return '';\n  var s = '';\n  for(var i=0;i<arr.length;i++){\n    var t = arr[i]; if(!t) continue;\n    if(t.type==='mention' && t.mention){\n      var mt=t.mention.type;\n      if(mt==='page' && t.mention.page && t.mention.page.id) refIds[t.mention.page.id]=1;\n      else if(mt==='database' && t.mention.database && t.mention.database.id) refIds[t.mention.database.id]=1;\n    }\n    if(t.href){ var m=String(t.href).match(/([0-9a-fA-F]{32})/); if(m && /notion\\./.test(t.href)) refIds[m[1]]=1; }\n    s += (t.plain_text || (t.text && t.text.content)) || '';\n  }\n  return s;\n}\nfor(var j=0;j<blocks.length;j++){\n  var b = blocks[j]; if(!b) continue;\n  var type = b.type;\n  if(type==='link_to_page' && b.link_to_page){\n    if(b.link_to_page.page_id) refIds[b.link_to_page.page_id]=1;\n    if(b.link_to_page.database_id) refIds[b.link_to_page.database_id]=1;\n    texts.push('[링크된 페이지]');\n  } else if(type==='child_page'){\n    if(b.id) refIds[b.id]=1;\n    texts.push('[하위 페이지: '+((b.child_page && b.child_page.title)||'')+']');\n  } else if(type && b[type] && b[type].rich_text){\n    texts.push(scanRich(b[type].rich_text));\n  } else if(typeof b.content==='string'){\n    texts.push(b.content);\n  }\n}\nreturn [{ json: { bodyBlocks: texts, refIds: Object.keys(refIds) } }];"
       },
       "position": [
         896,
@@ -1155,7 +2301,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-22T04:19:58.874Z",
-  "versionCounter": 146,
-  "versionId": "a7dca6cb-e993-4d56-bc7c-68fc8bbcde26"
+  "updatedAt": "2026-06-23T04:25:26.604Z",
+  "versionCounter": 152,
+  "versionId": "35d2ac30-3a71-4238-bf75-44289f2f6ab4"
 }
