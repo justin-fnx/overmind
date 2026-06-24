@@ -5,7 +5,7 @@
 | 항목 | 값 |
 |------|----|
 | 경로 | `../mydata-agent` |
-| 리포 | `github.com/bomapp/mydata-agent` (추정) |
+| 리포 | `github.com/bomapp-inc/mydata-agent` (GitLab `bomapp/mydata-agent` 프로젝트 없음, 2026-06-23 확인) |
 | 언어/플랫폼 | Java 17 / Spring Boot 3.0.6 / Spring WebFlux (Reactive) |
 | 빌드 | Gradle |
 | 첫 커밋 | 2023-05-11 |

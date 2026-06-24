@@ -1,6 +1,6 @@
 # legacy-backend (동결, 유지보수만)
 
-> 보맵 초기(2018년) 모놀리스 백엔드. **API 부분은 `next-backend / bomapp-api` 로 이관 완료**. 현재는 `redmin` (운영자 어드민)과 `webview_server` (앱 인앱 웹뷰 / 약관 정적 파일) 만 잔존하여 프로덕션 유지만 한다.
+> 보맵 초기(2018년) 모놀리스 백엔드. **API 부분은 `next-backend / bomapp-api` 로 이관 완료**. 현재는 `redmin` (운영자 어드민)과 `webview_server` (앱 인앱 웹뷰 / 약관 정적 파일) 만 잔존하여 프로덕션 유지만 한다. redmin 의 장기 대체 대상은 별도 GitLab 리포 [`bomapp-backoffice`](./bomapp-backoffice.md) 이다.
 
 | 항목 | 값 |
 |------|----|
@@ -144,6 +144,7 @@ legacy-backend/
 |------|------|
 | `bomapp_api_server` → `next-backend / bomapp-api` | 노션상 "완료" 진술. 단 `/was/data/legacy-bomapp-api-prod` 디렉토리 잔존(ps 비활성), 완전 제거 미확정 |
 | `bomapp_redmin` 이전 | **✅ 완료 — 2026-06-10 신규 ECS 컷오버** (BOM-157). **`prod-internal-alb` :443 prio 20**(redmin 은 internal ALB 가 실경로) → `prod-bomapp-redmin-ip-8080`. NEWTG RequestCount 양수로 라우팅 확정. 계정 시드(2FA)·로그인 기능 테스트는 사용자 진행. 구 default→:7575 롤백용. (최초 prod-alb 오설정 교정) |
+| `bomapp_redmin` 장기 대체 | **진행 중** — 신규 [`bomapp-backoffice`](./bomapp-backoffice.md) 가 redmin 대체 내부 운영 콘솔 역할. infra MR !54로 인프라 리소스는 반영, backoffice MR !7 기준 GitLab CI/ECS/S3+CloudFront 배포 파이프라인은 2026-06-23 조회 시 open/pipeline failed |
 | **`bomapp_webview_server` 이전** | **✅ 완료 — 2026-06-10 신규 ECS 전면 컷오버** (BOM-137/138/139/154). `web.bomapp.co.kr` → `prod-bomapp-webview-ip-8080`. 사무실 카나리가 공지 상세 네이티브 브릿지 버그(`window.bomapp.webNoticeDetail`↔`androidNative.openWithNaviBar`, BOM-154) 잡아 수정. 정적 자산 S3+CloudFront 분리는 미적용(이미지 베이킹 유지). 구 :7778 롤백용 잔존 ([근거](../runtime-verification.md#5-legacy-backend--bomapp_webview_server-코드상-endpoint-검증)) |
 | **PROD-BACK 자가구동 프로세스** | **✅ 2026-06-11 라이브 read-only SSM 감사 — 없음.** 실행 java 앱 전부 `spring.profiles.active=prod`(`cron`/`my-data-cron`/`open-api-cron` 0, `bomapp_api_server` 미실행). 실행 = 롤백 stub(redmin/webview/open-api/bomapp-api/wings/구mydata jar) + dead `bomapp_oauth`(8888 좀비)뿐, 이들 `@Scheduled`=0 → **인바운드 없이 도는 배치 없음** |
 | **`mydata-mgmts-api`(auth:11000) 이관** | **✅ 완료 — 2026-06-11 신규 ECS 100% 컷오버** (별도 서비스, [mydata-mgmts-api.md](./mydata-mgmts-api.md)). 구 PROD-BACK 11000 jar 는 롤백 stub |
@@ -166,5 +167,6 @@ legacy-backend/
 
 - [`../architecture.md`](../architecture.md)
 - [`./next-backend.md`](./next-backend.md) — 이관 완료 대상
+- [`./bomapp-backoffice.md`](./bomapp-backoffice.md) — redmin 장기 대체 신규 백오피스
 - [`./mydata-mgmts-api.md`](./mydata-mgmts-api.md) — redmin 이 직접 호출하는 레거시 마이데이터
 - 노션: `legacy-backend`, `BOMAPP 인프라 구조(HQ/AWS)`
