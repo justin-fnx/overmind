@@ -1,0 +1,433 @@
+{
+  "active": true,
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": false,
+    "connections": {
+      "Figma 렌더": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "URL 추출",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "PNG 다운로드": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "비전 설명",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "URL 추출": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "PNG 다운로드",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Vision 시작": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Figma 렌더",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "비전 Sonnet": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "비전 설명",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-06-18T07:30:42.495Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "d994bf14-4c2a-4ca7-924c-1e5919f4119f",
+        "name": "Vision 시작",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {},
+          "path": "figma-vision",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "webhookId": "084e4216-af62-4a67-b440-ed05a178977b"
+      },
+      {
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "OKR5k0AAH8p23JJj",
+            "name": "Figma PAT"
+          }
+        },
+        "id": "bb0f2de7-f541-4b7e-a294-b1fa2af31776",
+        "name": "Figma 렌더",
+        "parameters": {
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "method": "GET",
+          "options": {},
+          "url": "=https://api.figma.com/v1/images/{{ $json.body.fileKey || '3Ifh58l7EWLXapWRys0vjf' }}?ids={{ $json.body.nodeId || '10914-6407' }}&format=png&scale=2"
+        },
+        "position": [
+          220,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "e3c47a47-03fd-45dc-90b9-732883180353",
+        "name": "URL 추출",
+        "parameters": {
+          "jsCode": "const imgs=$json.images||{};const url=Object.values(imgs)[0]||'';const inp=($('Vision 시작').first().json.body)||{};if(!url)throw new Error('Figma 렌더 실패: '+JSON.stringify($json).slice(0,200));return [{json:{url:url,nodeId:inp.nodeId,question:inp.question||''}}];"
+        },
+        "position": [
+          440,
+          0
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "8b9a3e6e-a21b-4552-8ebc-407ccf855916",
+        "name": "PNG 다운로드",
+        "parameters": {
+          "method": "GET",
+          "options": {
+            "response": {
+              "response": {
+                "outputPropertyName": "data",
+                "responseFormat": "file"
+              }
+            }
+          },
+          "url": "={{ $json.url }}"
+        },
+        "position": [
+          660,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "50661d9b-c208-4343-8f97-8bf096c27c17",
+        "name": "비전 설명",
+        "parameters": {
+          "options": {
+            "passthroughBinaryImages": true
+          },
+          "promptType": "define",
+          "text": "=이 이미지는 보맵 앱의 UI 화면(Figma 디자인) 캡처입니다. 요청: {{ $('URL 추출').first().json.question || '화면 전체를 설명' }}\\n\\n레이아웃 구조(위→아래 영역 순서), 주요 UI 요소와 배치, 보이는 텍스트/라벨, 화면의 목적과 상태를 한국어로 구체적으로 설명하세요. 추측은 추측이라고 표시."
+        },
+        "position": [
+          900,
+          0
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "aws": {
+            "id": "GftVHJqfxQshQZ4P",
+            "name": "AWS (IAM) account"
+          }
+        },
+        "id": "69c5ea2a-3097-4733-9f72-8221326de713",
+        "name": "비전 Sonnet",
+        "parameters": {
+          "model": "global.anthropic.claude-sonnet-4-6",
+          "modelSource": "inferenceProfile",
+          "options": {
+            "maxTokensToSample": 1500,
+            "temperature": 0.3
+          }
+        },
+        "position": [
+          900,
+          220
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+        "typeVersion": 1.1
+      }
+    ],
+    "updatedAt": "2026-06-18T07:30:42.495Z",
+    "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+    "workflowId": "YN6uIteF2X5BAo85",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-18T07:30:42.534Z",
+        "event": "deactivated",
+        "id": 175,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+        "workflowId": "YN6uIteF2X5BAo85"
+      },
+      {
+        "createdAt": "2026-06-18T07:30:42.547Z",
+        "event": "activated",
+        "id": 176,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+        "workflowId": "YN6uIteF2X5BAo85"
+      },
+      {
+        "createdAt": "2026-06-18T07:30:42.647Z",
+        "event": "deactivated",
+        "id": 177,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+        "workflowId": "YN6uIteF2X5BAo85"
+      },
+      {
+        "createdAt": "2026-06-18T07:30:42.667Z",
+        "event": "activated",
+        "id": 178,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+        "workflowId": "YN6uIteF2X5BAo85"
+      }
+    ]
+  },
+  "activeVersionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+  "connections": {
+    "Figma 렌더": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "URL 추출",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "PNG 다운로드": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "비전 설명",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "URL 추출": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "PNG 다운로드",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Vision 시작": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Figma 렌더",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "비전 Sonnet": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "비전 설명",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-06-18T07:27:29.879Z",
+  "description": null,
+  "id": "YN6uIteF2X5BAo85",
+  "isArchived": false,
+  "meta": null,
+  "name": "Overmind Figma Vision · 화면 설명",
+  "nodes": [
+    {
+      "id": "d994bf14-4c2a-4ca7-924c-1e5919f4119f",
+      "name": "Vision 시작",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {},
+        "path": "figma-vision",
+        "responseMode": "lastNode"
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "084e4216-af62-4a67-b440-ed05a178977b"
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "OKR5k0AAH8p23JJj",
+          "name": "Figma PAT"
+        }
+      },
+      "id": "bb0f2de7-f541-4b7e-a294-b1fa2af31776",
+      "name": "Figma 렌더",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "GET",
+        "options": {},
+        "url": "=https://api.figma.com/v1/images/{{ $json.body.fileKey || '3Ifh58l7EWLXapWRys0vjf' }}?ids={{ $json.body.nodeId || '10914-6407' }}&format=png&scale=2"
+      },
+      "position": [
+        220,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "e3c47a47-03fd-45dc-90b9-732883180353",
+      "name": "URL 추출",
+      "parameters": {
+        "jsCode": "const imgs=$json.images||{};const url=Object.values(imgs)[0]||'';const inp=($('Vision 시작').first().json.body)||{};if(!url)throw new Error('Figma 렌더 실패: '+JSON.stringify($json).slice(0,200));return [{json:{url:url,nodeId:inp.nodeId,question:inp.question||''}}];"
+      },
+      "position": [
+        440,
+        0
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "8b9a3e6e-a21b-4552-8ebc-407ccf855916",
+      "name": "PNG 다운로드",
+      "parameters": {
+        "method": "GET",
+        "options": {
+          "response": {
+            "response": {
+              "outputPropertyName": "data",
+              "responseFormat": "file"
+            }
+          }
+        },
+        "url": "={{ $json.url }}"
+      },
+      "position": [
+        660,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "50661d9b-c208-4343-8f97-8bf096c27c17",
+      "name": "비전 설명",
+      "parameters": {
+        "options": {
+          "passthroughBinaryImages": true
+        },
+        "promptType": "define",
+        "text": "=이 이미지는 보맵 앱의 UI 화면(Figma 디자인) 캡처입니다. 요청: {{ $('URL 추출').first().json.question || '화면 전체를 설명' }}\\n\\n레이아웃 구조(위→아래 영역 순서), 주요 UI 요소와 배치, 보이는 텍스트/라벨, 화면의 목적과 상태를 한국어로 구체적으로 설명하세요. 추측은 추측이라고 표시."
+      },
+      "position": [
+        900,
+        0
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1
+    },
+    {
+      "credentials": {
+        "aws": {
+          "id": "GftVHJqfxQshQZ4P",
+          "name": "AWS (IAM) account"
+        }
+      },
+      "id": "69c5ea2a-3097-4733-9f72-8221326de713",
+      "name": "비전 Sonnet",
+      "parameters": {
+        "model": "global.anthropic.claude-sonnet-4-6",
+        "modelSource": "inferenceProfile",
+        "options": {
+          "maxTokensToSample": 1500,
+          "temperature": 0.3
+        }
+      },
+      "position": [
+        900,
+        220
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+      "typeVersion": 1.1
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2026-06-18T07:27:29.879Z",
+      "project": {
+        "createdAt": "2026-05-27T07:22:23.960Z",
+        "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "description": null,
+        "icon": null,
+        "id": "501Q7eGEKoHjxZfp",
+        "name": "재은 김 <justin@bomapp.co.kr>",
+        "type": "personal",
+        "updatedAt": "2026-05-27T07:24:05.558Z"
+      },
+      "projectId": "501Q7eGEKoHjxZfp",
+      "role": "workflow:owner",
+      "updatedAt": "2026-06-18T07:27:29.879Z",
+      "workflowId": "YN6uIteF2X5BAo85"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-06-18T07:30:42.494Z",
+  "versionCounter": 11,
+  "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71"
+}

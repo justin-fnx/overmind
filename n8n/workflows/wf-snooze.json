@@ -1,0 +1,515 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "보류 기록·스누즈": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "보류 저장·스누즈",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "보류 저장·스누즈": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "보류 통보·스누즈",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스누즈 가드": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "보류 기록·스누즈",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "재질문 블록",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스누즈 결정": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "스누즈 가드",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스누즈 도래 조회": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "행 조회·도래",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스누즈 점검": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "스누즈 도래 조회",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "재질문 블록": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "재질문 포스트",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "재질문 저장": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "재질문 기록",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "재질문 포스트": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "재질문 저장",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "행 조회·도래": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "스누즈 결정",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-06-15T06:28:23.386Z",
+  "description": "15분마다 Notion에서 🤖게이트=스누즈 AND 다음점검≤now 인 태스크 조회 → DT로 스레드 찾아 '📝 답변하기' 재게시(게이트=질문중, 스누즈횟수++). 3회 이상이면 자동 보류+통보.",
+  "id": "PpZ7nC12PWWet4DB",
+  "isArchived": false,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "name": "Overmind WF-Snooze · 재질문",
+  "nodes": [
+    {
+      "id": "c77e8b18-e373-4317-a482-df5593bb8be7",
+      "name": "스누즈 점검",
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        96
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "403b795f-3865-4081-be33-812d3cf487cd",
+      "name": "스누즈 도래 조회",
+      "parameters": {
+        "databaseId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
+        },
+        "filterType": "manual",
+        "filters": {
+          "conditions": [
+            {
+              "condition": "equals",
+              "key": "🤖 AI 게이트|select",
+              "selectValue": "스누즈"
+            },
+            {
+              "condition": "on_or_before",
+              "dateValue": "={{ $now.toISO() }}",
+              "key": "🤖 다음 점검 시각|date"
+            }
+          ]
+        },
+        "matchType": "allFilters",
+        "operation": "getAll",
+        "resource": "databasePage",
+        "returnAll": true
+      },
+      "position": [
+        224,
+        96
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "7e74c6ee-9915-43af-8969-114ceae0ef93",
+      "name": "행 조회·도래",
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "eq",
+              "keyName": "page_id",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        },
+        "limit": 1,
+        "operation": "get",
+        "resource": "row",
+        "returnAll": false
+      },
+      "position": [
+        448,
+        96
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "e8cdab9a-d9b4-4d48-b1e7-23fbe707a23a",
+      "name": "스누즈 결정",
+      "parameters": {
+        "jsCode": "const row = $json;\nconst cnt = Number(row.snooze_count || 0);\nlet qn = 0;\ntry { qn = (row.questions_json ? JSON.parse(row.questions_json) : []).length; } catch (e) { qn = 0; }\nreturn { json: { pageId: row.page_id, threadTs: row.thread_ts, channelId: row.channel_id, snoozeCount: cnt, newCount: cnt + 1, escalate: cnt >= 3, qCount: qn } };",
+        "mode": "runOnceForEachItem"
+      },
+      "position": [
+        672,
+        96
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "2e30a199-889e-4eb8-b195-3b697f65bf8b",
+      "name": "스누즈 가드",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.escalate }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          }
+        }
+      },
+      "position": [
+        896,
+        96
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "ad5c040d-1f06-4b30-b6e9-76af2dd50858",
+      "name": "보류 기록·스누즈",
+      "parameters": {
+        "operation": "update",
+        "options": {},
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.pageId }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "🤖 AI 게이트|select",
+              "selectValue": "보류"
+            },
+            {
+              "key": "🤖 미결 질문|rich_text",
+              "textContent": "⚠️ 여러 번 미뤄져 자동 보류 — 사람이 직접 확인 필요"
+            }
+          ]
+        },
+        "resource": "databasePage"
+      },
+      "position": [
+        1120,
+        0
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "69b1479d-a0ae-47a6-b920-f389924ee067",
+      "name": "보류 저장·스누즈",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "escalated"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "eq",
+              "keyName": "thread_ts",
+              "keyValue": "={{ $(\"스누즈 결정\").item.json.threadTs }}"
+            }
+          ]
+        },
+        "operation": "update",
+        "resource": "row"
+      },
+      "position": [
+        1344,
+        0
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "741d209b-3700-454a-a43f-72e60bf9ba79",
+      "name": "보류 통보·스누즈",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "jsonBody": "={ \"channel\": \"{{ $(\"스누즈 결정\").item.json.channelId }}\", \"thread_ts\": \"{{ $(\"스누즈 결정\").item.json.threadTs }}\", \"text\": \"🛑 여러 번 미뤄져 이 건을 자동 보류 처리했어요. 다시 진행하려면 담당자가 직접 확인해 주세요.\" }",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.postMessage"
+      },
+      "position": [
+        1568,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "c5603c68-36fb-4871-860c-29fe772d2d30",
+      "name": "재질문 블록",
+      "parameters": {
+        "jsCode": "const d = $json;\nconst guide = [\"• *📝 답변하기* — 폼을 열어 답해요.\", \"• *⏸️ 아직 작성 중* — 4시간 뒤 다시 여쭤볼게요.\", \"• *🛑 보류* — 이 건을 멈춰요.\"].join(\"\\n\");\nconst blocks = [\n  { type: \"section\", text: { type: \"mrkdwn\", text: \"⏰ 미뤄두셨던 검토 질문 \" + d.qCount + \"개, 다시 여쭤볼게요.\" } },\n  { type: \"section\", text: { type: \"mrkdwn\", text: guide } },\n  { type: \"actions\", block_id: \"prompt_actions\", elements: [\n    { type: \"button\", style: \"primary\", text: { type: \"plain_text\", text: \"📝 답변하기\", emoji: true }, action_id: \"open_form\", value: JSON.stringify({ pageId: d.pageId }) },\n    { type: \"button\", text: { type: \"plain_text\", text: \"⏸️ 아직 작성 중\", emoji: true }, action_id: \"snooze\", value: JSON.stringify({ pageId: d.pageId }) },\n    { type: \"button\", style: \"danger\", text: { type: \"plain_text\", text: \"🛑 보류\", emoji: true }, action_id: \"hold\", value: JSON.stringify({ pageId: d.pageId }) }\n  ] }\n];\nreturn { json: { body: { channel: d.channelId, thread_ts: d.threadTs, text: \"재검토 질문\", blocks: blocks } } };",
+        "mode": "runOnceForEachItem"
+      },
+      "position": [
+        1120,
+        192
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "id": "e859181b-4235-422b-83b5-5380d08cd345",
+      "name": "재질문 포스트",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "jsonBody": "={{ $json.body }}",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "https://slack.com/api/chat.postMessage"
+      },
+      "position": [
+        1344,
+        192
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "3063ef1d-3db9-4a94-bb8f-1bab4a4b41eb",
+      "name": "재질문 저장",
+      "parameters": {
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "snooze_count": "={{ $(\"스누즈 결정\").item.json.newCount }}",
+            "status": "collecting"
+          }
+        },
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "eq",
+              "keyName": "thread_ts",
+              "keyValue": "={{ $(\"스누즈 결정\").item.json.threadTs }}"
+            }
+          ]
+        },
+        "operation": "update",
+        "resource": "row"
+      },
+      "position": [
+        1568,
+        192
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "96b809ac-490e-4246-a422-c8e37577638e",
+      "name": "재질문 기록",
+      "parameters": {
+        "operation": "update",
+        "options": {},
+        "pageId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"스누즈 결정\").item.json.pageId }}"
+        },
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "🤖 AI 게이트|select",
+              "selectValue": "질문중"
+            },
+            {
+              "key": "🤖 스누즈 횟수|number",
+              "numberValue": "={{ $(\"스누즈 결정\").item.json.newCount }}"
+            }
+          ]
+        },
+        "resource": "databasePage"
+      },
+      "position": [
+        1792,
+        192
+      ],
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "availableInMCP": true,
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2026-06-15T06:28:23.386Z",
+      "project": {
+        "createdAt": "2026-05-27T07:22:23.960Z",
+        "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "description": null,
+        "icon": null,
+        "id": "501Q7eGEKoHjxZfp",
+        "name": "재은 김 <justin@bomapp.co.kr>",
+        "type": "personal",
+        "updatedAt": "2026-05-27T07:24:05.558Z"
+      },
+      "projectId": "501Q7eGEKoHjxZfp",
+      "role": "workflow:owner",
+      "updatedAt": "2026-06-15T06:28:23.386Z",
+      "workflowId": "PpZ7nC12PWWet4DB"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-06-15T06:28:23.386Z",
+  "versionCounter": 1,
+  "versionId": "bd719e70-74f3-4508-948c-8d76e88d09b1"
+}
