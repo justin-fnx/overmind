@@ -85,6 +85,7 @@ next-backend/
 | GET | `/premiums/*` | 보험료 조회 |
 | GET | `/renewal-insurance/*` | 갱신형 보험 |
 | POST | `/stg_only/test/alimtalk/recipient-extraction` | 스테이징 테스트 |
+| GET | `/admin/backoffice/metrics/engagement` | 백오피스 활성 지표(DAU/MAU, 신규, 탈퇴, 추이) admin API. `X-Backoffice-Token` 필요 |
 
 ### 3.2 chat-api (실시간 채팅)
 
