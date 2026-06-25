@@ -41,7 +41,7 @@ services:
       - "PROD 리소스는 prevent_destroy로 보호. destroy/replace 작업 절대 금지."
       - "변경 전 반드시 terraform state를 완전히 읽어 확인 후 plan/apply 수행."
       - "ECS 배포 대상 서비스: bomapp-api, chat-api, mydata-api, open-api, bomapp-batch, mydata-batch, statics-batch, wings-api"   # alimtalk-callback 디커미션됨 (BOM-180, 2026-06-16)"
-      - "bomapp-backoffice 인프라 리소스(ECR/IAM/Secrets metadata/log/SG/TG/listener/Route53 + frontend S3/CloudFront + ECS service bootstrap)는 infra MR !54로 main에 반영되었고 Terraform 이 소유한다."
+      - "bomapp-console 인프라 리소스(ECR/IAM/Secrets metadata/log/SG/TG/listener/Route53 + frontend S3/CloudFront + ECS service bootstrap)는 Terraform 코드 기준으로 준비 중이다. 실제 AWS service apply/deploy는 아직 완료되지 않았다."
 
   # ─────────────────────────────────────────────
   # Next-Generation Backend Platform
@@ -64,7 +64,7 @@ services:
       - path: "bomapp-external/src/main/java"
         description: "외부 시스템 연동 (14개 외부 클라이언트)"
       - path: "bomapp-server/bomapp-api"
-        description: "메인 REST API 서버 (보험 상품 도메인). 백오피스 활성 지표 admin API(`/admin/backoffice/metrics/engagement`)도 여기서 제공한다."
+        description: "메인 REST API 서버 (보험 상품 도메인). Bomapp Console 활성 지표 Bomapp Ops admin API(`/admin/bomapp-ops/metrics/engagement`)도 여기서 제공한다."
       - path: "bomapp-server/chat-api"
         description: "WebSocket 기반 상담 채팅 서버"
       - path: "bomapp-server/mydata-api"
@@ -130,13 +130,13 @@ services:
       - "각 앱별 환경 파일은 .env.dev / .env.stg / .env.prod 패턴."
 
   # ─────────────────────────────────────────────
-  # Internal Backoffice
+  # Bomapp Console
   # ─────────────────────────────────────────────
-  - name: "bomapp-backoffice"
-    repo_url: "gitlab.bomapp.co.kr/bomapp/backoffice"   # GitLab project id 36, default main. MR !7(BOM-209)에서 GitLab 배포 파이프라인 추가.
-    path: "../bomapp-backoffice"
+  - name: "bomapp-console"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/console"   # GitLab default main. BOM-221에서 backoffice 명칭을 console로 정리.
+    path: "../bomapp-console"
     feature_base_branch: "main"
-    description: "레거시 redmin 을 대체하는 BOMAPP 내부 백오피스. Bun/Turborepo 모노레포이며 Next.js 16 프론트엔드(`apps/frontend`)가 NestJS 11 Admin BFF(`apps/backend`)를 호출한다. 관리자 계정/감사 로그는 backoffice 소유로 직접 쓰고, 앱 소유 데이터의 write 는 next-backend admin API 로 프록시한다."
+    description: "레거시 redmin 을 대체하는 BOMAPP 내부 운영 콘솔. Bun/Turborepo 모노레포이며 Next.js 16 프론트엔드(`apps/frontend`)가 NestJS 11 Admin BFF(`apps/backend`)를 호출한다. 관리자 계정/감사 로그는 console 소유로 직접 쓰고, 앱 소유 데이터의 write 는 owner admin API 로 프록시한다."
     tech_stack: ["bun-1.3", "turborepo", "typescript", "nextjs-16", "react-19", "nestjs-11", "prisma-6", "mysql", "redis", "ecs-ec2", "s3-cloudfront", "gitlab-ci"]
     critical_paths:
       - path: "apps/frontend/src/app"
@@ -146,17 +146,17 @@ services:
       - path: "apps/backend/src"
         description: "NestJS Admin BFF. auth/member/metrics/alimtalk/alimtalk-template/review/opt-out/audit/admin/prisma/common 모듈."
       - path: "apps/backend/prisma/schema.prisma"
-        description: "백오피스 소유 테이블(redmin_user, audit 등) + app-owned read 모델. 스키마 변경 시 `bun --filter backend prisma:generate` 필수."
+        description: "Console 소유 테이블(redmin_user, audit 등) + app-owned read 모델. 스키마 변경 시 `bun --filter backend prisma:generate` 필수."
       - path: "packages/interfaces/src"
         description: "FE/BE 공유 API contract 타입의 단일 소스. 앱 양쪽에 전파됨."
       - path: "docs/architecture-data-ownership.md"
-        description: "데이터 소유권 3계층 규칙. T1 backoffice-owned 직접 R/W, T2 app-owned read-only 직접 조회(단 owner admin API 가 있으면 BFF proxy), T3 app-owned write 는 owner admin API 프록시."
+        description: "데이터 소유권 3계층 규칙. T1 console-owned 직접 R/W, T2 app-owned read-only 직접 조회(단 owner admin API 가 있으면 BFF proxy), T3 app-owned write 는 owner admin API 프록시."
       - path: "manifests"
         description: "ECS task/service template 과 dev/prod deploy overlay. Secrets 값은 AWS Secrets Manager JSON key 참조만 포함."
       - path: ".gitlab-ci.yml"
         description: "수동 GitLab CI. PIPELINE_TARGET(build|deploy|build-and-deploy|pr-check|runner-probe), ENVIRONMENT(dev|prod), IMAGE_TAG 입력."
       - path: "Dockerfile.backend"
-        description: "Bun 기반 backend 이미지. ARM64 buildx → ECR `bomapp-backoffice-backend:{YYYYMMDD-shortsha}`."
+        description: "Bun 기반 backend 이미지. ARM64 buildx → ECR `bomapp-console-backend:{YYYYMMDD-shortsha}`."
       - path: "Dockerfile.frontend"
         description: "Next.js static export 산출물을 `frontend-out/` 로 생성해 S3+CloudFront 에 배포."
     dependencies:
@@ -167,11 +167,11 @@ services:
       - service: "next-backend"
         type: "sync"
         interface: "rest"
-        note: "BFF 가 `BACKOFFICE_ADMIN_BASE_URL`(bapi) 과 `BACKOFFICE_WINGS_BASE_URL`(wapi) 로 앱 소유 write/조회 기능을 프록시한다. 지표 화면은 bapi `GET /admin/backoffice/metrics/engagement` 를 호출한다. DEV=`dev-bapi`/`dev-wapi`, PROD=`bapi`/`wapi`."
+        note: "BFF 가 `BOMAPP_OPS_ADMIN_BASE_URL`(bapi) 로 Bomapp-owned admin API 를, `BACKOFFICE_WINGS_BASE_URL`(wapi) 로 Wings admin API 를 프록시한다. 지표 화면은 bapi `GET /admin/bomapp-ops/metrics/engagement` 를 `X-Bomapp-Ops-Token` 으로 호출한다. DEV=`dev-bapi`/`dev-wapi`, PROD=`bapi`/`wapi`."
       - service: "Aurora MySQL / ElastiCache Redis"
         type: "sync"
         interface: "database/session-store"
-        note: "DATABASE_URL 로 MySQL 접근, Redis 는 express-session store. 값은 `bomapp/{dev,prod}/backoffice` Secrets Manager JSON 에서 ECS native secrets 로 주입한다."
+        note: "DATABASE_URL 로 MySQL 접근, Redis 는 express-session store. 값은 `bomapp/{dev,prod}/console` Secrets Manager JSON 에서 ECS native secrets 로 주입한다."
     docs_to_read:
       - "CLAUDE.md"
       - "README.md"
@@ -181,11 +181,11 @@ services:
     lint_command: "bun run lint"
     notes:
       - "**AGENTS.md 는 stale**: pnpm/Node 기준 설명이 남아 있다. 현재 기준은 CLAUDE.md/README.md 이며 모든 명령은 Bun(`bun install`, `bun run lint`, `bun run typecheck`, `bun run test`, `bun run build`)을 사용한다."
-      - "**배포(MR !7, BOM-209)**: backend Docker/ECR/ECS + frontend S3/CloudFront 를 GitLab CI 로 수동 실행하는 변경. 2026-06-23 조회 기준 MR !7은 open 상태이고 head pipeline 693은 failed 이므로 main 반영/배포 성공 후 재검증 필요. backend service=`SVC-ECS-{ENV}-bomapp-backoffice`, task family=`TD-ECS-{ENV}-bomapp-backoffice`, EC2 launch type, ARM64, container port 4000, desired=1, health check grace 60s."
-      - "**도메인**: DEV frontend `dev-admin.bomapp.co.kr` / BFF `dev-admin-api.bomapp.co.kr/api`; PROD frontend `admin.bomapp.co.kr` / BFF `admin-api.bomapp.co.kr/api`. 적용 전 CloudFront/ALB 인증서 SAN 또는 wildcard 커버 확인 필요."
-      - "**Secrets Manager**: `bomapp/dev/backoffice`, `bomapp/prod/backoffice` JSON keys = DATABASE_URL, BACKOFFICE_SESSION_SECRET, BACKOFFICE_REDIS_HOST, BACKOFFICE_REDIS_PORT, BACKOFFICE_REDIS_PASSWORD, BACKOFFICE_REDIS_TLS, BACKOFFICE_ADMIN_TOKEN, ALIMTALK_DASHBOARD_TOKEN. 민감값은 repo/manifest 에 커밋하지 않는다."
+      - "**배포(BOM-209/221)**: backend Docker/ECR/ECS + frontend S3/CloudFront 를 GitLab CI 로 수동 실행하는 구조. Terraform/manifest 계약은 console 명칭 기준이지만 실제 AWS service apply/deploy 는 아직 완료되지 않았다. backend service=`SVC-ECS-{ENV}-bomapp-console`, task family=`TD-ECS-{ENV}-bomapp-console`, EC2 launch type, ARM64, container port 4000, desired=1, health check grace 60s."
+      - "**도메인**: DEV frontend `dev-console.bomapp.co.kr` / BFF `dev-console-api.bomapp.co.kr/api`; PROD frontend `console.bomapp.co.kr` / BFF `console-api.bomapp.co.kr/api` 예정. 적용 전 CloudFront/ALB 인증서 SAN 또는 wildcard 커버 확인 필요."
+      - "**Secrets Manager**: `bomapp/dev/console`, `bomapp/prod/console` JSON keys = DATABASE_URL, BACKOFFICE_SESSION_SECRET, BACKOFFICE_REDIS_HOST, BACKOFFICE_REDIS_PORT, BACKOFFICE_REDIS_PASSWORD, BACKOFFICE_REDIS_TLS, BOMAPP_OPS_ADMIN_TOKEN, ALIMTALK_DASHBOARD_TOKEN. 민감값은 repo/manifest 에 커밋하지 않는다."
       - "**Bootstrap 순서**: infra 에서 ECS service 비의존 리소스(ECR/IAM/Secrets/log/SG/TG/listener/Route53/S3/CloudFront) 먼저 apply → secret 값 채움 → GitLab `PIPELINE_TARGET=build-and-deploy` 로 task definition :1 등록 → infra ECS service apply → 같은 IMAGE_TAG 로 `PIPELINE_TARGET=deploy` 재실행."
-      - "**런타임 변경(MR !7)**: backend `GET /health`, frontend `GET /healthz`, Redis session store, `/api` global prefix, static export 대응(`generateStaticParams`, `NEXT_OUTPUT=export`)이 포함된다."
+      - "**런타임 계약**: backend `GET /health`, frontend `GET /healthz`, Redis session store, `/api` global prefix, static export 대응(`generateStaticParams`, `NEXT_OUTPUT=export`)이 포함된다."
 
   # ─────────────────────────────────────────────
   # MyData Layer (마이데이터 연동)

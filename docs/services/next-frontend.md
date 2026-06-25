@@ -110,7 +110,7 @@ next-frontend/
   - `/templates/*` — 컨텐츠 관리
 - 호출 백엔드: `wings-api`
 
-> `planner-admin` 은 설계사/플래너 도구 영역의 어드민이다. 레거시 redmin 대체용 내부 운영 콘솔은 별도 리포 [`bomapp-backoffice`](./bomapp-backoffice.md) 로 관리한다.
+> `planner-admin` 은 설계사/플래너 도구 영역의 어드민이다. 레거시 redmin 대체용 내부 운영 콘솔은 별도 리포 [`bomapp-console`](./bomapp-console.md) 로 관리한다.
 
 ### 3.6 nextjs-bds-web (BDS 웹)
 
