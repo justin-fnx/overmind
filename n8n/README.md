@@ -17,10 +17,32 @@ n8n/
   .env.example      # N8N_API_URL / N8N_API_KEY 양식 (실제 .env 는 gitignore)
   sync.sh           # pull/push 도구 (curl + jq)
   workflows/
-    wf1-context-gate.json   # WF1 · 기획 맥락 게이트   (id Y74XMZpTEUejToOQ)
-    wf2-listener.json       # WF2 · Slack 리스너/재평가 (id 3LyKi5A20HoPrP0p)
-    wf-snooze.json          # WF-Snooze · 스누즈 재질문 (id PpZ7nC12PWWet4DB)
+    wf1-context-gate.json   # WF1 · 기획 맥락 게이트       (id Y74XMZpTEUejToOQ)
+    wf2-listener.json       # WF2 · Slack 리스너/재평가     (id 3LyKi5A20HoPrP0p)
+    wf-snooze.json          # WF-Snooze · 스누즈 재질문      (id PpZ7nC12PWWet4DB)
+    wf-dispatch.json        # WF-Dispatch · 단계 디스패처    (id 0KSWtN1SPermSuFw)
+    wf3-handoff.json        # WF3 · 단계 실행/서브태스크 생성 (id m6YGNNCEP5RI3SSF)
+    wf-watch.json           # WF-Watch · 단계 완료 감시      (id Nivu3hdSDVlL5LrR)
+    wf-enrich.json          # WF-Enrich · 완주 후 Hub upsert (id bPNVUvuHpaograNX)
+    wf-cleanup.json         # WF-Cleanup · dedup 테이블 정리 (id LHLd2RloEwRUkWuS)
+    wf-notion-read.json     # 서브WF · Notion 전문 읽기(표)  (id QHVMJ3uFEwlzumw3)
+    figma-vision.json       # 서브WF · Figma 비전           (id YN6uIteF2X5BAo85)
+    wf-reset.json           # WF-Reset · 기획 재검토 리셋    (id 40VRRfs2eAoTlsYH)
 ```
+
+## 재검토(재실행) 트리거 — 체크박스 + WF-Reset
+
+기획 검토는 **TASK DB(`fd91ec8d…`)의 `🔁 검토 요청` 체크박스**로 발화한다(최초 검토·재검토 동일).
+과거의 "상태=리뷰대기 자동 폴링"은 폐지 — 명시적 클릭만 게이트를 돌린다.
+
+- **WF1 트리거 필터**: `타입=기획 AND 🔁 검토 요청=true`. claim 시 체크박스를 즉시 해제(재포착·러너웨이 방지)하고 `🤖 AI 게이트=미검토` 기록.
+- **WF1 → 재검토 리셋(executeWorkflow, 동기) → 게이트**: claim 직후 **WF-Reset**(`40VRRfs2eAoTlsYH`)을 호출해 이전 검토 흔적을 멱등 정리한 뒤 게이트를 돈다. 흔적이 없으면(최초 검토) no-op.
+- **WF-Reset이 정리하는 흔적**(대상 page_id 기준):
+  1. `stage_pipeline`(`16uFko9jgm6gFs0T`)의 각 `subtask_page_id` Notion 카드 → **아카이브**(`archived:true`, 상태값 `취소`는 status에 옵션이 없어 아카이브로 대체). 사용자 결정: 진행 중 서브태스크는 자동 취소·아카이브.
+  2. `stage_pipeline` 행 삭제(parent_page_id) / `gate_threads`(`Kc7JZEVYgheNzZKo`) 행 삭제(page_id) / `enrich_log`(`KZccSviFYvgYA9e4`) 행 삭제(parent_page_id).
+  3. 부모 카드 `🤖 정리된 브리프/맥락 점수/미결 질문/스누즈 횟수/다음 점검 시각` 초기화(AI 게이트는 WF1이 미검토로 관리하므로 건드리지 않음).
+- **멱등성 함정**: dataTable `deleteRows`는 매칭 0건이면 0 items를 내보내 체인이 끊긴다 → 3개 delete 노드 모두 `alwaysOutputData:true`, `단계 행 삭제` 다중출력은 `단일화2`(Limit 1)로 수축해 항상 `부모 필드 초기화`까지 도달.
+- (선택) 더 예쁜 UI는 Notion **Button** 프로퍼티를 만들어 동작=`🔁 검토 요청` 체크로 설정하면 됨(Notion API는 Button 생성 미지원 → 체크박스가 기계 플래그).
 
 ## 사용
 

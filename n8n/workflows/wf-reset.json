@@ -1,0 +1,771 @@
+{
+  "active": true,
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": false,
+    "connections": {
+      "기존 단계 행 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "서브태스크 아카이브",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "단계 행 삭제": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "단일화2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "단일화": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "단계 행 삭제",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "단일화2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "스레드 행 삭제",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "리셋 요청 수신": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "기존 단계 행 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "서브태스크 아카이브": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "단일화",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "스레드 행 삭제": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "풍부화 행 삭제",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "풍부화 행 삭제": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "부모 필드 초기화",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-06-26T02:03:57.382Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "reset-trigger-0001",
+        "name": "리셋 요청 수신",
+        "parameters": {
+          "inputSource": "workflowInputs",
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "pageId",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          300
+        ],
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "reset-get-stages-001",
+        "name": "기존 단계 행 조회",
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "16uFko9jgm6gFs0T"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "condition": "eq",
+                "keyName": "parent_page_id",
+                "keyValue": "={{ $('리셋 요청 수신').first().json.pageId }}"
+              }
+            ]
+          },
+          "matchType": "allConditions",
+          "operation": "get",
+          "resource": "row",
+          "returnAll": true
+        },
+        "position": [
+          220,
+          300
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "reset-archive-sub-01",
+        "name": "서브태스크 아카이브",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "jsonBody": "{ \"archived\": true }",
+          "method": "PATCH",
+          "nodeCredentialType": "notionApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "=https://api.notion.com/v1/pages/{{ $json.subtask_page_id }}"
+        },
+        "position": [
+          440,
+          300
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "reset-limit-0001",
+        "name": "단일화",
+        "parameters": {
+          "maxItems": 1
+        },
+        "position": [
+          660,
+          300
+        ],
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "reset-del-stage-001",
+        "name": "단계 행 삭제",
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "16uFko9jgm6gFs0T"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "condition": "eq",
+                "keyName": "parent_page_id",
+                "keyValue": "={{ $('리셋 요청 수신').first().json.pageId }}"
+              }
+            ]
+          },
+          "matchType": "allConditions",
+          "operation": "deleteRows",
+          "resource": "row"
+        },
+        "position": [
+          880,
+          300
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "reset-limit-0002",
+        "name": "단일화2",
+        "parameters": {
+          "maxItems": 1
+        },
+        "position": [
+          990,
+          300
+        ],
+        "type": "n8n-nodes-base.limit",
+        "typeVersion": 1
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "reset-del-thread-01",
+        "name": "스레드 행 삭제",
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "Kc7JZEVYgheNzZKo"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "condition": "eq",
+                "keyName": "page_id",
+                "keyValue": "={{ $('리셋 요청 수신').first().json.pageId }}"
+              }
+            ]
+          },
+          "matchType": "allConditions",
+          "operation": "deleteRows",
+          "resource": "row"
+        },
+        "position": [
+          1100,
+          300
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "reset-del-enrich-01",
+        "name": "풍부화 행 삭제",
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "KZccSviFYvgYA9e4"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "condition": "eq",
+                "keyName": "parent_page_id",
+                "keyValue": "={{ $('리셋 요청 수신').first().json.pageId }}"
+              }
+            ]
+          },
+          "matchType": "allConditions",
+          "operation": "deleteRows",
+          "resource": "row"
+        },
+        "position": [
+          1320,
+          300
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "reset-clear-parent-1",
+        "name": "부모 필드 초기화",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "jsonBody": "{ \"properties\": { \"🤖 정리된 브리프\": { \"rich_text\": [] }, \"🤖 맥락 점수\": { \"number\": null }, \"🤖 미결 질문\": { \"rich_text\": [] }, \"🤖 스누즈 횟수\": { \"number\": null }, \"🤖 다음 점검 시각\": { \"date\": null } } }",
+          "method": "PATCH",
+          "nodeCredentialType": "notionApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "=https://api.notion.com/v1/pages/{{ $('리셋 요청 수신').first().json.pageId }}"
+        },
+        "position": [
+          1540,
+          300
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      }
+    ],
+    "updatedAt": "2026-06-26T02:03:57.382Z",
+    "versionId": "836cc266-cc9e-4ced-8d48-8efd84ff43c5",
+    "workflowId": "40VRRfs2eAoTlsYH",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-26T02:03:57.423Z",
+        "event": "deactivated",
+        "id": 272,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "836cc266-cc9e-4ced-8d48-8efd84ff43c5",
+        "workflowId": "40VRRfs2eAoTlsYH"
+      },
+      {
+        "createdAt": "2026-06-26T02:03:57.444Z",
+        "event": "activated",
+        "id": 273,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "836cc266-cc9e-4ced-8d48-8efd84ff43c5",
+        "workflowId": "40VRRfs2eAoTlsYH"
+      },
+      {
+        "createdAt": "2026-06-26T02:03:57.550Z",
+        "event": "deactivated",
+        "id": 274,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "836cc266-cc9e-4ced-8d48-8efd84ff43c5",
+        "workflowId": "40VRRfs2eAoTlsYH"
+      },
+      {
+        "createdAt": "2026-06-26T02:03:57.566Z",
+        "event": "activated",
+        "id": 275,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "836cc266-cc9e-4ced-8d48-8efd84ff43c5",
+        "workflowId": "40VRRfs2eAoTlsYH"
+      }
+    ]
+  },
+  "activeVersionId": "836cc266-cc9e-4ced-8d48-8efd84ff43c5",
+  "connections": {
+    "기존 단계 행 조회": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "서브태스크 아카이브",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "단계 행 삭제": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "단일화2",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "단일화": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "단계 행 삭제",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "단일화2": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "스레드 행 삭제",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "리셋 요청 수신": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "기존 단계 행 조회",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "서브태스크 아카이브": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "단일화",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스레드 행 삭제": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "풍부화 행 삭제",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "풍부화 행 삭제": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "부모 필드 초기화",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-06-26T01:55:58.110Z",
+  "description": null,
+  "id": "40VRRfs2eAoTlsYH",
+  "isArchived": false,
+  "meta": null,
+  "name": "Overmind WF-Reset · 기획 재검토 리셋",
+  "nodes": [
+    {
+      "id": "reset-trigger-0001",
+      "name": "리셋 요청 수신",
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "pageId",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        300
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "alwaysOutputData": true,
+      "id": "reset-get-stages-001",
+      "name": "기존 단계 행 조회",
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "16uFko9jgm6gFs0T"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "eq",
+              "keyName": "parent_page_id",
+              "keyValue": "={{ $('리셋 요청 수신').first().json.pageId }}"
+            }
+          ]
+        },
+        "matchType": "allConditions",
+        "operation": "get",
+        "resource": "row",
+        "returnAll": true
+      },
+      "position": [
+        220,
+        300
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "reset-archive-sub-01",
+      "name": "서브태스크 아카이브",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "{ \"archived\": true }",
+        "method": "PATCH",
+        "nodeCredentialType": "notionApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "=https://api.notion.com/v1/pages/{{ $json.subtask_page_id }}"
+      },
+      "position": [
+        440,
+        300
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2
+    },
+    {
+      "id": "reset-limit-0001",
+      "name": "단일화",
+      "parameters": {
+        "maxItems": 1
+      },
+      "position": [
+        660,
+        300
+      ],
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1
+    },
+    {
+      "alwaysOutputData": true,
+      "id": "reset-del-stage-001",
+      "name": "단계 행 삭제",
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "16uFko9jgm6gFs0T"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "eq",
+              "keyName": "parent_page_id",
+              "keyValue": "={{ $('리셋 요청 수신').first().json.pageId }}"
+            }
+          ]
+        },
+        "matchType": "allConditions",
+        "operation": "deleteRows",
+        "resource": "row"
+      },
+      "position": [
+        880,
+        300
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "reset-limit-0002",
+      "name": "단일화2",
+      "parameters": {
+        "maxItems": 1
+      },
+      "position": [
+        990,
+        300
+      ],
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1
+    },
+    {
+      "alwaysOutputData": true,
+      "id": "reset-del-thread-01",
+      "name": "스레드 행 삭제",
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Kc7JZEVYgheNzZKo"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "eq",
+              "keyName": "page_id",
+              "keyValue": "={{ $('리셋 요청 수신').first().json.pageId }}"
+            }
+          ]
+        },
+        "matchType": "allConditions",
+        "operation": "deleteRows",
+        "resource": "row"
+      },
+      "position": [
+        1100,
+        300
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "alwaysOutputData": true,
+      "id": "reset-del-enrich-01",
+      "name": "풍부화 행 삭제",
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "KZccSviFYvgYA9e4"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "condition": "eq",
+              "keyName": "parent_page_id",
+              "keyValue": "={{ $('리셋 요청 수신').first().json.pageId }}"
+            }
+          ]
+        },
+        "matchType": "allConditions",
+        "operation": "deleteRows",
+        "resource": "row"
+      },
+      "position": [
+        1320,
+        300
+      ],
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "reset-clear-parent-1",
+      "name": "부모 필드 초기화",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "{ \"properties\": { \"🤖 정리된 브리프\": { \"rich_text\": [] }, \"🤖 맥락 점수\": { \"number\": null }, \"🤖 미결 질문\": { \"rich_text\": [] }, \"🤖 스누즈 횟수\": { \"number\": null }, \"🤖 다음 점검 시각\": { \"date\": null } } }",
+        "method": "PATCH",
+        "nodeCredentialType": "notionApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "url": "=https://api.notion.com/v1/pages/{{ $('리셋 요청 수신').first().json.pageId }}"
+      },
+      "position": [
+        1540,
+        300
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2026-06-26T01:55:58.110Z",
+      "project": {
+        "createdAt": "2026-05-27T07:22:23.960Z",
+        "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "description": null,
+        "icon": null,
+        "id": "501Q7eGEKoHjxZfp",
+        "name": "재은 김 <justin@bomapp.co.kr>",
+        "type": "personal",
+        "updatedAt": "2026-05-27T07:24:05.558Z"
+      },
+      "projectId": "501Q7eGEKoHjxZfp",
+      "role": "workflow:owner",
+      "updatedAt": "2026-06-26T01:55:58.110Z",
+      "workflowId": "40VRRfs2eAoTlsYH"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-06-26T02:03:57.381Z",
+  "versionCounter": 8,
+  "versionId": "836cc266-cc9e-4ced-8d48-8efd84ff43c5"
+}
