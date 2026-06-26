@@ -37,6 +37,17 @@
           ]
         ]
       },
+      "검토 요청 수신": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "리뷰대기 태스크 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "검토 착수 기록": {
         "main": [
           [
@@ -98,17 +109,6 @@
             {
               "index": 0,
               "node": "담당자 Slack 조회",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "리뷰 폴링": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "리뷰대기 태스크 조회",
               "type": "main"
             }
           ]
@@ -298,29 +298,33 @@
         ]
       }
     },
-    "createdAt": "2026-06-26T02:10:38.609Z",
+    "createdAt": "2026-06-26T02:54:14.962Z",
     "description": null,
     "name": null,
     "nodes": [
       {
-        "id": "1525248b-af31-4da4-8f7f-a9a70bffef06",
-        "name": "리뷰 폴링",
-        "parameters": {
-          "rule": {
-            "interval": [
-              {
-                "field": "minutes",
-                "minutesInterval": 1
-              }
-            ]
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "xuAMs5mpZiSnoXgI",
+            "name": "Notion Webhook Token"
           }
+        },
+        "id": "wf1-webhook-trigger-1",
+        "name": "검토 요청 수신",
+        "parameters": {
+          "authentication": "headerAuth",
+          "httpMethod": "POST",
+          "options": {},
+          "path": "ai-review-request",
+          "responseMode": "onReceived"
         },
         "position": [
           0,
           112
         ],
-        "type": "n8n-nodes-base.scheduleTrigger",
-        "typeVersion": 1.3
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "2352e2a8-7af6-45f7-988b-a78fe71c0466"
       },
       {
         "credentials": {
@@ -332,32 +336,13 @@
         "id": "84c95d27-3bf2-4b15-9dc5-b86e137dc81d",
         "name": "리뷰대기 태스크 조회",
         "parameters": {
-          "databaseId": {
+          "operation": "get",
+          "options": {},
+          "pageId": {
             "__rl": true,
             "mode": "id",
-            "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
+            "value": "={{ $('검토 요청 수신').first().json.body.data.id }}"
           },
-          "filterType": "manual",
-          "filters": {
-            "conditions": [
-              {
-                "condition": "equals",
-                "key": "타입|select",
-                "selectValue": "기획",
-                "type": "select"
-              },
-              {
-                "checkboxValue": true,
-                "condition": "equals",
-                "key": "🔁 검토 요청|checkbox",
-                "type": "checkbox"
-              }
-            ]
-          },
-          "limit": 1,
-          "matchType": "allFilters",
-          "operation": "getAll",
-          "options": {},
           "resource": "databasePage",
           "simple": false
         },
@@ -390,10 +375,6 @@
               {
                 "key": "🤖 AI 게이트|select",
                 "selectValue": "미검토"
-              },
-              {
-                "checkboxValue": false,
-                "key": "🔁 검토 요청|checkbox"
               }
             ]
           },
@@ -1174,45 +1155,45 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-26T02:10:38.609Z",
-    "versionId": "708aff26-13e5-4989-a07c-dc27d8afda6e",
+    "updatedAt": "2026-06-26T02:54:14.962Z",
+    "versionId": "f4514abf-0889-45bb-830d-fdf7ed50d0bb",
     "workflowId": "Y74XMZpTEUejToOQ",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-26T02:10:38.690Z",
+        "createdAt": "2026-06-26T02:54:15.229Z",
         "event": "deactivated",
-        "id": 276,
+        "id": 284,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "708aff26-13e5-4989-a07c-dc27d8afda6e",
+        "versionId": "f4514abf-0889-45bb-830d-fdf7ed50d0bb",
         "workflowId": "Y74XMZpTEUejToOQ"
       },
       {
-        "createdAt": "2026-06-26T02:10:38.725Z",
+        "createdAt": "2026-06-26T02:54:15.252Z",
         "event": "activated",
-        "id": 277,
+        "id": 285,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "708aff26-13e5-4989-a07c-dc27d8afda6e",
+        "versionId": "f4514abf-0889-45bb-830d-fdf7ed50d0bb",
         "workflowId": "Y74XMZpTEUejToOQ"
       },
       {
-        "createdAt": "2026-06-26T02:10:38.902Z",
+        "createdAt": "2026-06-26T02:54:15.067Z",
         "event": "deactivated",
-        "id": 278,
+        "id": 282,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "708aff26-13e5-4989-a07c-dc27d8afda6e",
+        "versionId": "f4514abf-0889-45bb-830d-fdf7ed50d0bb",
         "workflowId": "Y74XMZpTEUejToOQ"
       },
       {
-        "createdAt": "2026-06-26T02:10:38.930Z",
+        "createdAt": "2026-06-26T02:54:15.094Z",
         "event": "activated",
-        "id": 279,
+        "id": 283,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "708aff26-13e5-4989-a07c-dc27d8afda6e",
+        "versionId": "f4514abf-0889-45bb-830d-fdf7ed50d0bb",
         "workflowId": "Y74XMZpTEUejToOQ"
       }
     ]
   },
-  "activeVersionId": "708aff26-13e5-4989-a07c-dc27d8afda6e",
+  "activeVersionId": "f4514abf-0889-45bb-830d-fdf7ed50d0bb",
   "connections": {
     "AWS Bedrock Chat Model": {
       "ai_languageModel": [
@@ -1243,6 +1224,17 @@
             "index": 0,
             "node": "맥락 충분성 게이트",
             "type": "ai_tool"
+          }
+        ]
+      ]
+    },
+    "검토 요청 수신": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "리뷰대기 태스크 조회",
+            "type": "main"
           }
         ]
       ]
@@ -1308,17 +1300,6 @@
           {
             "index": 0,
             "node": "담당자 Slack 조회",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "리뷰 폴링": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "리뷰대기 태스크 조회",
             "type": "main"
           }
         ]
@@ -1520,24 +1501,28 @@
   "name": "Overmind WF1 · 기획 맥락 게이트",
   "nodes": [
     {
-      "id": "1525248b-af31-4da4-8f7f-a9a70bffef06",
-      "name": "리뷰 폴링",
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "minutes",
-              "minutesInterval": 1
-            }
-          ]
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xuAMs5mpZiSnoXgI",
+          "name": "Notion Webhook Token"
         }
+      },
+      "id": "wf1-webhook-trigger-1",
+      "name": "검토 요청 수신",
+      "parameters": {
+        "authentication": "headerAuth",
+        "httpMethod": "POST",
+        "options": {},
+        "path": "ai-review-request",
+        "responseMode": "onReceived"
       },
       "position": [
         0,
         112
       ],
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.3
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "2352e2a8-7af6-45f7-988b-a78fe71c0466"
     },
     {
       "credentials": {
@@ -1549,32 +1534,13 @@
       "id": "84c95d27-3bf2-4b15-9dc5-b86e137dc81d",
       "name": "리뷰대기 태스크 조회",
       "parameters": {
-        "databaseId": {
+        "operation": "get",
+        "options": {},
+        "pageId": {
           "__rl": true,
           "mode": "id",
-          "value": "fd91ec8d-1025-4439-9d56-71af49eecac2"
+          "value": "={{ $('검토 요청 수신').first().json.body.data.id }}"
         },
-        "filterType": "manual",
-        "filters": {
-          "conditions": [
-            {
-              "condition": "equals",
-              "key": "타입|select",
-              "selectValue": "기획",
-              "type": "select"
-            },
-            {
-              "checkboxValue": true,
-              "condition": "equals",
-              "key": "🔁 검토 요청|checkbox",
-              "type": "checkbox"
-            }
-          ]
-        },
-        "limit": 1,
-        "matchType": "allFilters",
-        "operation": "getAll",
-        "options": {},
         "resource": "databasePage",
         "simple": false
       },
@@ -1607,10 +1573,6 @@
             {
               "key": "🤖 AI 게이트|select",
               "selectValue": "미검토"
-            },
-            {
-              "checkboxValue": false,
-              "key": "🔁 검토 요청|checkbox"
             }
           ]
         },
@@ -2429,7 +2391,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-26T02:10:38.607Z",
-  "versionCounter": 167,
-  "versionId": "708aff26-13e5-4989-a07c-dc27d8afda6e"
+  "updatedAt": "2026-06-26T02:54:14.960Z",
+  "versionCounter": 172,
+  "versionId": "f4514abf-0889-45bb-830d-fdf7ed50d0bb"
 }

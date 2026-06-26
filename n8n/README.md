@@ -30,19 +30,21 @@ n8n/
     wf-reset.json           # WF-Reset · 기획 재검토 리셋    (id 40VRRfs2eAoTlsYH)
 ```
 
-## 재검토(재실행) 트리거 — 체크박스 + WF-Reset
+## (재)검토 트리거 — Notion 버튼 → 인증 웹훅 + WF-Reset
 
-기획 검토는 **TASK DB(`fd91ec8d…`)의 `🔁 검토 요청` 체크박스**로 발화한다(최초 검토·재검토 동일).
-과거의 "상태=리뷰대기 자동 폴링"은 폐지 — 명시적 클릭만 게이트를 돌린다.
+기획 검토는 **TASK DB(`fd91ec8d…`)의 `🔁 AI 검토 요청` 버튼(button 타입)** 클릭으로 발화한다(최초 검토·재검토 동일). 폴링 없음.
 
-- **WF1 트리거 필터**: `타입=기획 AND 🔁 검토 요청=true`. claim 시 체크박스를 즉시 해제(재포착·러너웨이 방지)하고 `🤖 AI 게이트=미검토` 기록.
-- **WF1 → 재검토 리셋(executeWorkflow, 동기) → 게이트**: claim 직후 **WF-Reset**(`40VRRfs2eAoTlsYH`)을 호출해 이전 검토 흔적을 멱등 정리한 뒤 게이트를 돈다. 흔적이 없으면(최초 검토) no-op.
-- **WF-Reset이 정리하는 흔적**(대상 page_id 기준):
-  1. `stage_pipeline`(`16uFko9jgm6gFs0T`)의 각 `subtask_page_id` Notion 카드 → **아카이브**(`archived:true`, 상태값 `취소`는 status에 옵션이 없어 아카이브로 대체). 사용자 결정: 진행 중 서브태스크는 자동 취소·아카이브.
-  2. `stage_pipeline` 행 삭제(parent_page_id) / `gate_threads`(`Kc7JZEVYgheNzZKo`) 행 삭제(page_id) / `enrich_log`(`KZccSviFYvgYA9e4`) 행 삭제(parent_page_id).
-  3. 부모 카드 `🤖 정리된 브리프/맥락 점수/미결 질문/스누즈 횟수/다음 점검 시각` 초기화(AI 게이트는 WF1이 미검토로 관리하므로 건드리지 않음).
-- **멱등성 함정**: dataTable `deleteRows`는 매칭 0건이면 0 items를 내보내 체인이 끊긴다 → 3개 delete 노드 모두 `alwaysOutputData:true`, `단계 행 삭제` 다중출력은 `단일화2`(Limit 1)로 수축해 항상 `부모 필드 초기화`까지 도달.
-- (선택) 더 예쁜 UI는 Notion **Button** 프로퍼티를 만들어 동작=`🔁 검토 요청` 체크로 설정하면 됨(Notion API는 Button 생성 미지원 → 체크박스가 기계 플래그).
+- **트리거 = 웹훅(폴링 폐지)**: WF1 트리거는 `scheduleTrigger`가 아니라 **Webhook 노드 `검토 요청 수신`**.
+  공개 URL `https://n8n-webhook.bomapp.co.kr/webhook/ai-review-request` (POST).
+- **인증(필수, 비용 폭탄 방지)**: 웹훅 노드 `authentication: headerAuth` + 크레덴셜 **`Notion Webhook Token`(`httpHeaderAuth`, id `xuAMs5mpZiSnoXgI`)** — 헤더 `X-Webhook-Token`. 토큰 없거나 틀리면 **403 + 실행 미생성**(게이트=Bedrock 호출 0). Notion 버튼의 "웹훅 보내기" 동작에 **커스텀 헤더 `X-Webhook-Token: <시크릿>`** 을 넣어야 통과(시크릿 값은 n8n 크레덴셜에만 저장, git 미보관).
+- **page id 전달**: Notion 버튼 웹훅 페이로드는 `body.data`에 클릭한 행의 **전체 페이지 객체**(`body.data.id` = 페이지 UUID, `body.data.properties.*`)를 POST. WF1은 `검토 요청 수신` 다음 노드 **`리뷰대기 태스크 조회`(notion databasePage **get** by `body.data.id`, simple:false)** 로 단건 조회 → 출력 shape가 기존 폴링과 동일해 하위 노드(claim·게이트 등) 무수정 재사용.
+- **WF1 흐름**: 검토 요청 수신(webhook) → 리뷰대기 태스크 조회(get by id) → 검토 착수 기록(`🤖 AI 게이트=미검토`) → **재검토 리셋(executeWorkflow 동기) → 게이트**.
+- **WF-Reset(`40VRRfs2eAoTlsYH`, active 필수)** — claim 직후 호출, 이전 검토 흔적 멱등 정리(흔적 없으면 no-op):
+  1. `stage_pipeline`(`16uFko9jgm6gFs0T`)의 각 `subtask_page_id` Notion 카드 → **아카이브**(`archived:true`; status에 '취소' 옵션 없어 아카이브로 대체). 진행 중 서브태스크 자동 취소·아카이브.
+  2. `stage_pipeline`(parent_page_id) / `gate_threads`(`Kc7JZEVYgheNzZKo`, page_id) / `enrich_log`(`KZccSviFYvgYA9e4`, parent_page_id) 행 삭제.
+  3. 부모 카드 `🤖 정리된 브리프/맥락 점수/미결 질문/스누즈 횟수/다음 점검 시각` 초기화(AI 게이트는 WF1이 관리).
+  - **멱등 함정**: `deleteRows` 0건 매칭 시 0 items → 체인 끊김 → 3개 delete 모두 `alwaysOutputData:true` + `단계 행 삭제` 다중출력은 `단일화2`(Limit 1)로 수축해 항상 `부모 필드 초기화`까지 도달.
+- **Notion 버튼 설정(UI, 1회)**: `🔁 AI 검토 요청` 버튼 → 동작 "웹훅 보내기" → URL 위 공개 URL, 커스텀 헤더 `X-Webhook-Token` 추가. (Notion 버튼 동작은 API로 설정 불가 → UI에서만.)
 
 ## 사용
 
@@ -59,7 +61,7 @@ cp .env.example .env      # N8N_API_URL, N8N_API_KEY 채우기 (gitignored)
 ## 크레덴셜
 
 - JSON 안의 `credentials` 는 **id+name 참조만**(시크릿 값 없음) — n8n 인스턴스에 실제 크레덴셜이 존재해야 동작.
-- 현재 연결: Notion account(`b03vHUApw6s0O5jS`) / Botmap slackApi(`bjozecrw9OnFT8Lf`) / Figma account(`Rg6fKjWcdHHj0e1O`) / AWS (IAM) account(`GftVHJqfxQshQZ4P`).
+- 현재 연결: Notion account(`b03vHUApw6s0O5jS`) / Botmap slackApi(`bjozecrw9OnFT8Lf`) / Figma account(`Rg6fKjWcdHHj0e1O`) / AWS (IAM) account(`GftVHJqfxQshQZ4P`) / **Notion Webhook Token(`httpHeaderAuth`, `xuAMs5mpZiSnoXgI`) — WF1 `검토 요청 수신` 웹훅 인증(헤더 `X-Webhook-Token`); 토큰 값은 n8n 크레덴셜에만 저장**.
 - push 는 이 참조를 보존하므로 재연결 불필요.
 
 ## 현재 상태 / 미반영 작업
