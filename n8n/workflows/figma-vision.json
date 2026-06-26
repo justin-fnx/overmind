@@ -403,6 +403,7 @@
   ],
   "pinData": null,
   "settings": {
+    "availableInMCP": true,
     "executionOrder": "v1"
   },
   "shared": [
@@ -427,7 +428,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-18T07:30:42.494Z",
-  "versionCounter": 11,
+  "updatedAt": "2026-06-19T04:48:34.377Z",
+  "versionCounter": 12,
   "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71"
 }

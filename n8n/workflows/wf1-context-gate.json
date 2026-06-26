@@ -1572,11 +1572,9 @@
             }
           ]
         },
-        "method": "GET",
         "nodeCredentialType": "notionApi",
         "options": {},
         "sendHeaders": true,
-        "specifyHeaders": "keypair",
         "url": "=https://api.notion.com/v1/blocks/{{ $(\"리뷰대기 태스크 조회\").first().json.id }}/children?page_size=100"
       },
       "position": [
@@ -1819,7 +1817,6 @@
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "maxLength": 12000,
-        "method": "GET",
         "optimizeResponse": true,
         "options": {
           "response": {
@@ -1843,7 +1840,6 @@
         },
         "responseType": "text",
         "sendQuery": true,
-        "specifyQuery": "keypair",
         "toolDescription": "Figma 파일의 특정 node id 구조를 조회(디자인 건만)",
         "truncateResponse": true,
         "url": "=https://api.figma.com/v1/files/{{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fileKey', '조회할 Figma 파일 key (figma.com/design/<KEY>/... 의 KEY). DS 컴포넌트·토큰·화면취합 개요는 3Ifh58l7EWLXapWRys0vjf, 기능별 실제 화면은 태스크/Hub 카드에 링크된 파일 키 사용', 'string') }}/nodes"
@@ -2208,7 +2204,6 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "authentication": "predefinedCredentialType",
-        "contentType": "json",
         "headerParameters": {
           "parameters": [
             {
@@ -2234,14 +2229,13 @@
         "sendBody": true,
         "sendHeaders": true,
         "specifyBody": "json",
-        "specifyHeaders": "keypair",
         "toolDescription": "지금 기획과 비슷한 '과거에 진행된 태스크'를 Notion TASK DB에서 키워드로 조회한다. 같은 화면·같은 알림톡·같은 기능에 대한 과거 기획·디자인·개발·QA 태스크가 있었는지 확인할 때 사용. keyword에는 화면명/기능명/알림톡 종류 같은 핵심어 하나를 넣어라. 반환: 제목·타입·상태·정리된 브리프 등.",
         "truncateResponse": true,
         "url": "https://api.notion.com/v1/databases/fd91ec8d-1025-4439-9d56-71af49eecac2/query"
       },
       "position": [
         2128,
-        620
+        624
       ],
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.4
@@ -2258,7 +2252,6 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "authentication": "predefinedCredentialType",
-        "contentType": "json",
         "jsonBody": "={{ JSON.stringify({ channel: 'C0B9LE2FF36', text: '⚠️ *[Notion 접근권한 요청]* ' + /*n8n-auto-generated-fromAI-override*/ $fromAI('message', '어느 기획을 분석하다 어떤 Notion 페이지(URL 또는 page id)에 접근이 막혔는지와 Overmind 통합에 공유해 달라는 요청을 한국어 한두 문장으로', 'string') }) }}",
         "maxLength": 500,
         "method": "POST",
@@ -2281,7 +2274,7 @@
       },
       "position": [
         2128,
-        760
+        768
       ],
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.4
@@ -2325,7 +2318,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-23T04:45:44.857Z",
-  "versionCounter": 155,
-  "versionId": "ecabc0a8-f4e9-477b-bd8d-391146d287c2"
+  "updatedAt": "2026-06-24T03:54:40.335Z",
+  "versionCounter": 162,
+  "versionId": "374102d7-822f-4a4b-8b4c-65e9d8dadf30"
 }
