@@ -917,6 +917,10 @@
         "model": "global.anthropic.claude-sonnet-4-6",
         "modelSource": "inferenceProfile",
         "options": {
+          "cacheSystemPrompt": true,
+          "cacheTools": true,
+          "cacheTtl": "5m",
+          "enablePromptCaching": true,
           "maxTokensToSample": 16000,
           "temperature": 0.2
         }
@@ -925,8 +929,8 @@
         900,
         520
       ],
-      "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
-      "typeVersion": 1.1
+      "type": "n8n-nodes-bedrock-advanced.lmChatAwsBedrockAdvanced",
+      "typeVersion": 1
     },
     {
       "id": "enrich-parser-001",
