@@ -3,7 +3,7 @@ name: design-review
 description: >-
   Figma 디자인 시안을 시니어 UX/UI 기준으로 엄격히 리뷰할 때 사용한다. (특히 BOMAPP 노션 작업지시서 → Figma 구현물.)
   트리거: "디자인 리뷰"·시안 평가/검수·화면 품질 점검·접근성/색대비/가독성 체크 요청, 또는 디자인 구현 직후 자체 검수.
-  3대 차원으로 평가: ① 작업지시서 충실도 ② 빌드 스킬(notion-design-to-figma) 준수도 ③ UX/UI 휴리스틱(정보위계·여백·타이포·WCAG 대비·일관성·터치타겟·데이터시각화·카피).
+  3대 차원으로 평가: ① 작업지시서 충실도 ② 빌드 스킬(design-to-figma) 준수도 ③ UX/UI 휴리스틱(정보위계·여백·타이포·WCAG 대비·일관성·터치타겟·데이터시각화·카피).
   객관성을 위해 빌더와 분리된 Opus 서브에이전트로 수행 권장. 산출 = 심각도 태그가 붙은 한국어 리뷰 보고서 + 우선순위 수정 목록.
 ---
 
@@ -18,7 +18,7 @@ description: >-
 ## STEP 0 — 입력 수집 (직접 확인, 추측 금지)
 
 1. **작업지시서**: `notion-fetch`로 태스크 본문(+본문 멘션/하위 페이지)을 읽어 요구사항을 구조화 — 화면 수·섹션·콘텐츠·상태(정상/예외/완료)·문구·**「결정 필요/미정」 항목**.
-2. **빌드 규칙**: 대상이 따랐어야 할 스킬을 읽는다 — `.claude/skills/notion-design-to-figma/SKILL.md` + 메모리 `reference_bomapp_bds_figma_design`.
+2. **빌드 규칙**: 대상이 따랐어야 할 스킬을 읽는다 — `.claude/skills/design-to-figma/SKILL.md` + 메모리 `reference_bomapp_bds_figma_design`.
 3. **시각 입력(1차)**: 각 화면 노드를 **고해상도** `get_screenshot`(maxDimension 1500+) → URL `curl` → `Read`로 **전 화면을 눈으로** 본다. (빌더가 미리 렌더한 PNG가 있으면 그것도 활용.)
 4. **실측(2차)**: 의심 지점은 `get_design_context`/`get_metadata`로 **폰트 크기·색 hex·여백·노드 구조**(네이티브/컴포넌트 여부)를 실측해 근거로 삼는다. (시각 판단이 1차, 실측이 근거.)
    - Figma/Notion MCP는 ToolSearch로 로드: `select:mcp__claude_ai_Figma__get_screenshot,mcp__claude_ai_Figma__get_metadata,mcp__claude_ai_Figma__get_design_context,mcp__notion__notion-fetch`.
@@ -34,7 +34,7 @@ description: >-
 
 ## STEP 2 — 차원 2: 빌드 스킬 준수도
 
-대상 SKILL의 절대 규칙을 **규칙 ↔ 준수여부 대조표**로. BOMAPP `notion-design-to-figma` 기준 최소 점검:
+대상 SKILL의 절대 규칙을 **규칙 ↔ 준수여부 대조표**로. BOMAPP `design-to-figma` 기준 최소 점검:
 
 - 화면 전체가 **네이티브 노드**(평면 이미지 업로드 아님) · **반복요소 = 실제 Figma Component + 인스턴스**(동일 역할인데 일회성 프레임으로 샌 곳 없는지) · **배경(기기) 프레임 + cornerRadius + 그림자** · **최소 높이 375×812 + 하단요소(CTA·trust·약관) 도킹** · **BDS 토큰** 사용 · **Pretendard 스왑 명시** · **버전 페이지 분리(기존 보존)** · **차트 = 상태 컬러밴드** · 컴포넌트 프로퍼티(label/showArrow/title 등).
 
@@ -77,7 +77,7 @@ description: >-
 ## 마무리
 
 - 보고서를 빌더에게 전달 → 수정 후 **재리뷰**(수정 확인만 하지 말고 전체 다시 본다).
-- 합의된 변경은 디자인 문서·`services.yaml`/Context Hub·해당 **빌드 스킬(`notion-design-to-figma`)**에 반영(대비 결함처럼 반복되는 교훈은 빌드 스킬의 토큰 가이드에 역류시킨다).
+- 합의된 변경은 디자인 문서·`services.yaml`/Context Hub·해당 **빌드 스킬(`design-to-figma`)**에 반영(대비 결함처럼 반복되는 교훈은 빌드 스킬의 토큰 가이드에 역류시킨다).
 
 ## 빠른 체크리스트
 - [ ] 작업지시서 + 빌드 스킬 + 전 화면 고해상도 렌더를 **직접** 확인 (추측 금지)
