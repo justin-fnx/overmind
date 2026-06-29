@@ -10,13 +10,12 @@ if [ -f .env ]; then set -a; . ./.env; set +a; fi
 : "${N8N_API_URL:?N8N_API_URL not set (n8n/.env 참고)}"
 : "${N8N_API_KEY:?N8N_API_KEY not set (n8n/.env 참고)}"
 
-WF_NAMES="wf1-context-gate wf2-listener wf-snooze wf3-handoff figma-vision wf-dispatch wf-watch wf-cleanup wf-enrich wf-notion-read wf-reset"
+WF_NAMES="wf1-context-gate wf2-listener wf3-handoff figma-vision wf-dispatch wf-watch wf-cleanup wf-enrich wf-notion-read wf-reset"
 
 wf_id() {
   case "$1" in
     wf1-context-gate) echo "Y74XMZpTEUejToOQ" ;;
     wf2-listener)     echo "3LyKi5A20HoPrP0p" ;;
-    wf-snooze)        echo "PpZ7nC12PWWet4DB" ;;
     wf3-handoff)      echo "m6YGNNCEP5RI3SSF" ;;
     figma-vision)     echo "YN6uIteF2X5BAo85" ;;
     wf-dispatch)      echo "0KSWtN1SPermSuFw" ;;
