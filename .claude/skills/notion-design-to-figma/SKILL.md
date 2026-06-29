@@ -98,10 +98,13 @@ description: >-
 - 새 파일이 필요하면 `create_new_file`, planKey = **BOMAPP `team::915416689671091979`**(Dev 시트; justin의 팀=view 불가).
 - `use_figma` 호출 **전 반드시** `skill://figma/figma-use/SKILL.md`(필요 시 `figma-generate-design`)를 `ReadMcpResourceTool` 로 읽는다. 콜마다 `setCurrentPageAsync(<page id>)`로 페이지 컨텍스트 재설정. 색은 0–1 범위, 텍스트는 폰트 로드 후 수정.
 
-**① 반복 요소 = 실제 Figma Component로**
+**① 반복 요소 = 실제 Figma Component로 (필수)**
 
-- CTA·status pill·navbar·카카오 말풍선·읽기전용 필드처럼 **2회 이상 쓰는 요소는 `figma.createComponent()`로 만들고 `createInstance()`로 조립**한다. 텍스트 차이는 인스턴스 텍스트 오버라이드로 처리. 파일에 기존 로컬 컴포넌트가 있으면(예 `CTA/Primary`·`Webview/NavBar`) `getNodeByIdAsync` 후 재사용.
-- 상태 변형이 필요하면 variant(`combineAsVariants`)로, 단순하면 단일 컴포넌트 + 인스턴스 오버라이드로 충분.
+- CTA·status pill·navbar·카카오 말풍선·읽기전용 필드처럼 **2회 이상 쓰는 요소는 실제 Component로 만들고 인스턴스로 조립**한다. 기존 로컬 컴포넌트가 있으면(예 `CTA/Primary`·`Webview/NavBar`) `getNodeByIdAsync` 후 재사용.
+- **승격→스왑 레시피**(이미 인라인으로 지은 화면을 컴포넌트화): ① 잘 만든 인라인 노드 1개를 `figma.createComponentFromNode(node)`로 **제자리 승격**(마스터) → ② 마스터를 화면 밖 **선반**(페이지 빈 영역, 예 화면 아래 y≈1100)으로 옮기고 → ③ 그 자리 + 다른 화면의 동일 인라인 노드를 **삭제하고 인스턴스로 교체**(`comp.createInstance()`, 위치 지정). auto-layout 행 안이면 `insertChild(idx, inst)`로 순서 유지.
+- **컴포넌트 프로퍼티**(가변 텍스트/토글): `const key = comp.addComponentProperty('label','TEXT','기본값')`(반환 key 형식 `label#56:0`) → 대상 노드 `node.componentPropertyReferences = {characters: key}`(토글은 `'BOOLEAN'`+`{visible: key}`). 인스턴스는 `inst.setProperties({[key]: 값})`. ⚠️ characters를 바꾸는 프로퍼티는 **setProperties 전 해당 폰트 로드** 필수. (실제 적용: CTA=`label`+`showArrow`, NavBar=`title`, Pill=`label`.)
+- **리치 텍스트(부분 색·볼드)는 프로퍼티로 안 됨** → 인스턴스의 텍스트 노드를 직접 `setRangeFontName`/`setRangeFills`로 오버라이드(예: 말풍선 본문 변수 강조; characters 교체 후 전체를 기본 폰트/색으로 normalize → 강조 구간만 재지정). 색만 다른 변형(pill 정상/주의)도 인스턴스 `fills` + 자식 텍스트 `fills` 오버라이드로 처리.
+- 상태 변형이 많으면 variant(`combineAsVariants`)로 묶는다. 단순하면 단일 컴포넌트 + 프로퍼티/오버라이드로 충분.
 
 **② 빌드 레시피 (코드-퍼스트 수준 품질을 네이티브로)**
 
