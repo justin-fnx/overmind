@@ -1778,28 +1778,6 @@
         ]
       ]
     },
-    "스누즈 기록": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "스누즈 저장",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "스누즈 저장": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "프롬프트 잠금·스누즈",
-            "type": "main"
-          }
-        ]
-      ]
-    },
     "액션 라우터": {
       "main": [
         [
@@ -1813,13 +1791,6 @@
           {
             "index": 0,
             "node": "행 조회·제출",
-            "type": "main"
-          }
-        ],
-        [
-          {
-            "index": 0,
-            "node": "스누즈 기록",
             "type": "main"
           }
         ],
@@ -2201,29 +2172,6 @@
                 }
               },
               "outputKey": "submit",
-              "renameOutput": true
-            },
-            {
-              "conditions": {
-                "combinator": "and",
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.route }}",
-                    "operator": {
-                      "operation": "equals",
-                      "type": "string"
-                    },
-                    "rightValue": "snooze"
-                  }
-                ],
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 1
-                }
-              },
-              "outputKey": "snooze",
               "renameOutput": true
             },
             {
@@ -3014,109 +2962,6 @@
       },
       "position": [
         3776,
-        496
-      ],
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4
-    },
-    {
-      "credentials": {
-        "notionApi": {
-          "id": "b03vHUApw6s0O5jS",
-          "name": "Notion account"
-        }
-      },
-      "id": "a0242d51-4c8b-40a3-a867-132d5b73b3e3",
-      "name": "스누즈 기록",
-      "parameters": {
-        "operation": "update",
-        "options": {},
-        "pageId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "={{ $(\"액션 정규화\").first().json.pageId }}"
-        },
-        "propertiesUi": {
-          "propertyValues": [
-            {
-              "key": "🤖 AI 게이트|select",
-              "selectValue": "스누즈"
-            },
-            {
-              "date": "={{ $now.plus({ hours: 4 }).toISO() }}",
-              "key": "🤖 다음 점검 시각|date"
-            }
-          ]
-        },
-        "resource": "databasePage"
-      },
-      "position": [
-        896,
-        496
-      ],
-      "type": "n8n-nodes-base.notion",
-      "typeVersion": 2.2
-    },
-    {
-      "id": "6afe4c23-8cd3-4c49-9f6c-60729eb4d308",
-      "name": "스누즈 저장",
-      "parameters": {
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "status": "snoozed"
-          }
-        },
-        "dataTableId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "Kc7JZEVYgheNzZKo"
-        },
-        "filters": {
-          "conditions": [
-            {
-              "keyName": "thread_ts",
-              "keyValue": "={{ $(\"액션 정규화\").first().json.threadTs }}"
-            }
-          ]
-        },
-        "operation": "update",
-        "options": {}
-      },
-      "position": [
-        1120,
-        496
-      ],
-      "type": "n8n-nodes-base.dataTable",
-      "typeVersion": 1.1
-    },
-    {
-      "credentials": {
-        "slackApi": {
-          "id": "bjozecrw9OnFT8Lf",
-          "name": "Botmap"
-        }
-      },
-      "id": "04a5f553-c49c-47ab-8f05-b760b05117c4",
-      "name": "프롬프트 잠금·스누즈",
-      "parameters": {
-        "authentication": "predefinedCredentialType",
-        "jsonBody": "={ \"channel\": \"{{ $(\"액션 정규화\").first().json.channelId }}\", \"ts\": \"{{ $(\"액션 정규화\").first().json.promptTs }}\", \"text\": \"작성 중\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"⏸️ *아직 작성 중* — 4시간 뒤에 다시 여쭤볼게요.\" } } ] }",
-        "method": "POST",
-        "nodeCredentialType": "slackApi",
-        "options": {
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "url": "https://slack.com/api/chat.update"
-      },
-      "position": [
-        1344,
         496
       ],
       "type": "n8n-nodes-base.httpRequest",

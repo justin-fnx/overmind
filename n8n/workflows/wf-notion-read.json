@@ -1,201 +1,29 @@
 {
   "active": true,
-  "activeVersion": {
-    "authors": "재은 김",
-    "autosaved": false,
-    "connections": {
-      "입력": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "최상위 블록",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "자식 id 추출": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "자식 블록",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "자식 블록": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "마크다운 조립",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "최상위 블록": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "자식 id 추출",
-              "type": "main"
-            }
-          ]
-        ]
-      }
-    },
-    "createdAt": "2026-06-23T04:42:35.328Z",
-    "description": null,
-    "name": null,
-    "nodes": [
-      {
-        "id": "f4af93fb-00f5-4a8d-9432-55e574513ce7",
-        "name": "입력",
-        "parameters": {
-          "inputSource": "workflowInputs",
-          "workflowInputs": {
-            "values": [
-              {
-                "name": "pageId",
-                "type": "string"
-              }
-            ]
-          }
-        },
-        "position": [
-          0,
-          0
-        ],
-        "type": "n8n-nodes-base.executeWorkflowTrigger",
-        "typeVersion": 1.1
-      },
-      {
-        "credentials": {
-          "notionApi": {
-            "id": "b03vHUApw6s0O5jS",
-            "name": "Notion account"
-          }
-        },
-        "id": "144afdc7-108b-46d3-94fb-109f7907f441",
-        "name": "최상위 블록",
-        "parameters": {
-          "authentication": "predefinedCredentialType",
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "Notion-Version",
-                "value": "2022-06-28"
-              }
-            ]
-          },
-          "method": "GET",
-          "nodeCredentialType": "notionApi",
-          "options": {
-            "response": {
-              "response": {
-                "neverError": true
-              }
-            }
-          },
-          "sendHeaders": true,
-          "specifyHeaders": "keypair",
-          "url": "=https://api.notion.com/v1/blocks/{{ $json.pageId }}/children?page_size=100"
-        },
-        "position": [
-          224,
-          0
-        ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4
-      },
-      {
-        "id": "54d0af01-8544-4e7d-95ff-8aa555f60710",
-        "name": "자식 id 추출",
-        "parameters": {
-          "jsCode": "var resp = $('최상위 블록').first().json;\nvar results = (resp && resp.results) || [];\nvar ids = [];\nfor (var i = 0; i < results.length; i++) {\n  var b = results[i];\n  if (b && b.has_children) ids.push(b.id);\n}\nif (ids.length === 0) return [{ json: { childId: '' } }];\nreturn ids.map(function (id) { return { json: { childId: id } }; });"
-        },
-        "position": [
-          448,
-          0
-        ],
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2
-      },
-      {
-        "credentials": {
-          "notionApi": {
-            "id": "b03vHUApw6s0O5jS",
-            "name": "Notion account"
-          }
-        },
-        "id": "5c022d49-a980-4478-9a4a-5f6a45e23951",
-        "name": "자식 블록",
-        "parameters": {
-          "authentication": "predefinedCredentialType",
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "Notion-Version",
-                "value": "2022-06-28"
-              }
-            ]
-          },
-          "method": "GET",
-          "nodeCredentialType": "notionApi",
-          "options": {
-            "response": {
-              "response": {
-                "neverError": true
-              }
-            }
-          },
-          "sendHeaders": true,
-          "specifyHeaders": "keypair",
-          "url": "=https://api.notion.com/v1/blocks/{{ $json.childId }}/children?page_size=100"
-        },
-        "position": [
-          672,
-          0
-        ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4
-      },
-      {
-        "executeOnce": true,
-        "id": "b0dbd6b3-6f8e-4b32-b7b9-021e264cb568",
-        "name": "마크다운 조립",
-        "parameters": {
-          "jsCode": "function richText(arr) {\n  if (!Array.isArray(arr)) return '';\n  var s = '';\n  for (var i = 0; i < arr.length; i++) {\n    var t = arr[i]; if (!t) continue;\n    s += (t.plain_text || (t.text && t.text.content) || '');\n  }\n  return s;\n}\nfunction renderBlock(b, childMap) {\n  if (!b) return '';\n  var t = b.type;\n  var rt = (b[t] && b[t].rich_text) ? richText(b[t].rich_text) : '';\n  if (t === 'heading_1') return '# ' + rt;\n  if (t === 'heading_2') return '## ' + rt;\n  if (t === 'heading_3') return '### ' + rt;\n  if (t === 'paragraph') return rt;\n  if (t === 'bulleted_list_item') return '- ' + rt;\n  if (t === 'numbered_list_item') return '1. ' + rt;\n  if (t === 'to_do') { var ck = (b.to_do && b.to_do.checked) ? '[x]' : '[ ]'; return '- ' + ck + ' ' + rt; }\n  if (t === 'quote') return '> ' + rt;\n  if (t === 'callout') { var ic = (b.callout && b.callout.icon && b.callout.icon.emoji) ? (b.callout.icon.emoji + ' ') : ''; return '> ' + ic + rt; }\n  if (t === 'toggle') return '- ' + rt;\n  if (t === 'code') return '[code] ' + rt;\n  if (t === 'divider') return '---';\n  if (t === 'child_page') return '[하위 페이지: ' + ((b.child_page && b.child_page.title) || '') + ']';\n  if (t === 'child_database') return '[하위 DB: ' + ((b.child_database && b.child_database.title) || '') + ']';\n  if (t === 'image' || t === 'file' || t === 'video' || t === 'embed' || t === 'bookmark') return '[' + t + ']';\n  if (t === 'table_of_contents') return '';\n  if (t === 'table') {\n    var rows = childMap[b.id] || [];\n    var out = [];\n    for (var r = 0; r < rows.length; r++) {\n      var row = rows[r];\n      if (row && row.type === 'table_row' && row.table_row && Array.isArray(row.table_row.cells)) {\n        var cells = row.table_row.cells.map(function (c) { return richText(c).replace(/\\n/g, ' '); });\n        out.push('| ' + cells.join(' | ') + ' |');\n      }\n    }\n    return out.join('\\n');\n  }\n  return rt;\n}\n\nvar top = $('최상위 블록').first().json;\nif (!top || !top.results) {\n  var code = (top && (top.code || top.status)) || 'unknown';\n  var msg = (top && top.message) || '';\n  return [{ json: { text: '[읽기 실패] 이 Notion 페이지/블록에 접근할 수 없습니다 (code: ' + code + '). ' + msg + ' → Overmind 통합에 해당 페이지 공유가 필요합니다.', ok: false } }];\n}\nvar childItems = $('자식 id 추출').all();\nvar childResps = $('자식 블록').all();\nvar childMap = {};\nfor (var i = 0; i < childItems.length; i++) {\n  var cid = childItems[i].json.childId;\n  var rr = (childResps[i] && childResps[i].json && childResps[i].json.results) || [];\n  if (cid) childMap[cid] = rr;\n}\nvar lines = [];\nvar blocks = top.results;\nfor (var j = 0; j < blocks.length; j++) {\n  var b = blocks[j];\n  var line = renderBlock(b, childMap);\n  if (line && line.length) lines.push(line);\n  if (b && b.has_children && b.type !== 'table') {\n    var kids = childMap[b.id] || [];\n    for (var k = 0; k < kids.length; k++) {\n      var kl = renderBlock(kids[k], childMap);\n      if (kl && kl.length) lines.push('    ' + kl);\n    }\n  }\n}\nvar md = lines.join('\\n');\nif (!md) md = '[본문 없음]';\nreturn [{ json: { text: md, ok: true } }];"
-        },
-        "position": [
-          896,
-          0
-        ],
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2
-      }
-    ],
-    "updatedAt": "2026-06-23T04:42:35.328Z",
-    "versionId": "58c1b1f1-d05f-46e9-8c48-8c912c4a06e2",
-    "workflowId": "QHVMJ3uFEwlzumw3",
-    "workflowPublishHistory": [
-      {
-        "createdAt": "2026-06-23T04:44:53.058Z",
-        "event": "activated",
-        "id": 267,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "58c1b1f1-d05f-46e9-8c48-8c912c4a06e2",
-        "workflowId": "QHVMJ3uFEwlzumw3"
-      }
-    ]
-  },
   "activeVersionId": "58c1b1f1-d05f-46e9-8c48-8c912c4a06e2",
   "connections": {
+    "DB id 추출": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "DB 행 조회",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "DB 행 조회": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "마크다운 조립",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "입력": {
       "main": [
         [
@@ -223,7 +51,7 @@
         [
           {
             "index": 0,
-            "node": "마크다운 조립",
+            "node": "DB id 추출",
             "type": "main"
           }
         ]
@@ -315,7 +143,7 @@
       "id": "54d0af01-8544-4e7d-95ff-8aa555f60710",
       "name": "자식 id 추출",
       "parameters": {
-        "jsCode": "var resp = $('최상위 블록').first().json;\nvar results = (resp && resp.results) || [];\nvar ids = [];\nfor (var i = 0; i < results.length; i++) {\n  var b = results[i];\n  if (b && b.has_children) ids.push(b.id);\n}\nif (ids.length === 0) return [{ json: { childId: '' } }];\nreturn ids.map(function (id) { return { json: { childId: id } }; });"
+        "jsCode": "var resp = $('최상위 블록').first().json;\nvar results = (resp && resp.results) || [];\nvar ids = [];\nfor (var i = 0; i < results.length; i++) {\n  var b = results[i];\n  if (b && b.has_children && b.type !== 'child_database') ids.push(b.id);\n}\nif (ids.length === 0) return [{ json: { childId: '' } }];\nreturn ids.map(function (id) { return { json: { childId: id } }; });"
       },
       "position": [
         448,
@@ -364,14 +192,69 @@
       "typeVersion": 4.4
     },
     {
+      "id": "a1db0001-0000-4000-8000-000000000001",
+      "name": "DB id 추출",
+      "parameters": {
+        "jsCode": "var resp = $('최상위 블록').first().json;\nvar results = (resp && resp.results) || [];\nvar ids = [];\nfor (var i = 0; i < results.length; i++) {\n  var b = results[i];\n  if (b && b.type === 'child_database') ids.push(b.id);\n}\nif (ids.length === 0) return [{ json: { dbId: '' } }];\nreturn ids.map(function (id) { return { json: { dbId: id } }; });"
+      },
+      "position": [
+        896,
+        0
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "a1db0002-0000-4000-8000-000000000002",
+      "name": "DB 행 조회",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "={{ JSON.stringify({ page_size: 50 }) }}",
+        "method": "POST",
+        "nodeCredentialType": "notionApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "keypair",
+        "url": "=https://api.notion.com/v1/databases/{{ $json.dbId }}/query"
+      },
+      "position": [
+        1120,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
       "executeOnce": true,
       "id": "b0dbd6b3-6f8e-4b32-b7b9-021e264cb568",
       "name": "마크다운 조립",
       "parameters": {
-        "jsCode": "function richText(arr) {\n  if (!Array.isArray(arr)) return '';\n  var s = '';\n  for (var i = 0; i < arr.length; i++) {\n    var t = arr[i]; if (!t) continue;\n    s += (t.plain_text || (t.text && t.text.content) || '');\n  }\n  return s;\n}\nfunction renderBlock(b, childMap) {\n  if (!b) return '';\n  var t = b.type;\n  var rt = (b[t] && b[t].rich_text) ? richText(b[t].rich_text) : '';\n  if (t === 'heading_1') return '# ' + rt;\n  if (t === 'heading_2') return '## ' + rt;\n  if (t === 'heading_3') return '### ' + rt;\n  if (t === 'paragraph') return rt;\n  if (t === 'bulleted_list_item') return '- ' + rt;\n  if (t === 'numbered_list_item') return '1. ' + rt;\n  if (t === 'to_do') { var ck = (b.to_do && b.to_do.checked) ? '[x]' : '[ ]'; return '- ' + ck + ' ' + rt; }\n  if (t === 'quote') return '> ' + rt;\n  if (t === 'callout') { var ic = (b.callout && b.callout.icon && b.callout.icon.emoji) ? (b.callout.icon.emoji + ' ') : ''; return '> ' + ic + rt; }\n  if (t === 'toggle') return '- ' + rt;\n  if (t === 'code') return '[code] ' + rt;\n  if (t === 'divider') return '---';\n  if (t === 'child_page') return '[하위 페이지: ' + ((b.child_page && b.child_page.title) || '') + ']';\n  if (t === 'child_database') return '[하위 DB: ' + ((b.child_database && b.child_database.title) || '') + ']';\n  if (t === 'image' || t === 'file' || t === 'video' || t === 'embed' || t === 'bookmark') return '[' + t + ']';\n  if (t === 'table_of_contents') return '';\n  if (t === 'table') {\n    var rows = childMap[b.id] || [];\n    var out = [];\n    for (var r = 0; r < rows.length; r++) {\n      var row = rows[r];\n      if (row && row.type === 'table_row' && row.table_row && Array.isArray(row.table_row.cells)) {\n        var cells = row.table_row.cells.map(function (c) { return richText(c).replace(/\\n/g, ' '); });\n        out.push('| ' + cells.join(' | ') + ' |');\n      }\n    }\n    return out.join('\\n');\n  }\n  return rt;\n}\n\nvar top = $('최상위 블록').first().json;\nif (!top || !top.results) {\n  var code = (top && (top.code || top.status)) || 'unknown';\n  var msg = (top && top.message) || '';\n  return [{ json: { text: '[읽기 실패] 이 Notion 페이지/블록에 접근할 수 없습니다 (code: ' + code + '). ' + msg + ' → Overmind 통합에 해당 페이지 공유가 필요합니다.', ok: false } }];\n}\nvar childItems = $('자식 id 추출').all();\nvar childResps = $('자식 블록').all();\nvar childMap = {};\nfor (var i = 0; i < childItems.length; i++) {\n  var cid = childItems[i].json.childId;\n  var rr = (childResps[i] && childResps[i].json && childResps[i].json.results) || [];\n  if (cid) childMap[cid] = rr;\n}\nvar lines = [];\nvar blocks = top.results;\nfor (var j = 0; j < blocks.length; j++) {\n  var b = blocks[j];\n  var line = renderBlock(b, childMap);\n  if (line && line.length) lines.push(line);\n  if (b && b.has_children && b.type !== 'table') {\n    var kids = childMap[b.id] || [];\n    for (var k = 0; k < kids.length; k++) {\n      var kl = renderBlock(kids[k], childMap);\n      if (kl && kl.length) lines.push('    ' + kl);\n    }\n  }\n}\nvar md = lines.join('\\n');\nif (!md) md = '[본문 없음]';\nreturn [{ json: { text: md, ok: true } }];"
+        "jsCode": "function richText(arr) {\n  if (!Array.isArray(arr)) return '';\n  var s = '';\n  for (var i = 0; i < arr.length; i++) {\n    var t = arr[i]; if (!t) continue;\n    s += (t.plain_text || (t.text && t.text.content) || '');\n  }\n  return s;\n}\nfunction plainTitle(arr){ return richText(arr); }\nfunction propVal(p) {\n  if (!p) return '';\n  var t = p.type;\n  if (t === 'title') return richText(p.title);\n  if (t === 'rich_text') return richText(p.rich_text);\n  if (t === 'select') return (p.select && p.select.name) || '';\n  if (t === 'status') return (p.status && p.status.name) || '';\n  if (t === 'multi_select') return (p.multi_select || []).map(function (o) { return o.name; }).join(', ');\n  if (t === 'number') return (p.number != null) ? String(p.number) : '';\n  if (t === 'checkbox') return p.checkbox ? '예' : '아니오';\n  if (t === 'date') return (p.date && p.date.start) ? (p.date.start + (p.date.end ? (' ~ ' + p.date.end) : '')) : '';\n  if (t === 'url') return p.url || '';\n  if (t === 'email') return p.email || '';\n  if (t === 'phone_number') return p.phone_number || '';\n  if (t === 'people') return (p.people || []).map(function (u) { return (u && (u.name || u.id)) || ''; }).join(', ');\n  if (t === 'files') return (p.files || []).map(function (f) { return f.name || ''; }).join(', ');\n  if (t === 'formula') { var f = p.formula || {}; return String(f.string != null ? f.string : (f.number != null ? f.number : (f.boolean != null ? f.boolean : ''))); }\n  if (t === 'created_time') return p.created_time || '';\n  if (t === 'last_edited_time') return p.last_edited_time || '';\n  return '';\n}\nfunction renderRows(rows) {\n  var out = [];\n  for (var i = 0; i < rows.length; i++) {\n    var pg = rows[i]; if (!pg || !pg.properties) continue;\n    var props = pg.properties;\n    var titleKey = null;\n    for (var k in props) { if (props[k] && props[k].type === 'title') { titleKey = k; break; } }\n    var head = titleKey ? propVal(props[titleKey]) : '';\n    out.push('• ' + (head || ('항목 ' + (i + 1))));\n    var parts = [];\n    for (var k2 in props) {\n      if (k2 === titleKey) continue;\n      var v = propVal(props[k2]);\n      if (v && String(v).trim()) parts.push('   - ' + k2 + ': ' + String(v).replace(/\\n/g, ' '));\n    }\n    if (parts.length) out.push(parts.join('\\n'));\n  }\n  return out.join('\\n');\n}\n\nvar REFS = [];\nfunction addRef(id, title) { if (id) REFS.push({ id: id, title: title || '' }); }\nfunction scanMentions(arr) {\n  if (!Array.isArray(arr)) return;\n  for (var i = 0; i < arr.length; i++) {\n    var t = arr[i]; if (!t || t.type !== 'mention' || !t.mention) continue;\n    var m = t.mention;\n    if (m.type === 'page' && m.page && m.page.id) addRef(m.page.id, t.plain_text);\n    else if (m.type === 'database' && m.database && m.database.id) addRef(m.database.id, t.plain_text);\n  }\n}\n\nfunction renderBlock(b, childMap, dbMap) {\n  if (!b) return '';\n  var t = b.type;\n  if (b[t] && b[t].rich_text) scanMentions(b[t].rich_text);\n  var rt = (b[t] && b[t].rich_text) ? richText(b[t].rich_text) : '';\n  if (t === 'heading_1') return '# ' + rt;\n  if (t === 'heading_2') return '## ' + rt;\n  if (t === 'heading_3') return '### ' + rt;\n  if (t === 'paragraph') return rt;\n  if (t === 'bulleted_list_item') return '- ' + rt;\n  if (t === 'numbered_list_item') return '1. ' + rt;\n  if (t === 'to_do') { var ck = (b.to_do && b.to_do.checked) ? '[x]' : '[ ]'; return '- ' + ck + ' ' + rt; }\n  if (t === 'quote') return '> ' + rt;\n  if (t === 'callout') { var ic = (b.callout && b.callout.icon && b.callout.icon.emoji) ? (b.callout.icon.emoji + ' ') : ''; return '> ' + ic + rt; }\n  if (t === 'toggle') return '- ' + rt;\n  if (t === 'code') return '[code] ' + rt;\n  if (t === 'divider') return '---';\n  if (t === 'child_page') { addRef(b.id, (b.child_page && b.child_page.title) || ''); return '[참조 하위 페이지: ' + ((b.child_page && b.child_page.title) || '') + ' / id:' + b.id + ']'; }\n  if (t === 'link_to_page') { var lid = (b.link_to_page && (b.link_to_page.page_id || b.link_to_page.database_id)) || ''; addRef(lid, ''); return '[참조 링크 페이지 / id:' + lid + ']'; }\n  if (t === 'child_database') {\n    var rows = dbMap[b.id] || [];\n    var title = (b.child_database && b.child_database.title) || 'DB';\n    var body = renderRows(rows);\n    return '### [표 데이터: ' + title + ']\\n' + (body || '[행 없음 또는 접근불가]');\n  }\n  if (t === 'image' || t === 'file' || t === 'video' || t === 'embed' || t === 'bookmark') return '[' + t + ']';\n  if (t === 'table_of_contents') return '';\n  if (t === 'table') {\n    var rows2 = childMap[b.id] || [];\n    var out = [];\n    for (var r = 0; r < rows2.length; r++) {\n      var row = rows2[r];\n      if (row && row.type === 'table_row' && row.table_row && Array.isArray(row.table_row.cells)) {\n        var cells = row.table_row.cells.map(function (c) { return richText(c).replace(/\\n/g, ' '); });\n        out.push('| ' + cells.join(' | ') + ' |');\n      }\n    }\n    return out.join('\\n');\n  }\n  return rt;\n}\n\nvar top = $('최상위 블록').first().json;\nif (!top || !top.results) {\n  var code = (top && (top.code || top.status)) || 'unknown';\n  var msg = (top && top.message) || '';\n  return [{ json: { text: '[읽기 실패] 이 Notion 페이지/블록에 접근할 수 없습니다 (code: ' + code + '). ' + msg + ' → Overmind 통합에 해당 페이지 공유가 필요합니다.', refs: [], ok: false } }];\n}\n// 블록 자식 맵 (has_children)\nvar childItems = $('자식 id 추출').all();\nvar childResps = $('자식 블록').all();\nvar childMap = {};\nfor (var i = 0; i < childItems.length; i++) {\n  var cid = childItems[i].json.childId;\n  var rr = (childResps[i] && childResps[i].json && childResps[i].json.results) || [];\n  if (cid) childMap[cid] = rr;\n}\n// DB 행 맵 (child_database)\nvar dbItems = $('DB id 추출').all();\nvar dbResps = $('DB 행 조회').all();\nvar dbMap = {};\nfor (var di = 0; di < dbItems.length; di++) {\n  var did = dbItems[di].json.dbId;\n  var dr = (dbResps[di] && dbResps[di].json && dbResps[di].json.results) || [];\n  if (did) dbMap[did] = dr;\n}\nvar lines = [];\nvar blocks = top.results;\nfor (var j = 0; j < blocks.length; j++) {\n  var b = blocks[j];\n  var line = renderBlock(b, childMap, dbMap);\n  if (line && line.length) lines.push(line);\n  if (b && b.has_children && b.type !== 'table' && b.type !== 'child_database') {\n    var kids = childMap[b.id] || [];\n    for (var k = 0; k < kids.length; k++) {\n      var kl = renderBlock(kids[k], childMap, dbMap);\n      if (kl && kl.length) lines.push('    ' + kl);\n    }\n  }\n}\nvar md = lines.join('\\n');\nif (!md) md = '[본문 없음]';\n// refs 중복 제거\nvar seen = {}; var uref = [];\nfor (var x = 0; x < REFS.length; x++) { var rid = REFS[x].id; if (rid && !seen[rid]) { seen[rid] = 1; uref.push(REFS[x]); } }\nif (uref.length) {\n  md += '\\n\\n📎 이 문서가 참조하는 다른 Notion 페이지(필요하다고 판단되면 읽기 툴로 직접 열람): '\n      + uref.map(function (r) { return (r.title ? (r.title + ' ') : '') + '(id:' + r.id + ')'; }).join(', ');\n}\nreturn [{ json: { text: md, refs: uref, ok: true } }];"
       },
       "position": [
-        896,
+        1344,
         0
       ],
       "type": "n8n-nodes-base.code",
