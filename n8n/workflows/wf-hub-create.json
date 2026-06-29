@@ -1,0 +1,362 @@
+{
+  "active": true,
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": false,
+    "connections": {
+      "본문 구성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "카드 생성",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "입력": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "본문 구성",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "카드 생성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "결과 정리",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-06-29T08:30:42.841Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "e4ad6cb0-03ce-4f60-bde5-ec2cf89c67b1",
+        "name": "입력",
+        "parameters": {
+          "inputSource": "workflowInputs",
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "topic",
+                "type": "string"
+              },
+              {
+                "name": "area",
+                "type": "string"
+              },
+              {
+                "name": "tier",
+                "type": "string"
+              },
+              {
+                "name": "roles",
+                "type": "string"
+              },
+              {
+                "name": "source",
+                "type": "string"
+              },
+              {
+                "name": "body",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "7a08189d-c636-4b40-baca-86bcaa5f3ccb",
+        "name": "본문 구성",
+        "parameters": {
+          "jsCode": "const inp = ($json && typeof $json === 'object') ? $json : {};\nconst topic = String(inp.topic || '').trim();\nconst area = String(inp.area || '').trim();\nconst tier = String(inp.tier || '').trim();\nconst roles = String(inp.roles || '').trim();\nconst source = String(inp.source || '').trim();\nconst body = String(inp.body || '').trim();\nconst AREAS = ['제품','디자인','시스템','규제','결정로그'];\nconst ROLES = ['기획','디자인','개발','QA','마케팅','리서치'];\nconst props = {};\nprops['주제'] = { title: [{ text: { content: (topic || '(제목 없음)').slice(0,2000) } }] };\nprops['신뢰등급'] = { select: { name: 'AI추가' } };\nprops['영역'] = { select: { name: AREAS.indexOf(area) >= 0 ? area : '결정로그' } };\nprops['계층'] = { select: { name: tier === '핵심' ? '핵심' : '디테일' } };\nconst ms = roles.split(',').map(s => s.trim()).filter(s => ROLES.indexOf(s) >= 0).map(s => ({ name: s }));\nif (ms.length) props['관련 직무'] = { multi_select: ms };\nif (source && source.slice(0,4) === 'http') props['출처'] = { url: source };\nconst b = body || '(본문 없음)';\nconst children = [];\nfor (let i = 0; i < b.length && i < 18000; i += 1900) {\n  children.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: b.slice(i, i + 1900) } }] } });\n}\nreturn [{ json: { payload: { parent: { database_id: '3a6975952ad54380bc580901e079a7f7' }, properties: props, children: children } } }];\n",
+          "language": "javaScript",
+          "mode": "runOnceForAllItems"
+        },
+        "position": [
+          220,
+          0
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "80b1ecc3-56fd-44b9-a139-fb0d0cbee78c",
+        "name": "카드 생성",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "jsonBody": "={{ JSON.stringify($json.payload) }}",
+          "method": "POST",
+          "nodeCredentialType": "notionApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "specifyHeaders": "keypair",
+          "url": "https://api.notion.com/v1/pages"
+        },
+        "position": [
+          440,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "05edfad6-116a-4188-92c6-05ce227202da",
+        "name": "결과 정리",
+        "parameters": {
+          "jsCode": "const r = $json || {};\nif (r.id) return [{ json: { ok: true, text: '컨텍스트 허브 카드 생성 완료. id=' + r.id + (r.url ? (' url=' + r.url) : '') } }];\nconst msg = r.message || (r.error && r.error.message) || JSON.stringify(r).slice(0,400);\nreturn [{ json: { ok: false, text: '허브 카드 생성 실패: ' + msg } }];\n",
+          "language": "javaScript",
+          "mode": "runOnceForAllItems"
+        },
+        "position": [
+          660,
+          0
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      }
+    ],
+    "updatedAt": "2026-06-29T08:30:42.841Z",
+    "versionId": "06e59ebb-06c2-4d7e-aec2-74901e663976",
+    "workflowId": "XscK94nIO5wtbFiO",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-29T08:32:07.699Z",
+        "event": "activated",
+        "id": 326,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "06e59ebb-06c2-4d7e-aec2-74901e663976",
+        "workflowId": "XscK94nIO5wtbFiO"
+      }
+    ]
+  },
+  "activeVersionId": "06e59ebb-06c2-4d7e-aec2-74901e663976",
+  "connections": {
+    "본문 구성": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "카드 생성",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "입력": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "본문 구성",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "카드 생성": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "결과 정리",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-06-29T08:26:43.075Z",
+  "description": null,
+  "id": "XscK94nIO5wtbFiO",
+  "isArchived": false,
+  "meta": null,
+  "name": "Overmind · 컨텍스트 허브 카드 생성",
+  "nodes": [
+    {
+      "id": "e4ad6cb0-03ce-4f60-bde5-ec2cf89c67b1",
+      "name": "입력",
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "topic",
+              "type": "string"
+            },
+            {
+              "name": "area",
+              "type": "string"
+            },
+            {
+              "name": "tier",
+              "type": "string"
+            },
+            {
+              "name": "roles",
+              "type": "string"
+            },
+            {
+              "name": "source",
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "7a08189d-c636-4b40-baca-86bcaa5f3ccb",
+      "name": "본문 구성",
+      "parameters": {
+        "jsCode": "const inp = ($json && typeof $json === 'object') ? $json : {};\nconst topic = String(inp.topic || '').trim();\nconst area = String(inp.area || '').trim();\nconst tier = String(inp.tier || '').trim();\nconst roles = String(inp.roles || '').trim();\nconst source = String(inp.source || '').trim();\nconst body = String(inp.body || '').trim();\nconst AREAS = ['제품','디자인','시스템','규제','결정로그'];\nconst ROLES = ['기획','디자인','개발','QA','마케팅','리서치'];\nconst props = {};\nprops['주제'] = { title: [{ text: { content: (topic || '(제목 없음)').slice(0,2000) } }] };\nprops['신뢰등급'] = { select: { name: 'AI추가' } };\nprops['영역'] = { select: { name: AREAS.indexOf(area) >= 0 ? area : '결정로그' } };\nprops['계층'] = { select: { name: tier === '핵심' ? '핵심' : '디테일' } };\nconst ms = roles.split(',').map(s => s.trim()).filter(s => ROLES.indexOf(s) >= 0).map(s => ({ name: s }));\nif (ms.length) props['관련 직무'] = { multi_select: ms };\nif (source && source.slice(0,4) === 'http') props['출처'] = { url: source };\nconst b = body || '(본문 없음)';\nconst children = [];\nfor (let i = 0; i < b.length && i < 18000; i += 1900) {\n  children.push({ object: 'block', type: 'paragraph', paragraph: { rich_text: [{ type: 'text', text: { content: b.slice(i, i + 1900) } }] } });\n}\nreturn [{ json: { payload: { parent: { database_id: '3a6975952ad54380bc580901e079a7f7' }, properties: props, children: children } } }];\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        220,
+        0
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "80b1ecc3-56fd-44b9-a139-fb0d0cbee78c",
+      "name": "카드 생성",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "method": "POST",
+        "nodeCredentialType": "notionApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "keypair",
+        "url": "https://api.notion.com/v1/pages"
+      },
+      "position": [
+        440,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "05edfad6-116a-4188-92c6-05ce227202da",
+      "name": "결과 정리",
+      "parameters": {
+        "jsCode": "const r = $json || {};\nif (r.id) return [{ json: { ok: true, text: '컨텍스트 허브 카드 생성 완료. id=' + r.id + (r.url ? (' url=' + r.url) : '') } }];\nconst msg = r.message || (r.error && r.error.message) || JSON.stringify(r).slice(0,400);\nreturn [{ json: { ok: false, text: '허브 카드 생성 실패: ' + msg } }];\n",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        660,
+        0
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "availableInMCP": true,
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2026-06-29T08:26:43.075Z",
+      "project": {
+        "createdAt": "2026-05-27T07:22:23.960Z",
+        "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "description": null,
+        "icon": null,
+        "id": "501Q7eGEKoHjxZfp",
+        "name": "재은 김 <justin@bomapp.co.kr>",
+        "type": "personal",
+        "updatedAt": "2026-05-27T07:24:05.558Z"
+      },
+      "projectId": "501Q7eGEKoHjxZfp",
+      "role": "workflow:owner",
+      "updatedAt": "2026-06-29T08:26:43.075Z",
+      "workflowId": "XscK94nIO5wtbFiO"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-06-29T08:30:42.840Z",
+  "versionCounter": 7,
+  "versionId": "06e59ebb-06c2-4d7e-aec2-74901e663976"
+}
