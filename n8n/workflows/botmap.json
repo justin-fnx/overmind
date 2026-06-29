@@ -228,7 +228,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-29T08:00:16.988Z",
+    "createdAt": "2026-06-29T08:11:44.495Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -886,7 +886,7 @@
               }
             ]
           },
-          "jsonBody": "={{ (function(){ var topic=($fromAI(\"topic\",\"카드 제목(주제). 한 카드=한 주제.\",\"string\")||\"\").trim(); var area=($fromAI(\"area\",\"영역: 제품/디자인/시스템/규제/결정로그 중 하나(모르면 결정로그)\",\"string\")||\"\").trim(); var tier=($fromAI(\"tier\",\"계층: 핵심 또는 디테일(기본 디테일)\",\"string\")||\"\").trim(); var roles=($fromAI(\"roles\",\"관련 직무: 기획,디자인,개발,QA,마케팅,리서치 중 콤마구분(없으면 빈값)\",\"string\")||\"\").trim(); var source=($fromAI(\"source\",\"출처 URL(Slack 퍼머링크/Linear 문서 등, 없으면 빈값)\",\"string\")||\"\").trim(); var body=($fromAI(\"body\",\"카드 본문(마크다운/평문). 핵심 사실 위주.\",\"string\")||\"\").trim(); var props={}; props[\"주제\"]={title:[{text:{content:topic.slice(0,2000)}}]}; props[\"신뢰등급\"]={select:{name:\"AI추가\"}}; var areas={\"제품\":1,\"디자인\":1,\"시스템\":1,\"규제\":1,\"결정로그\":1}; props[\"영역\"]={select:{name:(areas[area]?area:\"결정로그\")}}; props[\"계층\"]={select:{name:(tier===\"핵심\"?\"핵심\":\"디테일\")}}; if(roles){var allow={\"기획\":1,\"디자인\":1,\"개발\":1,\"QA\":1,\"마케팅\":1,\"리서치\":1}; var ms=roles.split(\",\").map(function(s){return s.trim();}).filter(function(s){return allow[s];}).map(function(s){return {name:s};}); if(ms.length)props[\"관련 직무\"]={multi_select:ms};} if(source&&source.indexOf(\"http\")===0)props[\"출처\"]={url:source}; var children=[]; var b=body||\"(본문 없음)\"; for(var i=0;i<b.length&&i<8000;i+=1900){children.push({object:\"block\",type:\"paragraph\",paragraph:{rich_text:[{type:\"text\",text:{content:b.slice(i,i+1900)}}]}});} return JSON.stringify({parent:{database_id:\"3a6975952ad54380bc580901e079a7f7\"},properties:props,children:children}); })() }}",
+          "jsonBody": "={{ (function(){ var topic=($fromAI(\"topic\",\"카드 제목(주제). 한 카드=한 주제.\",\"string\")||\"\").trim(); var area=($fromAI(\"area\",\"영역: 제품/디자인/시스템/규제/결정로그 중 하나(모르면 결정로그)\",\"string\")||\"\").trim(); var tier=($fromAI(\"tier\",\"계층: 핵심 또는 디테일(기본 디테일)\",\"string\")||\"\").trim(); var roles=($fromAI(\"roles\",\"관련 직무: 기획,디자인,개발,QA,마케팅,리서치 중 콤마구분(없으면 빈값)\",\"string\")||\"\").trim(); var source=($fromAI(\"source\",\"출처 URL(Slack 퍼머링크/Linear 문서 등, 없으면 빈값)\",\"string\")||\"\").trim(); var body=($fromAI(\"body\",\"카드 본문(마크다운/평문). 핵심 사실 위주.\",\"string\")||\"\").trim(); var props={}; props[\"주제\"]={title:[{text:{content:topic.slice(0,2000)}}]}; props[\"신뢰등급\"]={select:{name:\"AI추가\"}}; var areas={\"제품\":1,\"디자인\":1,\"시스템\":1,\"규제\":1,\"결정로그\":1}; props[\"영역\"]={select:{name:(areas[area]?area:\"결정로그\")}}; props[\"계층\"]={select:{name:(tier===\"핵심\"?\"핵심\":\"디테일\")}}; if(roles){var allow={\"기획\":1,\"디자인\":1,\"개발\":1,\"QA\":1,\"마케팅\":1,\"리서치\":1}; var ms=roles.split(\",\").map(function(s){return s.trim();}).filter(function(s){return allow[s];}).map(function(s){return {name:s};}); if(ms.length)props[\"관련 직무\"]={multi_select:ms};} if(source&&source.indexOf(\"http\")===0)props[\"출처\"]={url:source}; var b=body||\"(본문 없음)\"; var parts=[b.slice(0,1900),b.slice(1900,3800),b.slice(3800,5700),b.slice(5700,7600)].filter(function(x){return x&&x.length;}); if(!parts.length)parts=[\"(본문 없음)\"]; var children=parts.map(function(c){return {object:\"block\",type:\"paragraph\",paragraph:{rich_text:[{type:\"text\",text:{content:c}}]}};}); return JSON.stringify({parent:{database_id:\"3a6975952ad54380bc580901e079a7f7\"},properties:props,children:children}); })() }}",
           "maxLength": 4000,
           "method": "POST",
           "nodeCredentialType": "notionApi",
@@ -916,45 +916,45 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-29T08:00:16.988Z",
-    "versionId": "3a38ab45-0ac3-41e2-8b3c-e1d9af40da40",
+    "updatedAt": "2026-06-29T08:11:44.495Z",
+    "versionId": "8eb5edbb-69ae-4842-8fe1-567465c19af8",
     "workflowId": "hOsWherqkbKRzGH1",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-29T08:00:17.068Z",
+        "createdAt": "2026-06-29T08:11:44.561Z",
         "event": "deactivated",
-        "id": 318,
+        "id": 322,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "3a38ab45-0ac3-41e2-8b3c-e1d9af40da40",
+        "versionId": "8eb5edbb-69ae-4842-8fe1-567465c19af8",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-06-29T08:00:17.094Z",
+        "createdAt": "2026-06-29T08:11:44.586Z",
         "event": "activated",
-        "id": 319,
+        "id": 323,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "3a38ab45-0ac3-41e2-8b3c-e1d9af40da40",
+        "versionId": "8eb5edbb-69ae-4842-8fe1-567465c19af8",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-06-29T08:00:24.901Z",
+        "createdAt": "2026-06-29T08:11:52.995Z",
         "event": "deactivated",
-        "id": 320,
+        "id": 324,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "3a38ab45-0ac3-41e2-8b3c-e1d9af40da40",
+        "versionId": "8eb5edbb-69ae-4842-8fe1-567465c19af8",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-06-29T08:00:24.921Z",
+        "createdAt": "2026-06-29T08:11:53.024Z",
         "event": "activated",
-        "id": 321,
+        "id": 325,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "3a38ab45-0ac3-41e2-8b3c-e1d9af40da40",
+        "versionId": "8eb5edbb-69ae-4842-8fe1-567465c19af8",
         "workflowId": "hOsWherqkbKRzGH1"
       }
     ]
   },
-  "activeVersionId": "3a38ab45-0ac3-41e2-8b3c-e1d9af40da40",
+  "activeVersionId": "8eb5edbb-69ae-4842-8fe1-567465c19af8",
   "connections": {
     "Bedrock Claude Sonnet 4.6": {
       "ai_languageModel": [
@@ -1844,7 +1844,7 @@
             }
           ]
         },
-        "jsonBody": "={{ (function(){ var topic=($fromAI(\"topic\",\"카드 제목(주제). 한 카드=한 주제.\",\"string\")||\"\").trim(); var area=($fromAI(\"area\",\"영역: 제품/디자인/시스템/규제/결정로그 중 하나(모르면 결정로그)\",\"string\")||\"\").trim(); var tier=($fromAI(\"tier\",\"계층: 핵심 또는 디테일(기본 디테일)\",\"string\")||\"\").trim(); var roles=($fromAI(\"roles\",\"관련 직무: 기획,디자인,개발,QA,마케팅,리서치 중 콤마구분(없으면 빈값)\",\"string\")||\"\").trim(); var source=($fromAI(\"source\",\"출처 URL(Slack 퍼머링크/Linear 문서 등, 없으면 빈값)\",\"string\")||\"\").trim(); var body=($fromAI(\"body\",\"카드 본문(마크다운/평문). 핵심 사실 위주.\",\"string\")||\"\").trim(); var props={}; props[\"주제\"]={title:[{text:{content:topic.slice(0,2000)}}]}; props[\"신뢰등급\"]={select:{name:\"AI추가\"}}; var areas={\"제품\":1,\"디자인\":1,\"시스템\":1,\"규제\":1,\"결정로그\":1}; props[\"영역\"]={select:{name:(areas[area]?area:\"결정로그\")}}; props[\"계층\"]={select:{name:(tier===\"핵심\"?\"핵심\":\"디테일\")}}; if(roles){var allow={\"기획\":1,\"디자인\":1,\"개발\":1,\"QA\":1,\"마케팅\":1,\"리서치\":1}; var ms=roles.split(\",\").map(function(s){return s.trim();}).filter(function(s){return allow[s];}).map(function(s){return {name:s};}); if(ms.length)props[\"관련 직무\"]={multi_select:ms};} if(source&&source.indexOf(\"http\")===0)props[\"출처\"]={url:source}; var children=[]; var b=body||\"(본문 없음)\"; for(var i=0;i<b.length&&i<8000;i+=1900){children.push({object:\"block\",type:\"paragraph\",paragraph:{rich_text:[{type:\"text\",text:{content:b.slice(i,i+1900)}}]}});} return JSON.stringify({parent:{database_id:\"3a6975952ad54380bc580901e079a7f7\"},properties:props,children:children}); })() }}",
+        "jsonBody": "={{ (function(){ var topic=($fromAI(\"topic\",\"카드 제목(주제). 한 카드=한 주제.\",\"string\")||\"\").trim(); var area=($fromAI(\"area\",\"영역: 제품/디자인/시스템/규제/결정로그 중 하나(모르면 결정로그)\",\"string\")||\"\").trim(); var tier=($fromAI(\"tier\",\"계층: 핵심 또는 디테일(기본 디테일)\",\"string\")||\"\").trim(); var roles=($fromAI(\"roles\",\"관련 직무: 기획,디자인,개발,QA,마케팅,리서치 중 콤마구분(없으면 빈값)\",\"string\")||\"\").trim(); var source=($fromAI(\"source\",\"출처 URL(Slack 퍼머링크/Linear 문서 등, 없으면 빈값)\",\"string\")||\"\").trim(); var body=($fromAI(\"body\",\"카드 본문(마크다운/평문). 핵심 사실 위주.\",\"string\")||\"\").trim(); var props={}; props[\"주제\"]={title:[{text:{content:topic.slice(0,2000)}}]}; props[\"신뢰등급\"]={select:{name:\"AI추가\"}}; var areas={\"제품\":1,\"디자인\":1,\"시스템\":1,\"규제\":1,\"결정로그\":1}; props[\"영역\"]={select:{name:(areas[area]?area:\"결정로그\")}}; props[\"계층\"]={select:{name:(tier===\"핵심\"?\"핵심\":\"디테일\")}}; if(roles){var allow={\"기획\":1,\"디자인\":1,\"개발\":1,\"QA\":1,\"마케팅\":1,\"리서치\":1}; var ms=roles.split(\",\").map(function(s){return s.trim();}).filter(function(s){return allow[s];}).map(function(s){return {name:s};}); if(ms.length)props[\"관련 직무\"]={multi_select:ms};} if(source&&source.indexOf(\"http\")===0)props[\"출처\"]={url:source}; var b=body||\"(본문 없음)\"; var parts=[b.slice(0,1900),b.slice(1900,3800),b.slice(3800,5700),b.slice(5700,7600)].filter(function(x){return x&&x.length;}); if(!parts.length)parts=[\"(본문 없음)\"]; var children=parts.map(function(c){return {object:\"block\",type:\"paragraph\",paragraph:{rich_text:[{type:\"text\",text:{content:c}}]}};}); return JSON.stringify({parent:{database_id:\"3a6975952ad54380bc580901e079a7f7\"},properties:props,children:children}); })() }}",
         "maxLength": 4000,
         "method": "POST",
         "nodeCredentialType": "notionApi",
@@ -1902,7 +1902,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-29T08:00:16.986Z",
-  "versionCounter": 56,
-  "versionId": "3a38ab45-0ac3-41e2-8b3c-e1d9af40da40"
+  "updatedAt": "2026-06-29T08:11:44.493Z",
+  "versionCounter": 61,
+  "versionId": "8eb5edbb-69ae-4842-8fe1-567465c19af8"
 }
