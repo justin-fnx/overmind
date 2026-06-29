@@ -86,10 +86,19 @@ description: >-
 
 - **기존 작업물은 절대 수정 금지.** 새 작업은 **새 페이지**(v1/v2/v3 …)로 분리해 나란히 비교.
 - 새 파일이 필요하면 `create_new_file`, planKey = **BOMAPP `team::915416689671091979`**(Dev 시트; justin의 팀=view 불가).
-- 렌더 PNG를 `upload_assets`(count=N) → 반환 submitUrl에 **multipart `file` 필드로 POST**(파일명=레이어명) → `placedOnNodeId` 확보.
-- `use_figma` 로 새 페이지 생성 후 업로드 프레임을 그 페이지로 옮기고 **이미지 정비율로 resize**(예 375×H, 보통 380×850)·정렬·라벨.
-- `use_figma` 함정: 환경에 Pretendard 없음(네이티브 텍스트는 Noto Sans KR), ≤~12노드/콜(초과 시 타임아웃·원자적 롤백), `textAutoResize`는 'WIDTH' 없음('WIDTH_AND_HEIGHT'/'HEIGHT'), 색은 0–1 범위.
-- Figma 산출물은 **렌더 이미지**(편집 불가)임을 명시 — **편집 원본은 HTML 프로토타입**. 네이티브 벡터 재작성은 Pretendard 회귀로 품질↓ → 권장 안 함.
+- `use_figma` 호출 **전 반드시** `skill://figma/figma-use/SKILL.md`(필요 시 `figma-generate-design`)를 `ReadMcpResourceTool` 로 읽는다. 콜마다 `setCurrentPageAsync(<page id>)`로 페이지 컨텍스트 재설정. 색은 0–1 범위, 텍스트는 폰트 로드 후 수정.
+
+**포팅 모드 선택 (편집 가능성 vs 손맛):**
+
+- **모드 A — 이미지 포팅(빠름, 비편집)**: 렌더 PNG를 `upload_assets`(count=N) → submitUrl에 **multipart `file` 필드 POST**(파일명=레이어명) → `placedOnNodeId`. 새 페이지로 옮겨 **이미지 정비율 resize**(보통 380×850). ⚠️ **결과물은 "평면 이미지 1장"이라 Figma 내 편집 불가** — 시각 시안 공유·빠른 합의용으로만. **편집 원본은 HTML 프로토타입.**
+- **모드 B — 네이티브 재구성(편집 가능, 권장 기본값)**: 화면을 `use_figma`로 **프레임·텍스트·벡터 개별 노드**로 재작성 → 각 요소 편집·컴포넌트화·코드 역이관 용이. **고품질도 충분히 달성됨**(TA-136 v4 입증). 레시피:
+  - 그림자 = `createEffectStyle`(카드/CTA) — **반환 styleId 끝에 콤마 포함**(`S:xxxx,`) → `setEffectStyleIdAsync`에 콤마째 전달.
+  - 아이콘 = `createNodeFromSvg`(back chevron·unlink·check 등 SVG 문자열 → 편집 가능 벡터).
+  - 컨테이너 = `figma.createAutoLayout`(pill·CTA·비교막대), 차트 = 솔리드 채움 + 상태 컬러밴드(rect opacity) + rounded 막대(`topLeftRadius/topRightRadius`).
+  - 큰 수치 정렬 = `counterAxisAlignItems:'BASELINE'`, 텍스트 부분강조 = `setRangeFills`+`setRangeFontName`.
+  - 폰트 = **Noto Sans KR**(Bold/Medium/Regular 확인됨; Pretendard 미설치라 미리보기는 Noto, 최종 Pretendard 스왑 명시).
+  - 빌드는 **화면당 ~6콜**로 쪼개 **≤10오브젝트/콜**(초과 시 타임아웃·원자적 롤백) + 중간 `get_screenshot`(URL→`curl`→`Read`)로 픽셀 검증. `textAutoResize`는 'WIDTH' 없음('WIDTH_AND_HEIGHT'/'HEIGHT').
+- **선택 기준**: 빠른 시안 합의 = A, **수정/핸드오프/코드 역이관 필요 = B**. 둘을 다른 페이지로 함께 두면 비교가 쉽다.
 
 ---
 
@@ -106,5 +115,5 @@ description: >-
 - [ ] BDS 토큰 실측 + 화면취합/참조 실화면 확인
 - [ ] 코드-퍼스트(실제 Pretendard·그림자·SVG) → 헤드리스 Chrome 렌더 검증
 - [ ] 일러스트는 실제 보맵 3D 에셋 재사용 우선, 부족분만 Bedrock SD3.5(레지스터+hex 프롬프트)
-- [ ] 새 페이지로 분리 포팅(기존 보존), 편집 원본=HTML 명시
+- [ ] 새 페이지로 분리 포팅(기존 보존) — 편집/핸드오프 필요=네이티브 재구성(모드 B), 빠른 시안=이미지(모드 A)
 - [ ] 결정사항 에스컬레이션 + 문서/Hub 반영
