@@ -1,0 +1,1908 @@
+{
+  "active": true,
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": false,
+    "connections": {
+      "Bedrock Claude Sonnet 4.6": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "BotmapAgent": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "답변 갱신",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "GitLab 검색": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "Linear (MCP)": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "Notion 검색": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "Slack 이벤트 수신": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "URL 검증?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "URL 검증?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "검증 응답",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "이벤트 ack",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "노션 페이지 읽기": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "맥락 구성": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "사내데이터 검색(Elasticsearch)": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "생각중 표시": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "스레드에서 호출?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "스레드 읽기": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 구성",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "스레드에서 호출?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "스레드 읽기",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "채널 최근 읽기",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "이벤트 ack": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "처리 대상?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "입력 정규화": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "생각중 표시",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "채널 최근 읽기": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "맥락 구성",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "처리 대상?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "입력 정규화",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "컨텍스트 허브 조회": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "컨텍스트 허브 카드 작성": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "BotmapAgent",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-06-29T07:40:00.030Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "4daad9cb-947e-4a0e-9bd1-5f9f9c50be70",
+        "name": "Slack 이벤트 수신",
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "botmap-slack-events",
+          "responseMode": "responseNode"
+        },
+        "position": [
+          240,
+          420
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "webhookId": "876b5b33-9f72-4b3a-858d-95c77b302992"
+      },
+      {
+        "id": "40a85dfc-9975-46a2-b678-f63e609fc880",
+        "name": "URL 검증?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "v",
+                "leftValue": "={{ $json.body.type }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "url_verification"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose"
+            }
+          }
+        },
+        "position": [
+          460,
+          420
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "deb08e30-3b26-44ac-84fc-3a0da6d8d01f",
+        "name": "검증 응답",
+        "parameters": {
+          "options": {
+            "enableStreaming": false
+          },
+          "respondWith": "text",
+          "responseBody": "={{ $json.body.challenge }}"
+        },
+        "position": [
+          680,
+          280
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5
+      },
+      {
+        "id": "dccc4820-0414-4dd5-a17b-fbb7682a8094",
+        "name": "이벤트 ack",
+        "parameters": {
+          "options": {
+            "enableStreaming": false
+          },
+          "respondWith": "text",
+          "responseBody": "ok"
+        },
+        "position": [
+          680,
+          540
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.5
+      },
+      {
+        "id": "94ab44c1-01c2-4ceb-9d5d-5469afa978e9",
+        "name": "처리 대상?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "target",
+                "leftValue": "={{ (function(){ var e = ($(\"Slack 이벤트 수신\").item.json.body && $(\"Slack 이벤트 수신\").item.json.body.event) || {}; var h = $(\"Slack 이벤트 수신\").item.json.headers || {}; var allowed = (e.type === \"app_mention\") || (e.type === \"message\" && e.channel_type === \"im\"); var notRetry = (h[\"x-slack-retry-num\"] === undefined || h[\"x-slack-retry-num\"] === null || h[\"x-slack-retry-num\"] === \"\"); var notBot = ((e.bot_id || \"\") === \"\"); var sub = (e.subtype || \"\"); var okSubtype = (sub === \"\" || sub === \"file_share\"); return allowed && notRetry && notBot && okSubtype; })() }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                }
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose"
+            }
+          }
+        },
+        "position": [
+          900,
+          540
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "266aaac0-7b40-4210-b468-3eb1d4dda31c",
+        "name": "입력 정규화",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "q",
+                "name": "question",
+                "type": "string",
+                "value": "={{ ($(\"Slack 이벤트 수신\").item.json.body.event.text ?? \"\").replace(/<@[^>]+>/g, \"\").trim() }}"
+              },
+              {
+                "id": "ch",
+                "name": "channel",
+                "type": "string",
+                "value": "={{ $(\"Slack 이벤트 수신\").item.json.body.event.channel ?? \"\" }}"
+              },
+              {
+                "id": "tt",
+                "name": "threadTs",
+                "type": "string",
+                "value": "={{ $(\"Slack 이벤트 수신\").item.json.body.event.thread_ts ?? $(\"Slack 이벤트 수신\").item.json.body.event.ts ?? \"\" }}"
+              },
+              {
+                "id": "usr",
+                "name": "userId",
+                "type": "string",
+                "value": "={{ $(\"Slack 이벤트 수신\").item.json.body.event.user ?? \"\" }}"
+              },
+              {
+                "id": "tm",
+                "name": "threadMode",
+                "type": "string",
+                "value": "={{ $(\"Slack 이벤트 수신\").item.json.body.event.thread_ts ? \"thread\" : \"channel\" }}"
+              }
+            ]
+          },
+          "includeOtherFields": false,
+          "mode": "manual"
+        },
+        "position": [
+          1120,
+          540
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "51c3ee43-54d4-40a1-a94a-03ac4ab9b3b3",
+        "name": "생각중 표시",
+        "parameters": {
+          "channelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"입력 정규화\").item.json.channel }}"
+          },
+          "messageType": "text",
+          "operation": "post",
+          "otherOptions": {
+            "includeLinkToWorkflow": false,
+            "thread_ts": {
+              "replyValues": {
+                "thread_ts": "={{ $(\"입력 정규화\").item.json.threadTs }}"
+              }
+            }
+          },
+          "resource": "message",
+          "select": "channel",
+          "text": "💭 _생각하는 중…_"
+        },
+        "position": [
+          1320,
+          540
+        ],
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "webhookId": "118b50c2-2782-42c9-92f5-6865be588e78"
+      },
+      {
+        "id": "af00902b-78d9-4463-842c-ecd28d2df067",
+        "name": "스레드에서 호출?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "t",
+                "leftValue": "={{ $(\"입력 정규화\").item.json.threadMode }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "thread"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict"
+            }
+          }
+        },
+        "position": [
+          1520,
+          540
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "07018019-942d-4003-a378-59eb599968f4",
+        "name": "스레드 읽기",
+        "parameters": {
+          "channelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"입력 정규화\").item.json.channel }}"
+          },
+          "limit": 30,
+          "operation": "replies",
+          "resource": "channel",
+          "returnAll": false,
+          "ts": "={{ $(\"입력 정규화\").item.json.threadTs }}"
+        },
+        "position": [
+          1740,
+          440
+        ],
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "webhookId": "66033959-6708-4e91-acc0-fa7941f7451d"
+      },
+      {
+        "id": "4c208d80-a22b-4c4a-aee6-d6e92d62c949",
+        "name": "맥락 구성",
+        "parameters": {
+          "jsCode": "const meta = $('입력 정규화').first().json; const items = $input.all(); const msgs = items.map(function(i){ return i.json; }); msgs.sort(function(a,b){ return Number(a.ts||0) - Number(b.ts||0); }); const NL = String.fromCharCode(10); const lines = []; const images = []; const files = []; for (const m of msgs) { const who = m.user || m.username || (m.bot_profile && m.bot_profile.name) || m.bot_id || 'unknown'; const txt = (m.text || '').replace(/<@[^>]+>/g, '').trim(); let line = '[' + who + '] ' + txt; if (Array.isArray(m.files)) { for (const f of m.files) { const mt = f.mimetype || f.filetype || 'file'; line = line + '  [첨부: ' + (f.name || 'file') + ' (' + mt + ') ' + (f.permalink || f.url_private || '') + ']'; const rec = { name: f.name, mimetype: mt, url: f.url_private, permalink: f.permalink }; files.push(rec); if (String(mt).indexOf('image/') === 0) { images.push(rec); } } } lines.push(line); } const transcript = lines.join(NL); return [{ json: { transcript: transcript, question: meta.question, channel: meta.channel, threadTs: meta.threadTs, mode: meta.threadMode, messageCount: msgs.length, fileCount: files.length, imageCount: images.length, images: images, files: files } }];",
+          "language": "javaScript",
+          "mode": "runOnceForAllItems"
+        },
+        "position": [
+          1960,
+          540
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "ae5a6fd5-13ea-45ef-ad3e-8c299e94c1f8",
+        "name": "채널 최근 읽기",
+        "parameters": {
+          "channelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"입력 정규화\").item.json.channel }}"
+          },
+          "limit": 10,
+          "operation": "history",
+          "resource": "channel",
+          "returnAll": false
+        },
+        "position": [
+          1740,
+          660
+        ],
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "webhookId": "e7959009-6c9e-4088-90a5-b8d66a3ecc78"
+      },
+      {
+        "id": "cb99b961-75fd-431a-aefc-a00da999e4ba",
+        "name": "BotmapAgent",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "options": {
+            "enableStreaming": false,
+            "maxIterations": 50,
+            "systemMessage": "당신은 \"봇맵(Botmap)\"입니다. 보맵(BOMAPP) 보험 도메인 마이크로서비스 팀을 돕는 Slack 어시스턴트입니다. 사용자 메시지에는 현재 Slack 스레드/채널의 대화 맥락(transcript)이 함께 제공되니 이를 활용해 답합니다.\n\n[역할]\n- 일반 질문/지식 응답, 요약, 초안 작성.\n- 오케스트레이션: \"Linear (MCP)\" 로 이슈/문서 조회·생성, \"GitLab 검색\" 으로 사내 GitLab 검색.\n- 사내 데이터: \"Notion 검색\"(일반 문서), \"사내데이터 검색(Elasticsearch)\"(로그/APM/지표).\n\n[컨텍스트 허브 = 진실의 원천(Single Source of Truth)]\n- 우리 회사 모든 자동화가 따라야 하는 진실의 원천은 Notion DB \"🧭 Context Hub — 보맵 컨텍스트\" 입니다.\n- \"컨텍스트 허브\"/\"진실의 원천\"/\"Context Hub\"/\"source of truth\" 를 언급하거나 보맵 제품·서비스·도메인·규제·디자인·시스템 사실 확인이 필요하면, 추측하지 말고 먼저 \"컨텍스트 허브 조회\"로 카드를 찾고 필요하면 \"노션 페이지 읽기\"로 본문을 읽어 근거로 답합니다.\n- 카드의 \"신뢰등급\"을 존중합니다: 확정 > AI추가 > 검토필요. 허브에 없으면 \"허브에 아직 없다\"고 명시하고 다른 도구로 보완합니다.\n\n[도구 사용 가이드 — 정확히 이렇게 호출한다]\n- 모든 도구 호출은 인자를 빠짐없이 채운다(빈 호출·placeholder 인자 금지). 같은 도구를 같은 인자로 반복 호출하지 않는다. 결과가 비거나 오류면 인자를 바꾸거나 다른 도구로 전환하고, 그래도 안 되면 \"찾지 못함/불가\"를 사용자에게 알린다. 충분한 근거를 모으면 즉시 답한다.\n- 컨텍스트 허브 조회: keyword(문자열). 특정 주제면 키워드, 전체 목록이면 빈 문자열. 결과 카드마다 id 가 들어있다.\n- 노션 페이지 읽기: pageId(카드/페이지 UUID). \"컨텍스트 허브 조회\"가 준 카드 id 를 그대로 넣으면 표 포함 본문을 읽는다.\n- 컨텍스트 허브 카드 작성: 허브에 새 카드를 만드는 전용 도구다(생성만 가능, 기존 카드 수정 불가). 인자 topic(주제·필수)/area(제품·디자인·시스템·규제·결정로그)/tier(핵심·디테일)/roles(기획,디자인,개발,QA,마케팅,리서치 콤마구분)/source(출처 URL)/body(본문). 신뢰등급은 자동으로 \"AI추가\" 로 기록된다. 허브에 무언가 기록하려면 반드시 이 도구를 쓴다 — 검색 도구로는 페이지를 만들 수 없다. 먼저 \"컨텍스트 허브 조회\"로 같은 주제 카드가 있는지 확인하고, 있으면 새로 만들지 말고 중복임을 알린다.\n- Notion 검색: query(키워드). 허브 밖 일반 Notion 문서 검색 전용 — 페이지를 생성하지 못한다.\n- Linear (MCP): 하위 도구(list_issues/get_issue/create_issue/save_document/list_projects 등)를 쓴다. 새로 생성할 땐 id 를 넣지 않는다(id 는 기존 항목 수정 전용). 이슈/문서 생성 시 teamId 는 UUID 필수 — Bomapp 팀 = 4ea4291b-6a59-434f-9579-7a36b9760ae6.\n- GitLab 검색: scope(projects|issues|merge_requests|milestones|blobs 중 정확히 하나) + search(키워드).\n- 사내데이터 검색(Elasticsearch): index(예 logs-prod-bomapp-api, logs-prod-*) + query(유효한 ES query DSL 을 JSON 문자열로. 예: {\"size\":20,\"sort\":[{\"@timestamp\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"match\":{\"message\":\"키워드\"}}]}}}). query 는 반드시 파싱 가능한 JSON 이어야 한다.\n\n[규칙]\n- 한국어로 간결·정확하게. 기술 용어는 영문 병기.\n- 사실 확인이 필요하면 반드시 도구로 확인 후 답한다. 추측 금지.\n- 쓰기/변경(Linear 생성·허브 카드 작성 등)은 사용자가 명시적으로 요청했을 때만 수행하고, 무엇을 했는지(만든 항목·링크) 결과에 분명히 보고한다. 요청이 모호하면 실행하지 말고 한 번 되묻는다.\n- 민감정보(시크릿/토큰/개인정보)는 출력하지 않는다.\n- 모르면 모른다고 하고 어떤 도구/정보가 더 필요한지 제안한다.\n- Slack 마크다운: 굵게 *별표하나*, 기울임 _언더스코어_, 코드 백틱."
+          },
+          "promptType": "define",
+          "text": "=아래는 현재 Slack 대화 맥락입니다 (모드 {{ $json.mode }}, 메시지 {{ $json.messageCount }}개, 첨부 {{ $json.fileCount }}개, 이미지 {{ $json.imageCount }}개).\n\n=== 대화 맥락 ===\n{{ $json.transcript }}\n\n=== 사용자의 최신 요청 ===\n{{ $json.question }}\n\n위 맥락을 참고해 한국어로 답하세요. 첨부 이미지의 실제 픽셀은 아직 전달되지 않으니, 이미지 내용 분석이 필요하면 그 사실을 알리고 사용자에게 요청하세요."
+        },
+        "position": [
+          2180,
+          540
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "aws": {
+            "id": "GftVHJqfxQshQZ4P",
+            "name": "AWS (IAM) account"
+          }
+        },
+        "id": "0e62b6e0-5055-467f-89f7-5671d7d3a89f",
+        "name": "Bedrock Claude Sonnet 4.6",
+        "parameters": {
+          "model": "global.anthropic.claude-sonnet-4-6",
+          "modelSource": "inferenceProfile",
+          "options": {
+            "cacheSystemPrompt": true,
+            "cacheTools": true,
+            "cacheTtl": "5m",
+            "enablePromptCaching": true,
+            "maxTokensToSample": 8000,
+            "temperature": 0.3
+          }
+        },
+        "position": [
+          2080,
+          820
+        ],
+        "type": "n8n-nodes-bedrock-advanced.lmChatAwsBedrockAdvanced",
+        "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "httpBearerAuth": {
+            "id": "A9EVg99rnoNtRHa9",
+            "name": "Linear PAT"
+          }
+        },
+        "id": "6a068ed4-d5c0-4368-8e1d-734a4a94741a",
+        "name": "Linear (MCP)",
+        "parameters": {
+          "authentication": "bearerAuth",
+          "endpointUrl": "https://mcp.linear.app/mcp",
+          "include": "all",
+          "serverTransport": "httpStreamable"
+        },
+        "position": [
+          2200,
+          820
+        ],
+        "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "d340e677-32f4-450b-98d6-99eb9c8a3a55",
+        "name": "Notion 검색",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "jsonBody": "={{ JSON.stringify({ query: $fromAI(\"query\", \"Notion에서 찾을 핵심 키워드\", \"string\"), page_size: 8 }) }}",
+          "maxLength": 8000,
+          "method": "POST",
+          "nodeCredentialType": "notionApi",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "responseType": "text",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "specifyHeaders": "keypair",
+          "toolDescription": "Notion 워크스페이스에서 문서/페이지를 키워드로 검색한다. query에 핵심 키워드를 넣어라.",
+          "truncateResponse": true,
+          "url": "https://api.notion.com/v1/search"
+        },
+        "position": [
+          2320,
+          820
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      },
+      {
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "KfGsGBBxzggLur5X",
+            "name": "Gitlab PAT"
+          }
+        },
+        "id": "a65d4cd9-c636-4f75-97d9-f41dc4e1896f",
+        "name": "GitLab 검색",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "maxLength": 8000,
+          "method": "GET",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "scope",
+                "value": "={{ $fromAI(\"scope\", \"검색 범위. projects, issues, merge_requests, milestones, blobs 중 하나\", \"string\") }}"
+              },
+              {
+                "name": "search",
+                "value": "={{ $fromAI(\"search\", \"검색 키워드\", \"string\") }}"
+              }
+            ]
+          },
+          "responseType": "text",
+          "sendQuery": true,
+          "specifyQuery": "keypair",
+          "toolDescription": "사내 GitLab(gitlab.bomapp.co.kr)을 전역 검색한다. scope(projects|issues|merge_requests|milestones|blobs)와 search(키워드)를 지정.",
+          "truncateResponse": true,
+          "url": "https://gitlab.bomapp.co.kr/api/v4/search"
+        },
+        "position": [
+          2440,
+          820
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      },
+      {
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "NvFZWnIb3zlrBL55",
+            "name": "ES API key"
+          }
+        },
+        "id": "81c29a86-5b12-4b8f-ad9a-28ce0df8f1be",
+        "name": "사내데이터 검색(Elasticsearch)",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "genericCredentialType",
+          "contentType": "json",
+          "genericAuthType": "httpHeaderAuth",
+          "jsonBody": "={{ $fromAI(\"query\", \"Elasticsearch query DSL 전체를 JSON 문자열로. 최근 N건이면 size와 sort(@timestamp desc), 텍스트검색이면 query.match 사용\", \"string\") }}",
+          "maxLength": 8000,
+          "method": "POST",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "responseType": "text",
+          "sendBody": true,
+          "specifyBody": "json",
+          "toolDescription": "사내 Elasticsearch 로그/지표를 검색한다. index=인덱스 패턴(logs-{env}-{app}), query=ES query DSL JSON.",
+          "truncateResponse": true,
+          "url": "=https://elastic.bomapp.co.kr:9200/{{ $fromAI(\"index\", \"검색할 인덱스/패턴. 앱 로그는 logs-{env}-{app} 형식(예 logs-prod-bomapp-api 또는 logs-prod-*)\", \"string\") }}/_search"
+        },
+        "position": [
+          2560,
+          820
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "15cec769-e43f-47d6-83a2-690016902e49",
+        "name": "컨텍스트 허브 조회",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "jsonBody": "={{ (function(){ var kw = ($fromAI(\"keyword\", \"Context Hub에서 찾을 주제 키워드. 전체 카드를 보려면 빈 문자열.\", \"string\") || \"\").trim(); var b = { page_size: 40, sorts: [{ property: \"최종 수정\", direction: \"descending\" }] }; if (kw) { b.filter = { property: \"주제\", title: { contains: kw } }; } return JSON.stringify(b); })() }}",
+          "maxLength": 10000,
+          "method": "POST",
+          "nodeCredentialType": "notionApi",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "responseType": "text",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "specifyHeaders": "keypair",
+          "toolDescription": "회사 자동화의 진실의 원천인 Notion \"🧭 Context Hub — 보맵 컨텍스트\" DB의 카드를 조회한다. keyword를 주면 주제로 필터, 비우면 전체 카드(주제·영역·계층·신뢰등급·출처·id)를 최신순 반환. 카드 본문이 필요하면 반환된 id를 \"노션 페이지 읽기\" 툴에 넘긴다.",
+          "truncateResponse": true,
+          "url": "https://api.notion.com/v1/databases/3a6975952ad54380bc580901e079a7f7/query"
+        },
+        "position": [
+          2680,
+          820
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      },
+      {
+        "id": "5c649fbe-ab16-4f2b-8607-81d38d20b143",
+        "name": "노션 페이지 읽기",
+        "parameters": {
+          "description": "Notion 페이지나 Context Hub 카드의 전체 본문(표 포함)을 깊이 읽어 마크다운으로 반환한다. pageId에 페이지/카드 UUID를 넘긴다. \"컨텍스트 허브 조회\"로 찾은 카드의 id를 여기에 넣어 본문을 읽는다.",
+          "source": "database",
+          "workflowId": {
+            "__rl": true,
+            "cachedResultName": "Overmind · Notion 페이지 전문 읽기(표 포함)",
+            "mode": "id",
+            "value": "QHVMJ3uFEwlzumw3"
+          },
+          "workflowInputs": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": true,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "schema": [
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pageId",
+                "id": "pageId",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "pageId": "={{ $fromAI(\"pageId\", \"읽을 Notion 페이지 또는 Context Hub 카드의 ID(UUID, 하이픈 유무 무관)\", \"string\") }}"
+            }
+          }
+        },
+        "position": [
+          2800,
+          820
+        ],
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "8849e0bc-d146-41e9-9df4-bc17e855cc58",
+        "name": "답변 갱신",
+        "parameters": {
+          "channelId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "={{ $(\"입력 정규화\").item.json.channel }}"
+          },
+          "messageType": "text",
+          "operation": "update",
+          "otherOptions": {
+            "includeLinkToWorkflow": false
+          },
+          "resource": "message",
+          "text": "={{ $json.output ?? \"⚠️ 처리 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.\" }}",
+          "ts": "={{ $(\"생각중 표시\").item.json.message.ts ?? $(\"생각중 표시\").item.json.message_timestamp }}"
+        },
+        "position": [
+          2400,
+          540
+        ],
+        "type": "n8n-nodes-base.slack",
+        "typeVersion": 2.4,
+        "webhookId": "340c9571-9356-4926-bcc4-84ad81e3a2f2"
+      },
+      {
+        "credentials": {
+          "notionApi": {
+            "id": "b03vHUApw6s0O5jS",
+            "name": "Notion account"
+          }
+        },
+        "id": "8967d0c9-b606-4fc2-b01d-722a3f05f516",
+        "name": "컨텍스트 허브 카드 작성",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Notion-Version",
+                "value": "2022-06-28"
+              }
+            ]
+          },
+          "jsonBody": "={{ (function(){ var topic=($fromAI(\"topic\",\"카드 제목(주제). 한 카드=한 주제.\",\"string\")||\"\").trim(); var area=($fromAI(\"area\",\"영역: 제품/디자인/시스템/규제/결정로그 중 하나(모르면 결정로그)\",\"string\")||\"\").trim(); var tier=($fromAI(\"tier\",\"계층: 핵심 또는 디테일(기본 디테일)\",\"string\")||\"\").trim(); var roles=($fromAI(\"roles\",\"관련 직무: 기획,디자인,개발,QA,마케팅,리서치 중 콤마구분(없으면 빈값)\",\"string\")||\"\").trim(); var source=($fromAI(\"source\",\"출처 URL(Slack 퍼머링크/Linear 문서 등, 없으면 빈값)\",\"string\")||\"\").trim(); var body=($fromAI(\"body\",\"카드 본문(마크다운/평문). 핵심 사실 위주.\",\"string\")||\"\").trim(); var props={}; props[\"주제\"]={title:[{text:{content:topic.slice(0,2000)}}]}; props[\"신뢰등급\"]={select:{name:\"AI추가\"}}; var areas={\"제품\":1,\"디자인\":1,\"시스템\":1,\"규제\":1,\"결정로그\":1}; props[\"영역\"]={select:{name:(areas[area]?area:\"결정로그\")}}; props[\"계층\"]={select:{name:(tier===\"핵심\"?\"핵심\":\"디테일\")}}; if(roles){var allow={\"기획\":1,\"디자인\":1,\"개발\":1,\"QA\":1,\"마케팅\":1,\"리서치\":1}; var ms=roles.split(\",\").map(function(s){return s.trim();}).filter(function(s){return allow[s];}).map(function(s){return {name:s};}); if(ms.length)props[\"관련 직무\"]={multi_select:ms};} if(source&&source.indexOf(\"http\")===0)props[\"출처\"]={url:source}; var children=[]; var b=body||\"(본문 없음)\"; for(var i=0;i<b.length&&i<8000;i+=1900){children.push({object:\"block\",type:\"paragraph\",paragraph:{rich_text:[{type:\"text\",text:{content:b.slice(i,i+1900)}}]}});} return JSON.stringify({parent:{database_id:\"3a6975952ad54380bc580901e079a7f7\"},properties:props,children:children}); })() }}",
+          "maxLength": 4000,
+          "method": "POST",
+          "nodeCredentialType": "notionApi",
+          "optimizeResponse": true,
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          },
+          "responseType": "text",
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "specifyHeaders": "keypair",
+          "toolDescription": "컨텍스트 허브(🧭 Context Hub — 보맵 컨텍스트 DB)에 새 카드를 생성한다(생성 전용, 기존 카드 수정 불가). 인자: topic(주제·필수), area(제품/디자인/시스템/규제/결정로그), tier(핵심/디테일), roles(기획,디자인,개발,QA,마케팅,리서치 콤마), source(출처 URL), body(본문). 신뢰등급은 자동 'AI추가'. 허브 기록은 반드시 이 도구로(검색 도구로는 생성 불가).",
+          "truncateResponse": true,
+          "url": "https://api.notion.com/v1/pages"
+        },
+        "position": [
+          2920,
+          820
+        ],
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.4
+      }
+    ],
+    "updatedAt": "2026-06-29T07:40:00.030Z",
+    "versionId": "3ed9b8e1-52de-49a2-88af-38cda9799903",
+    "workflowId": "hOsWherqkbKRzGH1",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-29T07:40:00.116Z",
+        "event": "deactivated",
+        "id": 314,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "3ed9b8e1-52de-49a2-88af-38cda9799903",
+        "workflowId": "hOsWherqkbKRzGH1"
+      },
+      {
+        "createdAt": "2026-06-29T07:40:00.144Z",
+        "event": "activated",
+        "id": 315,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "3ed9b8e1-52de-49a2-88af-38cda9799903",
+        "workflowId": "hOsWherqkbKRzGH1"
+      },
+      {
+        "createdAt": "2026-06-29T07:40:05.667Z",
+        "event": "deactivated",
+        "id": 316,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "3ed9b8e1-52de-49a2-88af-38cda9799903",
+        "workflowId": "hOsWherqkbKRzGH1"
+      },
+      {
+        "createdAt": "2026-06-29T07:40:05.690Z",
+        "event": "activated",
+        "id": 317,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "3ed9b8e1-52de-49a2-88af-38cda9799903",
+        "workflowId": "hOsWherqkbKRzGH1"
+      }
+    ]
+  },
+  "activeVersionId": "3ed9b8e1-52de-49a2-88af-38cda9799903",
+  "connections": {
+    "Bedrock Claude Sonnet 4.6": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    },
+    "BotmapAgent": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "답변 갱신",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "GitLab 검색": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
+    "Linear (MCP)": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
+    "Notion 검색": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
+    "Slack 이벤트 수신": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "URL 검증?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "URL 검증?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "검증 응답",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "이벤트 ack",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "노션 페이지 읽기": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
+    "맥락 구성": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "사내데이터 검색(Elasticsearch)": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
+    "생각중 표시": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "스레드에서 호출?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스레드 읽기": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "맥락 구성",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "스레드에서 호출?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "스레드 읽기",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "채널 최근 읽기",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "이벤트 ack": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "처리 대상?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "입력 정규화": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "생각중 표시",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "채널 최근 읽기": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "맥락 구성",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "처리 대상?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "입력 정규화",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "컨텍스트 허브 조회": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
+    "컨텍스트 허브 카드 작성": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "BotmapAgent",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-06-26T01:57:53.781Z",
+  "description": "@봇맵 멘션+DM(message.im) 동일 처리. 💭 placeholder→스레드/채널/DM 맥락+컨텍스트 허브(진실의 원천) 조회/노션 페이지 읽기 툴로 그라운딩→Bedrock Sonnet 4.6 에이전트(Linear MCP/Notion/GitLab/ES/Hub)→chat.update. 필터: DM 수락+루프가드.",
+  "id": "hOsWherqkbKRzGH1",
+  "isArchived": false,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "name": "봇맵 (Botmap) Slack 에이전트",
+  "nodes": [
+    {
+      "id": "4daad9cb-947e-4a0e-9bd1-5f9f9c50be70",
+      "name": "Slack 이벤트 수신",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "botmap-slack-events",
+        "responseMode": "responseNode"
+      },
+      "position": [
+        240,
+        420
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "webhookId": "876b5b33-9f72-4b3a-858d-95c77b302992"
+    },
+    {
+      "id": "40a85dfc-9975-46a2-b678-f63e609fc880",
+      "name": "URL 검증?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "v",
+              "leftValue": "={{ $json.body.type }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "url_verification"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          }
+        }
+      },
+      "position": [
+        460,
+        420
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "deb08e30-3b26-44ac-84fc-3a0da6d8d01f",
+      "name": "검증 응답",
+      "parameters": {
+        "options": {
+          "enableStreaming": false
+        },
+        "respondWith": "text",
+        "responseBody": "={{ $json.body.challenge }}"
+      },
+      "position": [
+        680,
+        280
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5
+    },
+    {
+      "id": "dccc4820-0414-4dd5-a17b-fbb7682a8094",
+      "name": "이벤트 ack",
+      "parameters": {
+        "options": {
+          "enableStreaming": false
+        },
+        "respondWith": "text",
+        "responseBody": "ok"
+      },
+      "position": [
+        680,
+        540
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5
+    },
+    {
+      "id": "94ab44c1-01c2-4ceb-9d5d-5469afa978e9",
+      "name": "처리 대상?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "target",
+              "leftValue": "={{ (function(){ var e = ($(\"Slack 이벤트 수신\").item.json.body && $(\"Slack 이벤트 수신\").item.json.body.event) || {}; var h = $(\"Slack 이벤트 수신\").item.json.headers || {}; var allowed = (e.type === \"app_mention\") || (e.type === \"message\" && e.channel_type === \"im\"); var notRetry = (h[\"x-slack-retry-num\"] === undefined || h[\"x-slack-retry-num\"] === null || h[\"x-slack-retry-num\"] === \"\"); var notBot = ((e.bot_id || \"\") === \"\"); var sub = (e.subtype || \"\"); var okSubtype = (sub === \"\" || sub === \"file_share\"); return allowed && notRetry && notBot && okSubtype; })() }}",
+              "operator": {
+                "operation": "true",
+                "singleValue": true,
+                "type": "boolean"
+              }
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          }
+        }
+      },
+      "position": [
+        900,
+        540
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "266aaac0-7b40-4210-b468-3eb1d4dda31c",
+      "name": "입력 정규화",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "q",
+              "name": "question",
+              "type": "string",
+              "value": "={{ ($(\"Slack 이벤트 수신\").item.json.body.event.text ?? \"\").replace(/<@[^>]+>/g, \"\").trim() }}"
+            },
+            {
+              "id": "ch",
+              "name": "channel",
+              "type": "string",
+              "value": "={{ $(\"Slack 이벤트 수신\").item.json.body.event.channel ?? \"\" }}"
+            },
+            {
+              "id": "tt",
+              "name": "threadTs",
+              "type": "string",
+              "value": "={{ $(\"Slack 이벤트 수신\").item.json.body.event.thread_ts ?? $(\"Slack 이벤트 수신\").item.json.body.event.ts ?? \"\" }}"
+            },
+            {
+              "id": "usr",
+              "name": "userId",
+              "type": "string",
+              "value": "={{ $(\"Slack 이벤트 수신\").item.json.body.event.user ?? \"\" }}"
+            },
+            {
+              "id": "tm",
+              "name": "threadMode",
+              "type": "string",
+              "value": "={{ $(\"Slack 이벤트 수신\").item.json.body.event.thread_ts ? \"thread\" : \"channel\" }}"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "mode": "manual"
+      },
+      "position": [
+        1120,
+        540
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "51c3ee43-54d4-40a1-a94a-03ac4ab9b3b3",
+      "name": "생각중 표시",
+      "parameters": {
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"입력 정규화\").item.json.channel }}"
+        },
+        "messageType": "text",
+        "operation": "post",
+        "otherOptions": {
+          "includeLinkToWorkflow": false,
+          "thread_ts": {
+            "replyValues": {
+              "thread_ts": "={{ $(\"입력 정규화\").item.json.threadTs }}"
+            }
+          }
+        },
+        "resource": "message",
+        "select": "channel",
+        "text": "💭 _생각하는 중…_"
+      },
+      "position": [
+        1320,
+        540
+      ],
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "webhookId": "118b50c2-2782-42c9-92f5-6865be588e78"
+    },
+    {
+      "id": "af00902b-78d9-4463-842c-ecd28d2df067",
+      "name": "스레드에서 호출?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "t",
+              "leftValue": "={{ $(\"입력 정규화\").item.json.threadMode }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "thread"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          }
+        }
+      },
+      "position": [
+        1520,
+        540
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "07018019-942d-4003-a378-59eb599968f4",
+      "name": "스레드 읽기",
+      "parameters": {
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"입력 정규화\").item.json.channel }}"
+        },
+        "limit": 30,
+        "operation": "replies",
+        "resource": "channel",
+        "returnAll": false,
+        "ts": "={{ $(\"입력 정규화\").item.json.threadTs }}"
+      },
+      "position": [
+        1740,
+        440
+      ],
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "webhookId": "66033959-6708-4e91-acc0-fa7941f7451d"
+    },
+    {
+      "id": "4c208d80-a22b-4c4a-aee6-d6e92d62c949",
+      "name": "맥락 구성",
+      "parameters": {
+        "jsCode": "const meta = $('입력 정규화').first().json; const items = $input.all(); const msgs = items.map(function(i){ return i.json; }); msgs.sort(function(a,b){ return Number(a.ts||0) - Number(b.ts||0); }); const NL = String.fromCharCode(10); const lines = []; const images = []; const files = []; for (const m of msgs) { const who = m.user || m.username || (m.bot_profile && m.bot_profile.name) || m.bot_id || 'unknown'; const txt = (m.text || '').replace(/<@[^>]+>/g, '').trim(); let line = '[' + who + '] ' + txt; if (Array.isArray(m.files)) { for (const f of m.files) { const mt = f.mimetype || f.filetype || 'file'; line = line + '  [첨부: ' + (f.name || 'file') + ' (' + mt + ') ' + (f.permalink || f.url_private || '') + ']'; const rec = { name: f.name, mimetype: mt, url: f.url_private, permalink: f.permalink }; files.push(rec); if (String(mt).indexOf('image/') === 0) { images.push(rec); } } } lines.push(line); } const transcript = lines.join(NL); return [{ json: { transcript: transcript, question: meta.question, channel: meta.channel, threadTs: meta.threadTs, mode: meta.threadMode, messageCount: msgs.length, fileCount: files.length, imageCount: images.length, images: images, files: files } }];",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        1960,
+        540
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "ae5a6fd5-13ea-45ef-ad3e-8c299e94c1f8",
+      "name": "채널 최근 읽기",
+      "parameters": {
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"입력 정규화\").item.json.channel }}"
+        },
+        "limit": 10,
+        "operation": "history",
+        "resource": "channel",
+        "returnAll": false
+      },
+      "position": [
+        1740,
+        660
+      ],
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "webhookId": "e7959009-6c9e-4088-90a5-b8d66a3ecc78"
+    },
+    {
+      "id": "cb99b961-75fd-431a-aefc-a00da999e4ba",
+      "name": "BotmapAgent",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "options": {
+          "enableStreaming": false,
+          "maxIterations": 50,
+          "systemMessage": "당신은 \"봇맵(Botmap)\"입니다. 보맵(BOMAPP) 보험 도메인 마이크로서비스 팀을 돕는 Slack 어시스턴트입니다. 사용자 메시지에는 현재 Slack 스레드/채널의 대화 맥락(transcript)이 함께 제공되니 이를 활용해 답합니다.\n\n[역할]\n- 일반 질문/지식 응답, 요약, 초안 작성.\n- 오케스트레이션: \"Linear (MCP)\" 로 이슈/문서 조회·생성, \"GitLab 검색\" 으로 사내 GitLab 검색.\n- 사내 데이터: \"Notion 검색\"(일반 문서), \"사내데이터 검색(Elasticsearch)\"(로그/APM/지표).\n\n[컨텍스트 허브 = 진실의 원천(Single Source of Truth)]\n- 우리 회사 모든 자동화가 따라야 하는 진실의 원천은 Notion DB \"🧭 Context Hub — 보맵 컨텍스트\" 입니다.\n- \"컨텍스트 허브\"/\"진실의 원천\"/\"Context Hub\"/\"source of truth\" 를 언급하거나 보맵 제품·서비스·도메인·규제·디자인·시스템 사실 확인이 필요하면, 추측하지 말고 먼저 \"컨텍스트 허브 조회\"로 카드를 찾고 필요하면 \"노션 페이지 읽기\"로 본문을 읽어 근거로 답합니다.\n- 카드의 \"신뢰등급\"을 존중합니다: 확정 > AI추가 > 검토필요. 허브에 없으면 \"허브에 아직 없다\"고 명시하고 다른 도구로 보완합니다.\n\n[도구 사용 가이드 — 정확히 이렇게 호출한다]\n- 모든 도구 호출은 인자를 빠짐없이 채운다(빈 호출·placeholder 인자 금지). 같은 도구를 같은 인자로 반복 호출하지 않는다. 결과가 비거나 오류면 인자를 바꾸거나 다른 도구로 전환하고, 그래도 안 되면 \"찾지 못함/불가\"를 사용자에게 알린다. 충분한 근거를 모으면 즉시 답한다.\n- 컨텍스트 허브 조회: keyword(문자열). 특정 주제면 키워드, 전체 목록이면 빈 문자열. 결과 카드마다 id 가 들어있다.\n- 노션 페이지 읽기: pageId(카드/페이지 UUID). \"컨텍스트 허브 조회\"가 준 카드 id 를 그대로 넣으면 표 포함 본문을 읽는다.\n- 컨텍스트 허브 카드 작성: 허브에 새 카드를 만드는 전용 도구다(생성만 가능, 기존 카드 수정 불가). 인자 topic(주제·필수)/area(제품·디자인·시스템·규제·결정로그)/tier(핵심·디테일)/roles(기획,디자인,개발,QA,마케팅,리서치 콤마구분)/source(출처 URL)/body(본문). 신뢰등급은 자동으로 \"AI추가\" 로 기록된다. 허브에 무언가 기록하려면 반드시 이 도구를 쓴다 — 검색 도구로는 페이지를 만들 수 없다. 먼저 \"컨텍스트 허브 조회\"로 같은 주제 카드가 있는지 확인하고, 있으면 새로 만들지 말고 중복임을 알린다.\n- Notion 검색: query(키워드). 허브 밖 일반 Notion 문서 검색 전용 — 페이지를 생성하지 못한다.\n- Linear (MCP): 하위 도구(list_issues/get_issue/create_issue/save_document/list_projects 등)를 쓴다. 새로 생성할 땐 id 를 넣지 않는다(id 는 기존 항목 수정 전용). 이슈/문서 생성 시 teamId 는 UUID 필수 — Bomapp 팀 = 4ea4291b-6a59-434f-9579-7a36b9760ae6.\n- GitLab 검색: scope(projects|issues|merge_requests|milestones|blobs 중 정확히 하나) + search(키워드).\n- 사내데이터 검색(Elasticsearch): index(예 logs-prod-bomapp-api, logs-prod-*) + query(유효한 ES query DSL 을 JSON 문자열로. 예: {\"size\":20,\"sort\":[{\"@timestamp\":{\"order\":\"desc\"}}],\"query\":{\"bool\":{\"must\":[{\"match\":{\"message\":\"키워드\"}}]}}}). query 는 반드시 파싱 가능한 JSON 이어야 한다.\n\n[규칙]\n- 한국어로 간결·정확하게. 기술 용어는 영문 병기.\n- 사실 확인이 필요하면 반드시 도구로 확인 후 답한다. 추측 금지.\n- 쓰기/변경(Linear 생성·허브 카드 작성 등)은 사용자가 명시적으로 요청했을 때만 수행하고, 무엇을 했는지(만든 항목·링크) 결과에 분명히 보고한다. 요청이 모호하면 실행하지 말고 한 번 되묻는다.\n- 민감정보(시크릿/토큰/개인정보)는 출력하지 않는다.\n- 모르면 모른다고 하고 어떤 도구/정보가 더 필요한지 제안한다.\n- Slack 마크다운: 굵게 *별표하나*, 기울임 _언더스코어_, 코드 백틱."
+        },
+        "promptType": "define",
+        "text": "=아래는 현재 Slack 대화 맥락입니다 (모드 {{ $json.mode }}, 메시지 {{ $json.messageCount }}개, 첨부 {{ $json.fileCount }}개, 이미지 {{ $json.imageCount }}개).\n\n=== 대화 맥락 ===\n{{ $json.transcript }}\n\n=== 사용자의 최신 요청 ===\n{{ $json.question }}\n\n위 맥락을 참고해 한국어로 답하세요. 첨부 이미지의 실제 픽셀은 아직 전달되지 않으니, 이미지 내용 분석이 필요하면 그 사실을 알리고 사용자에게 요청하세요."
+      },
+      "position": [
+        2180,
+        540
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1
+    },
+    {
+      "credentials": {
+        "aws": {
+          "id": "GftVHJqfxQshQZ4P",
+          "name": "AWS (IAM) account"
+        }
+      },
+      "id": "0e62b6e0-5055-467f-89f7-5671d7d3a89f",
+      "name": "Bedrock Claude Sonnet 4.6",
+      "parameters": {
+        "model": "global.anthropic.claude-sonnet-4-6",
+        "modelSource": "inferenceProfile",
+        "options": {
+          "cacheSystemPrompt": true,
+          "cacheTools": true,
+          "cacheTtl": "5m",
+          "enablePromptCaching": true,
+          "maxTokensToSample": 8000,
+          "temperature": 0.3
+        }
+      },
+      "position": [
+        2080,
+        820
+      ],
+      "type": "n8n-nodes-bedrock-advanced.lmChatAwsBedrockAdvanced",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "A9EVg99rnoNtRHa9",
+          "name": "Linear PAT"
+        }
+      },
+      "id": "6a068ed4-d5c0-4368-8e1d-734a4a94741a",
+      "name": "Linear (MCP)",
+      "parameters": {
+        "authentication": "bearerAuth",
+        "endpointUrl": "https://mcp.linear.app/mcp",
+        "include": "all",
+        "serverTransport": "httpStreamable"
+      },
+      "position": [
+        2200,
+        820
+      ],
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "d340e677-32f4-450b-98d6-99eb9c8a3a55",
+      "name": "Notion 검색",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "={{ JSON.stringify({ query: $fromAI(\"query\", \"Notion에서 찾을 핵심 키워드\", \"string\"), page_size: 8 }) }}",
+        "maxLength": 8000,
+        "method": "POST",
+        "nodeCredentialType": "notionApi",
+        "optimizeResponse": true,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "responseType": "text",
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "keypair",
+        "toolDescription": "Notion 워크스페이스에서 문서/페이지를 키워드로 검색한다. query에 핵심 키워드를 넣어라.",
+        "truncateResponse": true,
+        "url": "https://api.notion.com/v1/search"
+      },
+      "position": [
+        2320,
+        820
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "KfGsGBBxzggLur5X",
+          "name": "Gitlab PAT"
+        }
+      },
+      "id": "a65d4cd9-c636-4f75-97d9-f41dc4e1896f",
+      "name": "GitLab 검색",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "maxLength": 8000,
+        "method": "GET",
+        "optimizeResponse": true,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "scope",
+              "value": "={{ $fromAI(\"scope\", \"검색 범위. projects, issues, merge_requests, milestones, blobs 중 하나\", \"string\") }}"
+            },
+            {
+              "name": "search",
+              "value": "={{ $fromAI(\"search\", \"검색 키워드\", \"string\") }}"
+            }
+          ]
+        },
+        "responseType": "text",
+        "sendQuery": true,
+        "specifyQuery": "keypair",
+        "toolDescription": "사내 GitLab(gitlab.bomapp.co.kr)을 전역 검색한다. scope(projects|issues|merge_requests|milestones|blobs)와 search(키워드)를 지정.",
+        "truncateResponse": true,
+        "url": "https://gitlab.bomapp.co.kr/api/v4/search"
+      },
+      "position": [
+        2440,
+        820
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "NvFZWnIb3zlrBL55",
+          "name": "ES API key"
+        }
+      },
+      "id": "81c29a86-5b12-4b8f-ad9a-28ce0df8f1be",
+      "name": "사내데이터 검색(Elasticsearch)",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "contentType": "json",
+        "genericAuthType": "httpHeaderAuth",
+        "jsonBody": "={{ $fromAI(\"query\", \"Elasticsearch query DSL 전체를 JSON 문자열로. 최근 N건이면 size와 sort(@timestamp desc), 텍스트검색이면 query.match 사용\", \"string\") }}",
+        "maxLength": 8000,
+        "method": "POST",
+        "optimizeResponse": true,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "responseType": "text",
+        "sendBody": true,
+        "specifyBody": "json",
+        "toolDescription": "사내 Elasticsearch 로그/지표를 검색한다. index=인덱스 패턴(logs-{env}-{app}), query=ES query DSL JSON.",
+        "truncateResponse": true,
+        "url": "=https://elastic.bomapp.co.kr:9200/{{ $fromAI(\"index\", \"검색할 인덱스/패턴. 앱 로그는 logs-{env}-{app} 형식(예 logs-prod-bomapp-api 또는 logs-prod-*)\", \"string\") }}/_search"
+      },
+      "position": [
+        2560,
+        820
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "15cec769-e43f-47d6-83a2-690016902e49",
+      "name": "컨텍스트 허브 조회",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "={{ (function(){ var kw = ($fromAI(\"keyword\", \"Context Hub에서 찾을 주제 키워드. 전체 카드를 보려면 빈 문자열.\", \"string\") || \"\").trim(); var b = { page_size: 40, sorts: [{ property: \"최종 수정\", direction: \"descending\" }] }; if (kw) { b.filter = { property: \"주제\", title: { contains: kw } }; } return JSON.stringify(b); })() }}",
+        "maxLength": 10000,
+        "method": "POST",
+        "nodeCredentialType": "notionApi",
+        "optimizeResponse": true,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "responseType": "text",
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "keypair",
+        "toolDescription": "회사 자동화의 진실의 원천인 Notion \"🧭 Context Hub — 보맵 컨텍스트\" DB의 카드를 조회한다. keyword를 주면 주제로 필터, 비우면 전체 카드(주제·영역·계층·신뢰등급·출처·id)를 최신순 반환. 카드 본문이 필요하면 반환된 id를 \"노션 페이지 읽기\" 툴에 넘긴다.",
+        "truncateResponse": true,
+        "url": "https://api.notion.com/v1/databases/3a6975952ad54380bc580901e079a7f7/query"
+      },
+      "position": [
+        2680,
+        820
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "5c649fbe-ab16-4f2b-8607-81d38d20b143",
+      "name": "노션 페이지 읽기",
+      "parameters": {
+        "description": "Notion 페이지나 Context Hub 카드의 전체 본문(표 포함)을 깊이 읽어 마크다운으로 반환한다. pageId에 페이지/카드 UUID를 넘긴다. \"컨텍스트 허브 조회\"로 찾은 카드의 id를 여기에 넣어 본문을 읽는다.",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "Overmind · Notion 페이지 전문 읽기(표 포함)",
+          "mode": "id",
+          "value": "QHVMJ3uFEwlzumw3"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": false,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "pageId",
+              "id": "pageId",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "pageId": "={{ $fromAI(\"pageId\", \"읽을 Notion 페이지 또는 Context Hub 카드의 ID(UUID, 하이픈 유무 무관)\", \"string\") }}"
+          }
+        }
+      },
+      "position": [
+        2800,
+        820
+      ],
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "8849e0bc-d146-41e9-9df4-bc17e855cc58",
+      "name": "답변 갱신",
+      "parameters": {
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"입력 정규화\").item.json.channel }}"
+        },
+        "messageType": "text",
+        "operation": "update",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        },
+        "resource": "message",
+        "text": "={{ $json.output ?? \"⚠️ 처리 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.\" }}",
+        "ts": "={{ $(\"생각중 표시\").item.json.message.ts ?? $(\"생각중 표시\").item.json.message_timestamp }}"
+      },
+      "position": [
+        2400,
+        540
+      ],
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "webhookId": "340c9571-9356-4926-bcc4-84ad81e3a2f2"
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "8967d0c9-b606-4fc2-b01d-722a3f05f516",
+      "name": "컨텍스트 허브 카드 작성",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "={{ (function(){ var topic=($fromAI(\"topic\",\"카드 제목(주제). 한 카드=한 주제.\",\"string\")||\"\").trim(); var area=($fromAI(\"area\",\"영역: 제품/디자인/시스템/규제/결정로그 중 하나(모르면 결정로그)\",\"string\")||\"\").trim(); var tier=($fromAI(\"tier\",\"계층: 핵심 또는 디테일(기본 디테일)\",\"string\")||\"\").trim(); var roles=($fromAI(\"roles\",\"관련 직무: 기획,디자인,개발,QA,마케팅,리서치 중 콤마구분(없으면 빈값)\",\"string\")||\"\").trim(); var source=($fromAI(\"source\",\"출처 URL(Slack 퍼머링크/Linear 문서 등, 없으면 빈값)\",\"string\")||\"\").trim(); var body=($fromAI(\"body\",\"카드 본문(마크다운/평문). 핵심 사실 위주.\",\"string\")||\"\").trim(); var props={}; props[\"주제\"]={title:[{text:{content:topic.slice(0,2000)}}]}; props[\"신뢰등급\"]={select:{name:\"AI추가\"}}; var areas={\"제품\":1,\"디자인\":1,\"시스템\":1,\"규제\":1,\"결정로그\":1}; props[\"영역\"]={select:{name:(areas[area]?area:\"결정로그\")}}; props[\"계층\"]={select:{name:(tier===\"핵심\"?\"핵심\":\"디테일\")}}; if(roles){var allow={\"기획\":1,\"디자인\":1,\"개발\":1,\"QA\":1,\"마케팅\":1,\"리서치\":1}; var ms=roles.split(\",\").map(function(s){return s.trim();}).filter(function(s){return allow[s];}).map(function(s){return {name:s};}); if(ms.length)props[\"관련 직무\"]={multi_select:ms};} if(source&&source.indexOf(\"http\")===0)props[\"출처\"]={url:source}; var children=[]; var b=body||\"(본문 없음)\"; for(var i=0;i<b.length&&i<8000;i+=1900){children.push({object:\"block\",type:\"paragraph\",paragraph:{rich_text:[{type:\"text\",text:{content:b.slice(i,i+1900)}}]}});} return JSON.stringify({parent:{database_id:\"3a6975952ad54380bc580901e079a7f7\"},properties:props,children:children}); })() }}",
+        "maxLength": 4000,
+        "method": "POST",
+        "nodeCredentialType": "notionApi",
+        "optimizeResponse": true,
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "responseType": "text",
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "keypair",
+        "toolDescription": "컨텍스트 허브(🧭 Context Hub — 보맵 컨텍스트 DB)에 새 카드를 생성한다(생성 전용, 기존 카드 수정 불가). 인자: topic(주제·필수), area(제품/디자인/시스템/규제/결정로그), tier(핵심/디테일), roles(기획,디자인,개발,QA,마케팅,리서치 콤마), source(출처 URL), body(본문). 신뢰등급은 자동 'AI추가'. 허브 기록은 반드시 이 도구로(검색 도구로는 생성 불가).",
+        "truncateResponse": true,
+        "url": "https://api.notion.com/v1/pages"
+      },
+      "position": [
+        2920,
+        820
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "availableInMCP": true,
+    "binaryMode": "separate",
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2026-06-26T01:57:53.781Z",
+      "project": {
+        "createdAt": "2026-05-27T07:22:23.960Z",
+        "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "description": null,
+        "icon": null,
+        "id": "501Q7eGEKoHjxZfp",
+        "name": "재은 김 <justin@bomapp.co.kr>",
+        "type": "personal",
+        "updatedAt": "2026-05-27T07:24:05.558Z"
+      },
+      "projectId": "501Q7eGEKoHjxZfp",
+      "role": "workflow:owner",
+      "updatedAt": "2026-06-26T01:57:53.781Z",
+      "workflowId": "hOsWherqkbKRzGH1"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2026-06-29T07:40:00.028Z",
+  "versionCounter": 51,
+  "versionId": "3ed9b8e1-52de-49a2-88af-38cda9799903"
+}
