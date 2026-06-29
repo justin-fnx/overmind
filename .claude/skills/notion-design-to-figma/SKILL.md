@@ -115,6 +115,7 @@ description: >-
 - 컨테이너 = `figma.createAutoLayout`(pill·CTA·비교막대), 차트 = 솔리드 채움 + 상태 컬러밴드(rect opacity) + rounded 막대(`topLeftRadius/topRightRadius`) + 콜아웃 배지/마커.
 - 큰 수치 정렬 = `counterAxisAlignItems:'BASELINE'`, 텍스트 부분강조 = `setRangeFills`+`setRangeFontName`.
 - 폰트 = **Noto Sans KR**(Bold/Medium/Regular 확인됨; Pretendard 미설치 → 미리보기 Noto, **최종 Pretendard 스왑 명시**).
+- **색 대비(WCAG AA)를 빌드 시 확보**(리뷰 상습 결함 선제 차단): 채도 높은 상태색 warn `#FF8A00`·safe `#12B886`은 **막대·아이콘 등 비텍스트 그래픽에만** 쓰고, **텍스트·수치·상태 라벨엔 darker 변형**(오렌지→`#C2410C`대, 그린→`#0E7C5A`대, 밝은 배경서 ≥4.5:1)을 쓴다. 회색 캡션은 `#8A94A6`(흰/연배경 ~2.8~3:1 미달) 대신 본문급은 `#3B4252`(ink2). 9px 같은 초소형 텍스트 금지(≥11~12). 상태는 **색 + 텍스트 라벨 이중 인코딩**. (검수 기준은 `design-review` 스킬.)
 - 빌드는 **화면당 ~6콜**로 쪼개 **≤10오브젝트/콜**(초과 시 타임아웃·원자적 롤백) + 중간 `get_screenshot`(URL→`curl`→`Read`)로 픽셀 검증. `textAutoResize`는 'WIDTH' 없음('WIDTH_AND_HEIGHT'/'HEIGHT').
 
 > `upload_assets`(→ multipart `file` POST) 이미지 업로드는 **raster 일러스트를 네이티브 프레임 안에 끼워 넣을 때만** 쓴다(STEP 3 일러스트). **화면 전체를 렌더 PNG로 올리는 방식은 금지** — 편집·컴포넌트 분리가 막힌다.
