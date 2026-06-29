@@ -4,18 +4,24 @@ description: >-
   BOMAPP(보맵) 디자인 태스크를 노션 작업지시서로부터 읽어 Figma에 온브랜드 화면/시안으로 구현할 때 사용한다.
   트리거: 노션 디자인 태스크(타입=디자인)·작업 정의서 URL이 주어지고 목표가 Figma 화면 제작일 때.
   포함: 노션 Context Hub + 연결 태스크 선독, BDS 디자인 시스템 + 화면취합(마스터) 그라운딩,
-  코드-퍼스트(HTML→헤드리스 렌더→Figma 업로드) 고품질 워크플로우, 실제 보맵 3D 에셋 재사용/Bedrock SD3.5
+  Figma 산출물은 항상 use_figma 네이티브 컴포넌트(프레임·텍스트·벡터·Component)로 구성(화면 전체 평면 이미지 업로드 금지),
+  코드-퍼스트 HTML 렌더는 시각 레퍼런스 보조로만 사용, 실제 보맵 3D 에셋 재사용/Bedrock SD3.5
   온브랜드 일러스트 생성, 버전별 페이지 분리 포팅. (상세 IDs는 메모리 reference_bomapp_bds_figma_design 와 동기화)
 ---
 
 # 노션 작업지시서 → Figma 구현 (BOMAPP 디자인 자동화)
 
 보맵 디자인 태스크를 **무에서 그리지 말고**, 노션 컨텍스트 + 실제 보맵 디자인 시스템/화면에 그라운딩해
-**코드-퍼스트**로 고품질 시안을 만들고 Figma에 비교 가능하게 포팅한다.
+**Figma 네이티브 컴포넌트**(프레임·텍스트·벡터·Component)로 고품질 시안을 짓고, 버전별 페이지로 비교 가능하게 둔다.
 
-> 핵심 교훈: Claude는 Figma 플러그인 API로 "박스를 그리는" 비주얼 craft가 약하다. 대신 **HTML/CSS 코드(강점) →
-> 헤드리스 Chrome 렌더 → Figma 이미지 업로드** 경로가 압도적으로 품질이 높다. 또 Figma MCP 환경엔 **Pretendard가
-> 없어** 네이티브로 그리면 폰트가 Noto로 회귀해 품질이 깎인다(코드 경로는 웹폰트로 실제 Pretendard 사용).
+> 🚩 **절대 원칙: Figma 산출물은 무조건 `use_figma` 네이티브 노드로 구성한다.** 화면을 렌더 이미지(PNG)로
+> 업로드해 "평면 한 장"으로 만들지 않는다 — 그러면 편집·컴포넌트 분리·코드 역이관이 전부 막힌다(사용자 핵심 요구).
+> 모든 요소는 개별 노드여야 하고, 반복 요소(CTA·pill·navbar·말풍선 등)는 **실제 Figma Component**로 만들어 인스턴스로 조립한다.
+>
+> 핵심 교훈: Claude의 Figma 네이티브 빌드도 **이펙트 스타일·SVG 벡터·auto-layout·상태 컬러밴드 차트**를 쓰면
+> 코드-퍼스트 수준의 고품질을 낸다(TA-136 v4 입증). 단 Figma MCP 환경엔 **Pretendard가 없어** 미리보기 폰트는
+> Noto Sans KR로 보인다 → 최종 Pretendard 스왑을 명시한다. HTML/CSS 렌더는 **레이아웃·색감을 빠르게 잡는 시각
+> 레퍼런스 보조**로만 쓰고(STEP 2), Figma로는 그 결과를 네이티브로 재현한다 — 렌더 이미지를 그대로 올리지 않는다.
 
 ---
 
@@ -43,19 +49,22 @@ description: >-
 
 ---
 
-## STEP 2 — 코드-퍼스트로 고품질 빌드 (메인 작업)
+## STEP 2 — (선택) 코드-퍼스트 HTML = 시각 레퍼런스 보조
+
+> ⚠️ 이 단계의 산출물(렌더 PNG)은 **Figma에 그대로 올리지 않는다.** 레이아웃·간격·색감을 빠르게 확정해서,
+> STEP 4에서 네이티브로 재현할 때 베껴 그릴 **픽셀 레퍼런스**로만 쓴다. 화면이 단순하거나 급하면 생략 가능.
 
 1. 화면을 **HTML/CSS**로 작성. `proto/` 폴더 사용. 토큰을 CSS 변수로, 타입은 **실제 Pretendard 웹폰트**:
    `https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.min.css`
-2. 카드 그림자·그라데이션·둥근 모서리·정교한 **SVG 차트**(상태 컬러밴드·콜아웃 마커 등)로 깊이를 준다.
-3. **렌더(픽셀 검증)** — Playwright는 브라우저 버전 불일치로 자주 실패. 설치된 Chrome 헤드리스 사용:
+2. 카드 그림자·둥근 모서리·정교한 **SVG 차트**(상태 컬러밴드·콜아웃 마커 등)로 깊이를 잡아 본다 — 그대로 STEP 4에서 네이티브로 옮긴다.
+3. **렌더(픽셀 확인)** — Playwright는 브라우저 버전 불일치로 자주 실패. 설치된 Chrome 헤드리스 사용:
    ```bash
    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu \
      --hide-scrollbars --force-device-scale-factor=2 --virtual-time-budget=3500 \
      --window-size=375,H --screenshot=out.png "file://$PWD/screen.html"
    # 여러 화면 한 파일이면 ?s=N 쿼리+인라인 JS로 1개만 보이게 해 개별 렌더
    ```
-4. 스크린샷을 `Read`로 보며 반복 수정. (375pt 폭, body 패딩/가운데정렬이 뷰포트 넘기면 우측 클리핑됨 주의.)
+4. 스크린샷을 `Read`로 보며 레퍼런스를 다듬는다. (375pt 폭, body 패딩/가운데정렬이 뷰포트 넘기면 우측 클리핑됨 주의.)
 
 ---
 
@@ -82,23 +91,29 @@ description: >-
 
 ---
 
-## STEP 4 — Figma 포팅 (버전별 페이지 분리 = 비교 가능하게)
+## STEP 4 — Figma 네이티브 컴포넌트로 빌드 (필수 · 유일한 산출 방식)
 
-- **기존 작업물은 절대 수정 금지.** 새 작업은 **새 페이지**(v1/v2/v3 …)로 분리해 나란히 비교.
+- 🚫 **화면 전체를 렌더 PNG로 업로드해 평면 이미지로 만들지 않는다.** 모든 화면은 `use_figma`로 **개별 노드**(프레임·텍스트·벡터)로 짓는다. (raster 일러스트만 예외 — 네이티브 프레임 안에 이미지로 끼워 넣음, 아래 참조.)
+- **기존 작업물은 절대 수정 금지.** 새 작업은 **새 페이지**(v1/v2/v3/v4 …)로 분리해 나란히 비교.
 - 새 파일이 필요하면 `create_new_file`, planKey = **BOMAPP `team::915416689671091979`**(Dev 시트; justin의 팀=view 불가).
 - `use_figma` 호출 **전 반드시** `skill://figma/figma-use/SKILL.md`(필요 시 `figma-generate-design`)를 `ReadMcpResourceTool` 로 읽는다. 콜마다 `setCurrentPageAsync(<page id>)`로 페이지 컨텍스트 재설정. 색은 0–1 범위, 텍스트는 폰트 로드 후 수정.
 
-**포팅 모드 선택 (편집 가능성 vs 손맛):**
+**① 반복 요소 = 실제 Figma Component로**
 
-- **모드 A — 이미지 포팅(빠름, 비편집)**: 렌더 PNG를 `upload_assets`(count=N) → submitUrl에 **multipart `file` 필드 POST**(파일명=레이어명) → `placedOnNodeId`. 새 페이지로 옮겨 **이미지 정비율 resize**(보통 380×850). ⚠️ **결과물은 "평면 이미지 1장"이라 Figma 내 편집 불가** — 시각 시안 공유·빠른 합의용으로만. **편집 원본은 HTML 프로토타입.**
-- **모드 B — 네이티브 재구성(편집 가능, 권장 기본값)**: 화면을 `use_figma`로 **프레임·텍스트·벡터 개별 노드**로 재작성 → 각 요소 편집·컴포넌트화·코드 역이관 용이. **고품질도 충분히 달성됨**(TA-136 v4 입증). 레시피:
-  - 그림자 = `createEffectStyle`(카드/CTA) — **반환 styleId 끝에 콤마 포함**(`S:xxxx,`) → `setEffectStyleIdAsync`에 콤마째 전달.
-  - 아이콘 = `createNodeFromSvg`(back chevron·unlink·check 등 SVG 문자열 → 편집 가능 벡터).
-  - 컨테이너 = `figma.createAutoLayout`(pill·CTA·비교막대), 차트 = 솔리드 채움 + 상태 컬러밴드(rect opacity) + rounded 막대(`topLeftRadius/topRightRadius`).
-  - 큰 수치 정렬 = `counterAxisAlignItems:'BASELINE'`, 텍스트 부분강조 = `setRangeFills`+`setRangeFontName`.
-  - 폰트 = **Noto Sans KR**(Bold/Medium/Regular 확인됨; Pretendard 미설치라 미리보기는 Noto, 최종 Pretendard 스왑 명시).
-  - 빌드는 **화면당 ~6콜**로 쪼개 **≤10오브젝트/콜**(초과 시 타임아웃·원자적 롤백) + 중간 `get_screenshot`(URL→`curl`→`Read`)로 픽셀 검증. `textAutoResize`는 'WIDTH' 없음('WIDTH_AND_HEIGHT'/'HEIGHT').
-- **선택 기준**: 빠른 시안 합의 = A, **수정/핸드오프/코드 역이관 필요 = B**. 둘을 다른 페이지로 함께 두면 비교가 쉽다.
+- CTA·status pill·navbar·카카오 말풍선·읽기전용 필드처럼 **2회 이상 쓰는 요소는 `figma.createComponent()`로 만들고 `createInstance()`로 조립**한다. 텍스트 차이는 인스턴스 텍스트 오버라이드로 처리. 파일에 기존 로컬 컴포넌트가 있으면(예 `CTA/Primary`·`Webview/NavBar`) `getNodeByIdAsync` 후 재사용.
+- 상태 변형이 필요하면 variant(`combineAsVariants`)로, 단순하면 단일 컴포넌트 + 인스턴스 오버라이드로 충분.
+
+**② 빌드 레시피 (코드-퍼스트 수준 품질을 네이티브로)**
+
+- **배경(기기) 프레임 필수**: 각 화면 = 375px 폭 phone 프레임에 **앱 배경색을 채우고**(예 `#F3F5F8`, 카카오 `#B2C7D9`), `cornerRadius`(예 30) + **기기 그림자 이펙트 스타일**을 줘 흰 캔버스와 분명히 구분되게 한다. (배경을 비우면 콘텐츠가 떠 보임 — v4 초기 실수.)
+- 그림자 = `createEffectStyle`(카드/CTA/기기) — **반환 styleId 끝에 콤마 포함**(`S:xxxx,`) → `setEffectStyleIdAsync`에 콤마째 전달.
+- 아이콘 = `createNodeFromSvg`(back chevron·unlink·check 등 SVG 문자열 → 편집 가능 벡터).
+- 컨테이너 = `figma.createAutoLayout`(pill·CTA·비교막대), 차트 = 솔리드 채움 + 상태 컬러밴드(rect opacity) + rounded 막대(`topLeftRadius/topRightRadius`) + 콜아웃 배지/마커.
+- 큰 수치 정렬 = `counterAxisAlignItems:'BASELINE'`, 텍스트 부분강조 = `setRangeFills`+`setRangeFontName`.
+- 폰트 = **Noto Sans KR**(Bold/Medium/Regular 확인됨; Pretendard 미설치 → 미리보기 Noto, **최종 Pretendard 스왑 명시**).
+- 빌드는 **화면당 ~6콜**로 쪼개 **≤10오브젝트/콜**(초과 시 타임아웃·원자적 롤백) + 중간 `get_screenshot`(URL→`curl`→`Read`)로 픽셀 검증. `textAutoResize`는 'WIDTH' 없음('WIDTH_AND_HEIGHT'/'HEIGHT').
+
+> `upload_assets`(→ multipart `file` POST) 이미지 업로드는 **raster 일러스트를 네이티브 프레임 안에 끼워 넣을 때만** 쓴다(STEP 3 일러스트). **화면 전체를 렌더 PNG로 올리는 방식은 금지** — 편집·컴포넌트 분리가 막힌다.
 
 ---
 
@@ -113,7 +128,7 @@ description: >-
 ## 빠른 체크리스트
 - [ ] 노션 태스크 + Context Hub 디자인 카드 3종 읽음
 - [ ] BDS 토큰 실측 + 화면취합/참조 실화면 확인
-- [ ] 코드-퍼스트(실제 Pretendard·그림자·SVG) → 헤드리스 Chrome 렌더 검증
-- [ ] 일러스트는 실제 보맵 3D 에셋 재사용 우선, 부족분만 Bedrock SD3.5(레지스터+hex 프롬프트)
-- [ ] 새 페이지로 분리 포팅(기존 보존) — 편집/핸드오프 필요=네이티브 재구성(모드 B), 빠른 시안=이미지(모드 A)
+- [ ] (선택) 코드-퍼스트 HTML 렌더로 레이아웃·색감 레퍼런스 확보 (Figma엔 이미지로 올리지 않음)
+- [ ] 일러스트는 실제 보맵 3D 에셋 재사용 우선, 부족분만 Bedrock SD3.5(레지스터+hex 프롬프트) — 네이티브 프레임 안 이미지로만
+- [ ] **Figma는 네이티브 컴포넌트로만 빌드(화면 평면 이미지 금지)**: 배경(기기) 프레임 채움 + 반복요소 Component화 + 새 페이지 분리(기존 보존) + Pretendard 스왑 명시
 - [ ] 결정사항 에스컬레이션 + 문서/Hub 반영
