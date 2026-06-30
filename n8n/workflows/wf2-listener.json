@@ -114,28 +114,6 @@
           ]
         ]
       },
-      "스누즈 기록": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "스누즈 저장",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "스누즈 저장": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "프롬프트 잠금·스누즈",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "액션 라우터": {
         "main": [
           [
@@ -149,13 +127,6 @@
             {
               "index": 0,
               "node": "행 조회·제출",
-              "type": "main"
-            }
-          ],
-          [
-            {
-              "index": 0,
-              "node": "스누즈 기록",
               "type": "main"
             }
           ],
@@ -419,7 +390,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-19T04:29:57.423Z",
+    "createdAt": "2026-06-30T23:46:28.455Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -531,29 +502,6 @@
                   }
                 },
                 "outputKey": "submit",
-                "renameOutput": true
-              },
-              {
-                "conditions": {
-                  "combinator": "and",
-                  "conditions": [
-                    {
-                      "leftValue": "={{ $json.route }}",
-                      "operator": {
-                        "operation": "equals",
-                        "type": "string"
-                      },
-                      "rightValue": "snooze"
-                    }
-                  ],
-                  "options": {
-                    "caseSensitive": true,
-                    "leftValue": "",
-                    "typeValidation": "strict",
-                    "version": 1
-                  }
-                },
-                "outputKey": "snooze",
                 "renameOutput": true
               },
               {
@@ -1356,109 +1304,6 @@
             "name": "Notion account"
           }
         },
-        "id": "a0242d51-4c8b-40a3-a867-132d5b73b3e3",
-        "name": "스누즈 기록",
-        "parameters": {
-          "operation": "update",
-          "options": {},
-          "pageId": {
-            "__rl": true,
-            "mode": "id",
-            "value": "={{ $(\"액션 정규화\").first().json.pageId }}"
-          },
-          "propertiesUi": {
-            "propertyValues": [
-              {
-                "key": "🤖 AI 게이트|select",
-                "selectValue": "스누즈"
-              },
-              {
-                "date": "={{ $now.plus({ hours: 4 }).toISO() }}",
-                "key": "🤖 다음 점검 시각|date"
-              }
-            ]
-          },
-          "resource": "databasePage"
-        },
-        "position": [
-          896,
-          496
-        ],
-        "type": "n8n-nodes-base.notion",
-        "typeVersion": 2.2
-      },
-      {
-        "id": "6afe4c23-8cd3-4c49-9f6c-60729eb4d308",
-        "name": "스누즈 저장",
-        "parameters": {
-          "columns": {
-            "mappingMode": "defineBelow",
-            "value": {
-              "status": "snoozed"
-            }
-          },
-          "dataTableId": {
-            "__rl": true,
-            "mode": "id",
-            "value": "Kc7JZEVYgheNzZKo"
-          },
-          "filters": {
-            "conditions": [
-              {
-                "keyName": "thread_ts",
-                "keyValue": "={{ $(\"액션 정규화\").first().json.threadTs }}"
-              }
-            ]
-          },
-          "operation": "update",
-          "options": {}
-        },
-        "position": [
-          1120,
-          496
-        ],
-        "type": "n8n-nodes-base.dataTable",
-        "typeVersion": 1.1
-      },
-      {
-        "credentials": {
-          "slackApi": {
-            "id": "bjozecrw9OnFT8Lf",
-            "name": "Botmap"
-          }
-        },
-        "id": "04a5f553-c49c-47ab-8f05-b760b05117c4",
-        "name": "프롬프트 잠금·스누즈",
-        "parameters": {
-          "authentication": "predefinedCredentialType",
-          "jsonBody": "={ \"channel\": \"{{ $(\"액션 정규화\").first().json.channelId }}\", \"ts\": \"{{ $(\"액션 정규화\").first().json.promptTs }}\", \"text\": \"작성 중\", \"blocks\": [ { \"type\": \"section\", \"text\": { \"type\": \"mrkdwn\", \"text\": \"⏸️ *아직 작성 중* — 4시간 뒤에 다시 여쭤볼게요.\" } } ] }",
-          "method": "POST",
-          "nodeCredentialType": "slackApi",
-          "options": {
-            "response": {
-              "response": {
-                "neverError": true
-              }
-            }
-          },
-          "sendBody": true,
-          "specifyBody": "json",
-          "url": "https://slack.com/api/chat.update"
-        },
-        "position": [
-          1344,
-          496
-        ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4
-      },
-      {
-        "credentials": {
-          "notionApi": {
-            "id": "b03vHUApw6s0O5jS",
-            "name": "Notion account"
-          }
-        },
         "id": "2dad9bba-7718-4ff9-9487-e6048241fba0",
         "name": "보류 기록",
         "parameters": {
@@ -1567,26 +1412,104 @@
       {
         "id": "2bf88262-d939-4cd5-ba4a-7071e476127e",
         "name": "Dispatch 호출",
+        "onError": "continueRegularOutput",
         "parameters": {
-          "jsonBody": "={{ $json }}",
-          "method": "POST",
+          "mode": "once",
           "options": {
-            "response": {
-              "response": {
-                "neverError": true
-              }
-            }
+            "waitForSubWorkflow": true
           },
-          "sendBody": true,
-          "specifyBody": "json",
-          "url": "https://n8n-webhook.bomapp.co.kr/webhook/wf-dispatch"
+          "source": "database",
+          "workflowId": {
+            "__rl": true,
+            "cachedResultName": "Overmind WF-Dispatch · 단계 디스패처",
+            "mode": "id",
+            "value": "0KSWtN1SPermSuFw"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pageId",
+                "id": "pageId",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "title",
+                "id": "title",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "brief",
+                "id": "brief",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "qa",
+                "id": "qa",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "roles",
+                "id": "roles",
+                "required": false,
+                "type": "array"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "channelId",
+                "id": "channelId",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "threadTs",
+                "id": "threadTs",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "brief": "={{ $json.brief }}",
+              "channelId": "={{ $json.channelId }}",
+              "pageId": "={{ $json.pageId }}",
+              "qa": "={{ $json.qa }}",
+              "roles": "={{ $json.roles }}",
+              "threadTs": "={{ $json.threadTs }}",
+              "title": "={{ $json.title }}"
+            }
+          }
         },
         "position": [
           3120,
           640
         ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.4
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3
       },
       {
         "id": "wf2-qa-blocks-001",
@@ -1644,29 +1567,45 @@
         "typeVersion": 4.4
       }
     ],
-    "updatedAt": "2026-06-19T04:29:57.423Z",
-    "versionId": "6cd29790-a731-42f6-9c1c-ef9daccb0f13",
+    "updatedAt": "2026-06-30T23:46:28.455Z",
+    "versionId": "7b529ead-764f-4cb9-8cd9-0944615067d5",
     "workflowId": "3LyKi5A20HoPrP0p",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-19T04:29:57.490Z",
+        "createdAt": "2026-06-30T23:46:28.553Z",
         "event": "deactivated",
-        "id": 226,
+        "id": 357,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "6cd29790-a731-42f6-9c1c-ef9daccb0f13",
+        "versionId": "7b529ead-764f-4cb9-8cd9-0944615067d5",
         "workflowId": "3LyKi5A20HoPrP0p"
       },
       {
-        "createdAt": "2026-06-19T04:29:57.516Z",
+        "createdAt": "2026-06-30T23:46:28.584Z",
         "event": "activated",
-        "id": 227,
+        "id": 358,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "6cd29790-a731-42f6-9c1c-ef9daccb0f13",
+        "versionId": "7b529ead-764f-4cb9-8cd9-0944615067d5",
+        "workflowId": "3LyKi5A20HoPrP0p"
+      },
+      {
+        "createdAt": "2026-06-30T23:46:34.564Z",
+        "event": "deactivated",
+        "id": 361,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "7b529ead-764f-4cb9-8cd9-0944615067d5",
+        "workflowId": "3LyKi5A20HoPrP0p"
+      },
+      {
+        "createdAt": "2026-06-30T23:46:34.591Z",
+        "event": "activated",
+        "id": 362,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "7b529ead-764f-4cb9-8cd9-0944615067d5",
         "workflowId": "3LyKi5A20HoPrP0p"
       }
     ]
   },
-  "activeVersionId": "6cd29790-a731-42f6-9c1c-ef9daccb0f13",
+  "activeVersionId": "7b529ead-764f-4cb9-8cd9-0944615067d5",
   "connections": {
     "Slack 인터랙션 수신": {
       "main": [
@@ -3082,26 +3021,104 @@
     {
       "id": "2bf88262-d939-4cd5-ba4a-7071e476127e",
       "name": "Dispatch 호출",
+      "onError": "continueRegularOutput",
       "parameters": {
-        "jsonBody": "={{ $json }}",
-        "method": "POST",
+        "mode": "once",
         "options": {
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
+          "waitForSubWorkflow": true
         },
-        "sendBody": true,
-        "specifyBody": "json",
-        "url": "https://n8n-webhook.bomapp.co.kr/webhook/wf-dispatch"
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "Overmind WF-Dispatch · 단계 디스패처",
+          "mode": "id",
+          "value": "0KSWtN1SPermSuFw"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "pageId",
+              "id": "pageId",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "title",
+              "id": "title",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "brief",
+              "id": "brief",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "qa",
+              "id": "qa",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "roles",
+              "id": "roles",
+              "required": false,
+              "type": "array"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "channelId",
+              "id": "channelId",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "threadTs",
+              "id": "threadTs",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "brief": "={{ $json.brief }}",
+            "channelId": "={{ $json.channelId }}",
+            "pageId": "={{ $json.pageId }}",
+            "qa": "={{ $json.qa }}",
+            "roles": "={{ $json.roles }}",
+            "threadTs": "={{ $json.threadTs }}",
+            "title": "={{ $json.title }}"
+          }
+        }
       },
       "position": [
         3120,
         640
       ],
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
     },
     {
       "id": "wf2-qa-blocks-001",
@@ -3187,7 +3204,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-19T04:29:57.421Z",
-  "versionCounter": 86,
-  "versionId": "6cd29790-a731-42f6-9c1c-ef9daccb0f13"
+  "updatedAt": "2026-06-30T23:46:28.453Z",
+  "versionCounter": 94,
+  "versionId": "7b529ead-764f-4cb9-8cd9-0944615067d5"
 }

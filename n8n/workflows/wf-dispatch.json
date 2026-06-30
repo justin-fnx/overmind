@@ -1,6 +1,570 @@
 {
   "active": true,
-  "activeVersionId": "d5923dd4-38a6-4ddf-9ab8-d561cff9967a",
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": false,
+    "connections": {
+      "Dispatch 시작": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "계획 입력",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "ready?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "WF3 호출",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "pending 기록",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "계획 입력": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "단계 계획",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "계획 파서": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "단계 계획",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "기존 단계 조회": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "분류",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "디스패치 통보 메시지",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "단계 Sonnet": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "단계 계획",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "단계 계획": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "기존 단계 조회",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "디스패치 통보 메시지": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "디스패치 통보",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "분류": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "ready?",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-06-30T23:46:28.198Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "aed7fcd9-dc84-401a-9d7d-e984b67ccdb9",
+        "name": "Dispatch 시작",
+        "parameters": {
+          "inputSource": "workflowInputs",
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "pageId",
+                "type": "string"
+              },
+              {
+                "name": "title",
+                "type": "string"
+              },
+              {
+                "name": "brief",
+                "type": "string"
+              },
+              {
+                "name": "qa",
+                "type": "string"
+              },
+              {
+                "name": "roles",
+                "type": "array"
+              },
+              {
+                "name": "channelId",
+                "type": "string"
+              },
+              {
+                "name": "threadTs",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          300
+        ],
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "e9ad4847-deb1-42d4-abb7-09626d4ddb0f",
+        "name": "계획 입력",
+        "parameters": {
+          "jsCode": "const b=$json.body||$json;return [{json:{pageId:b.pageId,title:b.title,brief:b.brief||'',qa:b.qa||'',roles:b.roles||[],channelId:b.channelId,threadTs:b.threadTs}}];"
+        },
+        "position": [
+          220,
+          300
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "943aa552-081e-4403-836e-e019c1774262",
+        "maxTries": 2,
+        "name": "단계 계획",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "당신은 기획 통과 후 다음 실무 단계를 계획하는 디스패처입니다. 통과된 기획(브리프)과 게이트가 추론한 직무(roles)를 받아 실제 수행 단계와 의존 관계를 추론합니다.\n규칙:\n- roles에 있는 직무만 단계로 만든다. '개발'은 화면 UI가 관여하면 프론트엔드/백엔드로 분해(둘 다 필요시 둘, API/데이터만이면 백엔드, UI만이면 프론트엔드).\n- 각 stage의 dependsOn = 시작 전 완료돼야 할 선행 stage명 배열:\n  · 리서치/디자인/백엔드: 보통 의존 없음(병렬). 디자인은 리서치 있으면 ['리서치'] 가능.\n  · 프론트엔드: 화면 디자인 + 백엔드 API 의존 → 백엔드 stage가 있으면 ['디자인','백엔드'], 없으면 ['디자인'] (디자인 산출물·백엔드 PR을 모두 받아 통합 구현하므로 둘 다 선행).\n  · QA: 구현 의존 → 존재하는 개발 stage(['프론트엔드','백엔드'] 중 있는 것).\n  · 마케팅: 보통 독립 또는 QA 후.\n- dependsOn 값은 반드시 이 출력의 다른 stage 이름과 정확히 일치. persona는 그 단계 시니어 실무자.\n반드시 지정 JSON 스키마로만 답하세요."
+          },
+          "promptType": "define",
+          "text": "=직무(roles): {{ JSON.stringify($json.roles) }}\n제목: {{ $json.title }}\n기획 브리프:\n{{ $json.brief }}\n\nQ&A:\n{{ $json.qa }}"
+        },
+        "position": [
+          440,
+          300
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "aws": {
+            "id": "GftVHJqfxQshQZ4P",
+            "name": "AWS (IAM) account"
+          }
+        },
+        "id": "e3a726d7-e595-48a4-b5cd-b4c7406196fc",
+        "name": "단계 Sonnet",
+        "parameters": {
+          "model": "global.anthropic.claude-sonnet-4-6",
+          "modelSource": "inferenceProfile",
+          "options": {
+            "maxTokensToSample": 2000,
+            "temperature": 0.2
+          }
+        },
+        "position": [
+          400,
+          520
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "c0e9c8d6-0783-4aa1-9708-7d96181f35bb",
+        "name": "계획 파서",
+        "parameters": {
+          "jsonSchemaExample": "{\"stages\": [{\"stage\": \"디자인\", \"persona\": \"시니어 프로덕트 디자이너\", \"dependsOn\": [], \"reason\": \"화면 신규 설계, 선행 없음\"}, {\"stage\": \"프론트엔드\", \"persona\": \"시니어 프론트엔드 개발자\", \"dependsOn\": [\"디자인\"], \"reason\": \"디자인 화면 의존\"}]}"
+        },
+        "position": [
+          560,
+          520
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "f1a2b3c4-0001-4001-8001-0d1e2f3a4b5c",
+        "name": "기존 단계 조회",
+        "parameters": {
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "16uFko9jgm6gFs0T"
+          },
+          "filters": {
+            "conditions": [
+              {
+                "condition": "eq",
+                "keyName": "parent_page_id",
+                "keyValue": "={{ $('계획 입력').first().json.pageId }}"
+              }
+            ]
+          },
+          "matchType": "allConditions",
+          "operation": "get",
+          "resource": "row",
+          "returnAll": true
+        },
+        "position": [
+          560,
+          300
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "7a3fa5b0-e5a7-4be4-830e-9d87483d8b10",
+        "name": "분류",
+        "parameters": {
+          "jsCode": "const stages=(($('단계 계획').first().json.output)||{}).stages||[];const c=$('계획 입력').first().json;const existing={};$('기존 단계 조회').all().forEach(function(it){var s=it.json&&it.json.stage;if(s)existing[s]=1;});const fresh=stages.filter(function(s){return !existing[s.stage];});const pipeline=stages.map(function(s){return s.stage;}).join(' → ');const P={'리서치':'UX 리서처','디자인':'시니어 프로덕트 디자이너','개발':'시니어 소프트웨어 개발자','프론트엔드':'시니어 프론트엔드 개발자','백엔드':'시니어 백엔드 개발자','QA':'QA 엔지니어','마케팅':'그로스 마케터'};return fresh.map(function(s){var dep=s.dependsOn||[];return {json:{stage:s.stage,persona:s.persona||P[s.stage]||(s.stage+' 담당자'),pipeline:pipeline,dependsOn:JSON.stringify(dep),ready:(dep.length===0),pageId:c.pageId,title:c.title,brief:c.brief,qa:c.qa,channelId:c.channelId,threadTs:c.threadTs}};});"
+        },
+        "position": [
+          700,
+          200
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "d3eb6108-6467-4b32-bb1e-19bb8b2e848f",
+        "name": "ready?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "leftValue": "={{ $json.ready }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "typeValidation": "loose",
+              "version": 1
+            }
+          },
+          "options": {}
+        },
+        "position": [
+          920,
+          200
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3
+      },
+      {
+        "id": "17f1201d-07a1-43ee-a0af-387f30eb99b3",
+        "name": "WF3 호출",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "mode": "once",
+          "options": {
+            "waitForSubWorkflow": true
+          },
+          "source": "database",
+          "workflowId": {
+            "__rl": true,
+            "cachedResultName": "Overmind WF3 · 다음 단계 태스크 생성",
+            "mode": "id",
+            "value": "m6YGNNCEP5RI3SSF"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pageId",
+                "id": "pageId",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "title",
+                "id": "title",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "brief",
+                "id": "brief",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "qa",
+                "id": "qa",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "stage",
+                "id": "stage",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "persona",
+                "id": "persona",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pipeline",
+                "id": "pipeline",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "channelId",
+                "id": "channelId",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "threadTs",
+                "id": "threadTs",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "priorContext",
+                "id": "priorContext",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "brief": "={{ $json.brief }}",
+              "channelId": "={{ $json.channelId }}",
+              "pageId": "={{ $json.pageId }}",
+              "persona": "={{ $json.persona }}",
+              "pipeline": "={{ $json.pipeline }}",
+              "priorContext": "",
+              "qa": "={{ $json.qa }}",
+              "stage": "={{ $json.stage }}",
+              "threadTs": "={{ $json.threadTs }}",
+              "title": "={{ $json.title }}"
+            }
+          }
+        },
+        "position": [
+          1160,
+          100
+        ],
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3
+      },
+      {
+        "id": "cbc14343-9511-4cd9-b531-0777d791f763",
+        "name": "pending 기록",
+        "parameters": {
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "brief": "={{ $json.brief }}",
+              "channel_id": "={{ $json.channelId }}",
+              "created_at": "={{ $now.toISO() }}",
+              "depends_on": "={{ $json.dependsOn }}",
+              "parent_page_id": "={{ $json.pageId }}",
+              "persona": "={{ $json.persona }}",
+              "pipeline": "={{ $json.pipeline }}",
+              "qa": "={{ $json.qa }}",
+              "stage": "={{ $json.stage }}",
+              "status": "pending",
+              "thread_ts": "={{ $json.threadTs }}",
+              "title": "={{ $json.title }}"
+            }
+          },
+          "dataTableId": {
+            "__rl": true,
+            "mode": "id",
+            "value": "16uFko9jgm6gFs0T"
+          },
+          "operation": "insert",
+          "options": {},
+          "resource": "row"
+        },
+        "position": [
+          1160,
+          320
+        ],
+        "type": "n8n-nodes-base.dataTable",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "b41035ee-dc9b-4604-8dc9-d3103d77adc4",
+        "name": "디스패치 통보 메시지",
+        "parameters": {
+          "jsCode": "const stages=(($('단계 계획').first().json.output)||{}).stages||[];const c=$('계획 입력').first().json;const existing={};$('기존 단계 조회').all().forEach(function(it){var s=it.json&&it.json.stage;if(s)existing[s]=1;});const fresh=stages.filter(function(s){return !existing[s.stage];});const skipped=stages.filter(function(s){return existing[s.stage];}).map(function(s){return s.stage;});const ready=fresh.filter(function(s){return !((s.dependsOn||[]).length);}).map(function(s){return s.stage;});const pend=fresh.filter(function(s){return (s.dependsOn||[]).length;}).map(function(s){return s.stage+'(←'+s.dependsOn.join(',')+')';});var text='🧩 ['+c.title+'] 단계 디스패치\\n• 즉시 생성: '+(ready.join(', ')||'없음')+'\\n• 대기(의존): '+(pend.join(', ')||'없음');if(skipped.length)text+='\\n• 건너뜀(이미 존재): '+skipped.join(', ');return [{json:{body:{channel:c.channelId,thread_ts:c.threadTs,text:text}}}];"
+        },
+        "position": [
+          700,
+          440
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "5b8cc6f2-26bf-490b-b9b7-d5ade8c1250c",
+        "name": "디스패치 통보",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "https://slack.com/api/chat.postMessage"
+        },
+        "position": [
+          920,
+          440
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      }
+    ],
+    "updatedAt": "2026-06-30T23:46:28.198Z",
+    "versionId": "1615bb1b-9e4d-42ea-af00-bb6d5db6cb36",
+    "workflowId": "0KSWtN1SPermSuFw",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-30T23:46:32.853Z",
+        "event": "deactivated",
+        "id": 359,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "1615bb1b-9e4d-42ea-af00-bb6d5db6cb36",
+        "workflowId": "0KSWtN1SPermSuFw"
+      },
+      {
+        "createdAt": "2026-06-30T23:46:32.866Z",
+        "event": "activated",
+        "id": 360,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "1615bb1b-9e4d-42ea-af00-bb6d5db6cb36",
+        "workflowId": "0KSWtN1SPermSuFw"
+      },
+      {
+        "createdAt": "2026-06-30T23:46:28.258Z",
+        "event": "deactivated",
+        "id": 355,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "1615bb1b-9e4d-42ea-af00-bb6d5db6cb36",
+        "workflowId": "0KSWtN1SPermSuFw"
+      },
+      {
+        "createdAt": "2026-06-30T23:46:28.272Z",
+        "event": "activated",
+        "id": 356,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "1615bb1b-9e4d-42ea-af00-bb6d5db6cb36",
+        "workflowId": "0KSWtN1SPermSuFw"
+      }
+    ]
+  },
+  "activeVersionId": "1615bb1b-9e4d-42ea-af00-bb6d5db6cb36",
   "connections": {
     "Dispatch 시작": {
       "main": [
@@ -125,19 +689,46 @@
       "id": "aed7fcd9-dc84-401a-9d7d-e984b67ccdb9",
       "name": "Dispatch 시작",
       "parameters": {
-        "httpMethod": "POST",
-        "options": {
-          "noResponseBody": true
-        },
-        "path": "wf-dispatch"
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "pageId",
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "name": "brief",
+              "type": "string"
+            },
+            {
+              "name": "qa",
+              "type": "string"
+            },
+            {
+              "name": "roles",
+              "type": "array"
+            },
+            {
+              "name": "channelId",
+              "type": "string"
+            },
+            {
+              "name": "threadTs",
+              "type": "string"
+            }
+          ]
+        }
       },
       "position": [
         0,
         300
       ],
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "webhookId": "b7eb78ef-88cb-470e-be03-33737ac4c5df"
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
     },
     {
       "id": "e9ad4847-deb1-42d4-abb7-09626d4ddb0f",
@@ -288,26 +879,134 @@
     {
       "id": "17f1201d-07a1-43ee-a0af-387f30eb99b3",
       "name": "WF3 호출",
+      "onError": "continueRegularOutput",
       "parameters": {
-        "jsonBody": "={{ {pageId:$json.pageId,title:$json.title,brief:$json.brief,qa:$json.qa,stage:$json.stage,persona:$json.persona,pipeline:$json.pipeline,channelId:$json.channelId,threadTs:$json.threadTs,priorContext:''} }}",
-        "method": "POST",
+        "mode": "once",
         "options": {
-          "response": {
-            "response": {
-              "neverError": true
-            }
-          }
+          "waitForSubWorkflow": true
         },
-        "sendBody": true,
-        "specifyBody": "json",
-        "url": "https://n8n-webhook.bomapp.co.kr/webhook/wf3-handoff"
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "Overmind WF3 · 다음 단계 태스크 생성",
+          "mode": "id",
+          "value": "m6YGNNCEP5RI3SSF"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "pageId",
+              "id": "pageId",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "title",
+              "id": "title",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "brief",
+              "id": "brief",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "qa",
+              "id": "qa",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "stage",
+              "id": "stage",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "persona",
+              "id": "persona",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "pipeline",
+              "id": "pipeline",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "channelId",
+              "id": "channelId",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "threadTs",
+              "id": "threadTs",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "priorContext",
+              "id": "priorContext",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "brief": "={{ $json.brief }}",
+            "channelId": "={{ $json.channelId }}",
+            "pageId": "={{ $json.pageId }}",
+            "persona": "={{ $json.persona }}",
+            "pipeline": "={{ $json.pipeline }}",
+            "priorContext": "",
+            "qa": "={{ $json.qa }}",
+            "stage": "={{ $json.stage }}",
+            "threadTs": "={{ $json.threadTs }}",
+            "title": "={{ $json.title }}"
+          }
+        }
       },
       "position": [
         1160,
         100
       ],
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
     },
     {
       "id": "cbc14343-9511-4cd9-b531-0777d791f763",
@@ -419,8 +1118,8 @@
   ],
   "staticData": null,
   "tags": [],
-  "triggerCount": 1,
-  "updatedAt": "2026-06-22T05:40:40.978Z",
-  "versionCounter": 23,
-  "versionId": "d5923dd4-38a6-4ddf-9ab8-d561cff9967a"
+  "triggerCount": 0,
+  "updatedAt": "2026-06-30T23:46:28.196Z",
+  "versionCounter": 36,
+  "versionId": "1615bb1b-9e4d-42ea-af00-bb6d5db6cb36"
 }

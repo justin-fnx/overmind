@@ -60,7 +60,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-18T07:30:42.495Z",
+    "createdAt": "2026-06-30T23:43:27.048Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -68,18 +68,30 @@
         "id": "d994bf14-4c2a-4ca7-924c-1e5919f4119f",
         "name": "Vision 시작",
         "parameters": {
-          "httpMethod": "POST",
-          "options": {},
-          "path": "figma-vision",
-          "responseMode": "lastNode"
+          "inputSource": "workflowInputs",
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "nodeId",
+                "type": "string"
+              },
+              {
+                "name": "question",
+                "type": "string"
+              },
+              {
+                "name": "fileKey",
+                "type": "string"
+              }
+            ]
+          }
         },
         "position": [
           0,
           0
         ],
-        "type": "n8n-nodes-base.webhook",
-        "typeVersion": 2.1,
-        "webhookId": "084e4216-af62-4a67-b440-ed05a178977b"
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1
       },
       {
         "credentials": {
@@ -95,7 +107,7 @@
           "genericAuthType": "httpHeaderAuth",
           "method": "GET",
           "options": {},
-          "url": "=https://api.figma.com/v1/images/{{ $json.body.fileKey || '3Ifh58l7EWLXapWRys0vjf' }}?ids={{ $json.body.nodeId || '10914-6407' }}&format=png&scale=2"
+          "url": "=https://api.figma.com/v1/images/{{ $json.fileKey || '3Ifh58l7EWLXapWRys0vjf' }}?ids={{ $json.nodeId || '10914-6407' }}&format=png&scale=2"
         },
         "position": [
           220,
@@ -108,7 +120,7 @@
         "id": "e3c47a47-03fd-45dc-90b9-732883180353",
         "name": "URL 추출",
         "parameters": {
-          "jsCode": "const imgs=$json.images||{};const url=Object.values(imgs)[0]||'';const inp=($('Vision 시작').first().json.body)||{};if(!url)throw new Error('Figma 렌더 실패: '+JSON.stringify($json).slice(0,200));return [{json:{url:url,nodeId:inp.nodeId,question:inp.question||''}}];"
+          "jsCode": "const imgs=$json.images||{};const url=Object.values(imgs)[0]||'';const inp=($('Vision 시작').first().json)||{};if(!url)throw new Error('Figma 렌더 실패: '+JSON.stringify($json).slice(0,200));return [{json:{url:url,nodeId:inp.nodeId,question:inp.question||''}}];"
         },
         "position": [
           440,
@@ -181,45 +193,45 @@
         "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-18T07:30:42.495Z",
-    "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+    "updatedAt": "2026-06-30T23:43:27.048Z",
+    "versionId": "2456c00c-fdd6-4ecb-a97b-857a4f8c3729",
     "workflowId": "YN6uIteF2X5BAo85",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-18T07:30:42.534Z",
+        "createdAt": "2026-06-30T23:43:27.116Z",
         "event": "deactivated",
-        "id": 175,
+        "id": 335,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+        "versionId": "2456c00c-fdd6-4ecb-a97b-857a4f8c3729",
         "workflowId": "YN6uIteF2X5BAo85"
       },
       {
-        "createdAt": "2026-06-18T07:30:42.547Z",
+        "createdAt": "2026-06-30T23:43:27.129Z",
         "event": "activated",
-        "id": 176,
+        "id": 336,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+        "versionId": "2456c00c-fdd6-4ecb-a97b-857a4f8c3729",
         "workflowId": "YN6uIteF2X5BAo85"
       },
       {
-        "createdAt": "2026-06-18T07:30:42.647Z",
+        "createdAt": "2026-06-30T23:43:32.058Z",
         "event": "deactivated",
-        "id": 177,
+        "id": 339,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+        "versionId": "2456c00c-fdd6-4ecb-a97b-857a4f8c3729",
         "workflowId": "YN6uIteF2X5BAo85"
       },
       {
-        "createdAt": "2026-06-18T07:30:42.667Z",
+        "createdAt": "2026-06-30T23:43:32.071Z",
         "event": "activated",
-        "id": 178,
+        "id": 340,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+        "versionId": "2456c00c-fdd6-4ecb-a97b-857a4f8c3729",
         "workflowId": "YN6uIteF2X5BAo85"
       }
     ]
   },
-  "activeVersionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71",
+  "activeVersionId": "2456c00c-fdd6-4ecb-a97b-857a4f8c3729",
   "connections": {
     "Figma 렌더": {
       "main": [
@@ -288,18 +300,30 @@
       "id": "d994bf14-4c2a-4ca7-924c-1e5919f4119f",
       "name": "Vision 시작",
       "parameters": {
-        "httpMethod": "POST",
-        "options": {},
-        "path": "figma-vision",
-        "responseMode": "lastNode"
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "nodeId",
+              "type": "string"
+            },
+            {
+              "name": "question",
+              "type": "string"
+            },
+            {
+              "name": "fileKey",
+              "type": "string"
+            }
+          ]
+        }
       },
       "position": [
         0,
         0
       ],
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2.1,
-      "webhookId": "084e4216-af62-4a67-b440-ed05a178977b"
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
     },
     {
       "credentials": {
@@ -315,7 +339,7 @@
         "genericAuthType": "httpHeaderAuth",
         "method": "GET",
         "options": {},
-        "url": "=https://api.figma.com/v1/images/{{ $json.body.fileKey || '3Ifh58l7EWLXapWRys0vjf' }}?ids={{ $json.body.nodeId || '10914-6407' }}&format=png&scale=2"
+        "url": "=https://api.figma.com/v1/images/{{ $json.fileKey || '3Ifh58l7EWLXapWRys0vjf' }}?ids={{ $json.nodeId || '10914-6407' }}&format=png&scale=2"
       },
       "position": [
         220,
@@ -328,7 +352,7 @@
       "id": "e3c47a47-03fd-45dc-90b9-732883180353",
       "name": "URL 추출",
       "parameters": {
-        "jsCode": "const imgs=$json.images||{};const url=Object.values(imgs)[0]||'';const inp=($('Vision 시작').first().json.body)||{};if(!url)throw new Error('Figma 렌더 실패: '+JSON.stringify($json).slice(0,200));return [{json:{url:url,nodeId:inp.nodeId,question:inp.question||''}}];"
+        "jsCode": "const imgs=$json.images||{};const url=Object.values(imgs)[0]||'';const inp=($('Vision 시작').first().json)||{};if(!url)throw new Error('Figma 렌더 실패: '+JSON.stringify($json).slice(0,200));return [{json:{url:url,nodeId:inp.nodeId,question:inp.question||''}}];"
       },
       "position": [
         440,
@@ -427,8 +451,8 @@
   ],
   "staticData": null,
   "tags": [],
-  "triggerCount": 1,
-  "updatedAt": "2026-06-19T04:48:34.377Z",
-  "versionCounter": 12,
-  "versionId": "cf0b0c85-06d6-4561-8ba7-0e5e27f78c71"
+  "triggerCount": 0,
+  "updatedAt": "2026-06-30T23:43:27.047Z",
+  "versionCounter": 17,
+  "versionId": "2456c00c-fdd6-4ecb-a97b-857a4f8c3729"
 }
