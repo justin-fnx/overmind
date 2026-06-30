@@ -30,6 +30,15 @@ n8n/
     wf-reset.json           # WF-Reset · 기획 재검토 리셋    (id 40VRRfs2eAoTlsYH)
 ```
 
+## 보안 — 외부 노출 표면 (2026-07-01 검토)
+
+전체 검토·잔여 조치: `../docs/n8n-external-exposure-review.md`.
+
+- **공개 웹훅(`n8n-webhook.bomapp.co.kr/webhook/*`)은 crown-jewel 표면**(뚫리면 Notion/GitLab/ES/Slack 자산 유출). 새 워크플로우 트리거를 공개 웹훅으로 둘 땐 반드시 인증(headerAuth)·서명검증을 건다.
+- **워크플로우끼리의 내부 호출은 공개 웹훅 금지.** `executeWorkflow`(일반) / `toolWorkflow`(에이전트 툴)로 인프로세스 호출한다. 과거 `wf-dispatch`·`wf3-handoff`·`figma-vision`이 공개 무인증 웹훅으로 서로를 호출하던 것을 2026-07-01 전부 `executeWorkflowTrigger` 서브워크플로우로 전환해 엔드포인트를 제거했다.
+- 현재 외부 POST 표면 = `ai-review-request`(WF1, headerAuth) · `overmind-slack-interactions`(WF2, Slack) · `botmap-slack-events`(봇맵, Slack). Slack 2종은 서명검증 미적용(권고, 위 문서 §2).
+- 에디터/REST(`n8n.bomapp.co.kr`)는 공개 IP에 Host 헤더로 도달 가능 → nginx에서 VPN/사무실 CIDR로 폐쇄 권고(인프라).
+
 ## (재)검토 트리거 — Notion 버튼 → 인증 웹훅 + WF-Reset
 
 기획 검토는 **TASK DB(`fd91ec8d…`)의 `🔁 AI 검토 요청` 버튼(button 타입)** 클릭으로 발화한다(최초 검토·재검토 동일). 폴링 없음.
