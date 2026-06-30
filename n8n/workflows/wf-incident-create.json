@@ -1,0 +1,220 @@
+{
+  "active": false,
+  "activeVersion": null,
+  "activeVersionId": null,
+  "connections": {
+    "본문 구성": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "행 생성",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "입력": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "본문 구성",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "행 생성": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "결과 정리",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-06-30T00:04:43.565Z",
+  "description": null,
+  "id": "Kbd0fVok16El7Zsr",
+  "isArchived": false,
+  "meta": null,
+  "name": "Overmind · 장애 대응 기록 생성",
+  "nodes": [
+    {
+      "id": "2a317e59-3895-4bc3-9eb9-54f4a53a51f6",
+      "name": "입력",
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "name": "occurredAt",
+              "type": "string"
+            },
+            {
+              "name": "service",
+              "type": "string"
+            },
+            {
+              "name": "severity",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "string"
+            },
+            {
+              "name": "symptom",
+              "type": "string"
+            },
+            {
+              "name": "cause",
+              "type": "string"
+            },
+            {
+              "name": "action",
+              "type": "string"
+            },
+            {
+              "name": "followup",
+              "type": "string"
+            },
+            {
+              "name": "reporter",
+              "type": "string"
+            },
+            {
+              "name": "logRefs",
+              "type": "string"
+            },
+            {
+              "name": "sourceLink",
+              "type": "string"
+            },
+            {
+              "name": "trust",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "0536b02b-1e1c-443a-8821-6b676d15fa89",
+      "name": "본문 구성",
+      "parameters": {
+        "jsCode": "const inp = ($json && typeof $json === 'object') ? $json : {};\nconst S = function(v){ return String(v==null?'':v).trim(); };\nconst title = S(inp.title) || '(제목 없음)';\nconst occurredAt = S(inp.occurredAt);\nconst service = S(inp.service);\nconst severity = S(inp.severity);\nconst status = S(inp.status);\nconst symptom = S(inp.symptom);\nconst cause = S(inp.cause);\nconst action = S(inp.action);\nconst followup = S(inp.followup);\nconst reporter = S(inp.reporter);\nconst logRefs = S(inp.logRefs);\nconst sourceLink = S(inp.sourceLink);\nconst trust = S(inp.trust);\nconst SERVICES = ['wings-api','bomapp-api','mydata-api','mydata-agent','chat-api','open-api','next-frontend','infra','기타'];\nconst SEV = ['Critical','High','Medium','Low'];\nconst STT = ['발생 중','복구 완료','후속 조치 중'];\nconst TRUST = ['확정','AI추가','검토필요'];\nconst sev = SEV.indexOf(severity) >= 0 ? severity : 'Medium';\nconst st = STT.indexOf(status) >= 0 ? status : '발생 중';\nconst start = occurredAt || new Date().toISOString();\nconst props = {};\nprops['제목'] = { title: [{ text: { content: title.slice(0,2000) } }] };\nprops['발생일시'] = { date: { start: start } };\nprops['서비스/API'] = { select: { name: SERVICES.indexOf(service) >= 0 ? service : '기타' } };\nprops['심각도'] = { select: { name: sev } };\nprops['상태'] = { select: { name: st } };\nprops['신뢰등급'] = { select: { name: TRUST.indexOf(trust) >= 0 ? trust : 'AI추가' } };\nif (cause) props['원인 요약'] = { rich_text: [{ text: { content: cause.slice(0,2000) } }] };\nif (action) props['조치 내용'] = { rich_text: [{ text: { content: action.slice(0,2000) } }] };\nif (followup) props['후속 과제'] = { rich_text: [{ text: { content: followup.slice(0,2000) } }] };\nconst h2 = function(t){ return { object:'block', type:'heading_2', heading_2:{ rich_text:[{ type:'text', text:{ content: String(t).slice(0,1900) } }] } }; };\nconst para = function(t){ return { object:'block', type:'paragraph', paragraph:{ rich_text:[{ type:'text', text:{ content: String(t).slice(0,1900) } }] } }; };\nconst bullet = function(t){ return { object:'block', type:'bulleted_list_item', bulleted_list_item:{ rich_text:[{ type:'text', text:{ content: String(t).slice(0,1900) } }] } }; };\nconst blocks = [];\nblocks.push(h2('개요'));\nblocks.push(bullet('발생 시점: ' + start));\nblocks.push(bullet('영향 서비스/API: ' + (service || '미상')));\nblocks.push(bullet('심각도: ' + sev + ' / 상태: ' + st));\nif (reporter) blocks.push(bullet('보고자/담당: ' + reporter));\nconst addSec = function(t, body){ blocks.push(h2(t)); blocks.push(para(body ? body : '(미기재)')); };\naddSec('증상', symptom);\naddSec('원인', cause);\naddSec('조치', action);\naddSec('후속 과제', followup);\nif (logRefs) {\n  blocks.push(h2('🔎 관련 로그·메트릭 (Elasticsearch)'));\n  const lines = logRefs.split(String.fromCharCode(10)).map(function(s){ return s.trim(); }).filter(function(s){ return s; });\n  (lines.length ? lines : ['(기재 없음)']).forEach(function(l){ blocks.push(bullet(l)); });\n}\nif (sourceLink) { blocks.push({ object:'block', type:'divider', divider:{} }); blocks.push(para('출처: ' + sourceLink)); }\nconst payload = { parent: { database_id: 'cecdb9670ad04e2eab141221cb27b52a' }, properties: props, children: blocks };\nreturn [{ json: { payload: payload } }];",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        220,
+        0
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "notionApi": {
+          "id": "b03vHUApw6s0O5jS",
+          "name": "Notion account"
+        }
+      },
+      "id": "f8687de2-2ebd-448d-979f-bf30b9ce5950",
+      "name": "행 생성",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Notion-Version",
+              "value": "2022-06-28"
+            }
+          ]
+        },
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "method": "POST",
+        "nodeCredentialType": "notionApi",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        },
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "keypair",
+        "url": "https://api.notion.com/v1/pages"
+      },
+      "position": [
+        440,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    },
+    {
+      "id": "bd03c464-cac6-4c98-80a6-e7854817d6b6",
+      "name": "결과 정리",
+      "parameters": {
+        "jsCode": "const r = $json || {};\nif (r.id) return [{ json: { ok:true, text: '장애 기록 생성 완료. id=' + r.id + (r.url ? (' url=' + r.url) : '') } }];\nconst msg = r.message || (r.error && r.error.message) || JSON.stringify(r).slice(0,400);\nreturn [{ json: { ok:false, text: '장애 기록 생성 실패: ' + msg } }];",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        660,
+        0
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "availableInMCP": true,
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2026-06-30T00:04:43.565Z",
+      "project": {
+        "createdAt": "2026-05-27T07:22:23.960Z",
+        "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "description": null,
+        "icon": null,
+        "id": "501Q7eGEKoHjxZfp",
+        "name": "재은 김 <justin@bomapp.co.kr>",
+        "type": "personal",
+        "updatedAt": "2026-05-27T07:24:05.558Z"
+      },
+      "projectId": "501Q7eGEKoHjxZfp",
+      "role": "workflow:owner",
+      "updatedAt": "2026-06-30T00:04:43.565Z",
+      "workflowId": "Kbd0fVok16El7Zsr"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-06-30T00:52:37.756Z",
+  "versionCounter": 3,
+  "versionId": "99524401-dacc-458d-9ef3-f8134c7d8a94"
+}
