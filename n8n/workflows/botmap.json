@@ -103,12 +103,23 @@
           ]
         ]
       },
+      "Slack HMAC": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "서명 판정",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Slack 이벤트 수신": {
         "main": [
           [
             {
               "index": 0,
-              "node": "URL 검증?",
+              "node": "서명 준비",
               "type": "main"
             }
           ]
@@ -160,6 +171,28 @@
             {
               "index": 0,
               "node": "스레드에서 호출?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "서명 준비": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Slack HMAC",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "서명 판정": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "URL 검증?",
               "type": "main"
             }
           ]
@@ -239,7 +272,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-30T00:53:32.588Z",
+    "createdAt": "2026-07-01T03:37:24.685Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -248,6 +281,9 @@
         "name": "Slack 이벤트 수신",
         "parameters": {
           "httpMethod": "POST",
+          "options": {
+            "rawBody": true
+          },
           "path": "botmap-slack-events",
           "responseMode": "responseNode"
         },
@@ -1144,47 +1180,99 @@
         ],
         "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
         "typeVersion": 2.2
+      },
+      {
+        "id": "sigprep-bm",
+        "name": "서명 준비",
+        "parameters": {
+          "jsCode": "const wh=$('Slack 이벤트 수신').first(); const j=wh.json||{}; const h=j.headers||{};\nconst ts=String(h['x-slack-request-timestamp']||''); const sig=String(h['x-slack-signature']||'');\nlet raw=''; try{ const b=wh.binary; if(b&&b.data&&b.data.data) raw=Buffer.from(b.data.data,'base64').toString('utf8'); }catch(e){}\nconst secret=($env&&$env.SLACK_SIGNING_SECRET)||''; const now=Math.floor(Date.now()/1000);\nconst fresh=!!ts && Math.abs(now-Number(ts))<=300;\nreturn [{json:{basestring:'v0:'+ts+':'+raw, sig, ts, fresh, skip:(secret.length===0)}}];",
+          "mode": "runOnceForAllItems"
+        },
+        "position": [
+          420,
+          580
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "crypto": {
+            "id": "T80aJ1PR0xCvm7kY",
+            "name": "Slack Signing Secret"
+          }
+        },
+        "id": "sighmac-bm",
+        "name": "Slack HMAC",
+        "parameters": {
+          "action": "hmac",
+          "binaryData": false,
+          "dataPropertyName": "computedHmac",
+          "encoding": "hex",
+          "type": "SHA256",
+          "value": "={{ $json.basestring }}"
+        },
+        "position": [
+          600,
+          580
+        ],
+        "type": "n8n-nodes-base.crypto",
+        "typeVersion": 2
+      },
+      {
+        "id": "sigjudge-bm",
+        "name": "서명 판정",
+        "parameters": {
+          "jsCode": "const it=$input.first().json; const expected='v0='+(it.computedHmac||'');\nconst ok = it.skip || (it.fresh && expected===it.sig);\nif(!ok){ return []; }\nconst wh=$('Slack 이벤트 수신').first();\nreturn [{json: wh.json, binary: wh.binary}];",
+          "mode": "runOnceForAllItems"
+        },
+        "position": [
+          780,
+          580
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
       }
     ],
-    "updatedAt": "2026-06-30T00:53:32.588Z",
-    "versionId": "9c704a02-1cf2-41fb-869f-f121666191e6",
+    "updatedAt": "2026-07-01T03:37:24.685Z",
+    "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
     "workflowId": "hOsWherqkbKRzGH1",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-30T00:53:40.936Z",
+        "createdAt": "2026-07-01T03:37:24.763Z",
         "event": "deactivated",
-        "id": 333,
+        "id": 392,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "9c704a02-1cf2-41fb-869f-f121666191e6",
+        "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-06-30T00:53:40.968Z",
+        "createdAt": "2026-07-01T03:37:24.793Z",
         "event": "activated",
-        "id": 334,
+        "id": 393,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "9c704a02-1cf2-41fb-869f-f121666191e6",
+        "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-06-30T00:53:32.666Z",
+        "createdAt": "2026-07-01T03:37:31.773Z",
         "event": "deactivated",
-        "id": 331,
+        "id": 396,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "9c704a02-1cf2-41fb-869f-f121666191e6",
+        "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-06-30T00:53:32.699Z",
+        "createdAt": "2026-07-01T03:37:31.793Z",
         "event": "activated",
-        "id": 332,
+        "id": 397,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "9c704a02-1cf2-41fb-869f-f121666191e6",
+        "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
         "workflowId": "hOsWherqkbKRzGH1"
       }
     ]
   },
-  "activeVersionId": "9c704a02-1cf2-41fb-869f-f121666191e6",
+  "activeVersionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
   "connections": {
     "Bedrock Claude Sonnet 4.6": {
       "ai_languageModel": [
@@ -1285,12 +1373,23 @@
         ]
       ]
     },
+    "Slack HMAC": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "서명 판정",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "Slack 이벤트 수신": {
       "main": [
         [
           {
             "index": 0,
-            "node": "URL 검증?",
+            "node": "서명 준비",
             "type": "main"
           }
         ]
@@ -1342,6 +1441,28 @@
           {
             "index": 0,
             "node": "스레드에서 호출?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "서명 준비": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Slack HMAC",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "서명 판정": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "URL 검증?",
             "type": "main"
           }
         ]
@@ -1436,6 +1557,9 @@
       "name": "Slack 이벤트 수신",
       "parameters": {
         "httpMethod": "POST",
+        "options": {
+          "rawBody": true
+        },
         "path": "botmap-slack-events",
         "responseMode": "responseNode"
       },
@@ -2332,6 +2456,58 @@
       ],
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2
+    },
+    {
+      "id": "sigprep-bm",
+      "name": "서명 준비",
+      "parameters": {
+        "jsCode": "const wh=$('Slack 이벤트 수신').first(); const j=wh.json||{}; const h=j.headers||{};\nconst ts=String(h['x-slack-request-timestamp']||''); const sig=String(h['x-slack-signature']||'');\nlet raw=''; try{ const b=wh.binary; if(b&&b.data&&b.data.data) raw=Buffer.from(b.data.data,'base64').toString('utf8'); }catch(e){}\nconst secret=($env&&$env.SLACK_SIGNING_SECRET)||''; const now=Math.floor(Date.now()/1000);\nconst fresh=!!ts && Math.abs(now-Number(ts))<=300;\nreturn [{json:{basestring:'v0:'+ts+':'+raw, sig, ts, fresh, skip:(secret.length===0)}}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        420,
+        580
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "crypto": {
+          "id": "T80aJ1PR0xCvm7kY",
+          "name": "Slack Signing Secret"
+        }
+      },
+      "id": "sighmac-bm",
+      "name": "Slack HMAC",
+      "parameters": {
+        "action": "hmac",
+        "binaryData": false,
+        "dataPropertyName": "computedHmac",
+        "encoding": "hex",
+        "type": "SHA256",
+        "value": "={{ $json.basestring }}"
+      },
+      "position": [
+        600,
+        580
+      ],
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2
+    },
+    {
+      "id": "sigjudge-bm",
+      "name": "서명 판정",
+      "parameters": {
+        "jsCode": "const it=$input.first().json; const expected='v0='+(it.computedHmac||'');\nconst ok = it.skip || (it.fresh && expected===it.sig);\nif(!ok){ return []; }\nconst wh=$('Slack 이벤트 수신').first();\nreturn [{json: wh.json, binary: wh.binary}];",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        780,
+        580
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
     }
   ],
   "pinData": {},
@@ -2362,7 +2538,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-30T00:53:32.586Z",
-  "versionCounter": 71,
-  "versionId": "9c704a02-1cf2-41fb-869f-f121666191e6"
+  "updatedAt": "2026-07-01T03:37:24.683Z",
+  "versionCounter": 80,
+  "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c"
 }
