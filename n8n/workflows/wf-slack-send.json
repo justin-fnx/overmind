@@ -1,0 +1,279 @@
+{
+  "active": true,
+  "activeVersion": {
+    "authors": "재은 김",
+    "autosaved": false,
+    "connections": {
+      "전송 요청 수신": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "조각 나누기",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "조각 나누기": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Slack 전송",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2026-07-03T08:47:28.647Z",
+    "description": null,
+    "name": null,
+    "nodes": [
+      {
+        "id": "425591da-7604-4219-b104-f16235e23bef",
+        "name": "전송 요청 수신",
+        "parameters": {
+          "inputSource": "workflowInputs",
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "channel",
+                "type": "string"
+              },
+              {
+                "name": "text",
+                "type": "string"
+              },
+              {
+                "name": "threadTs",
+                "type": "string"
+              },
+              {
+                "name": "updateTs",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "de4df345-92de-484b-ac3d-2debbaddb778",
+        "name": "조각 나누기",
+        "parameters": {
+          "jsCode": "const MAXB = 2500;\nconst NL = String.fromCharCode(10);\nconst FENCE = String.fromCharCode(96) + String.fromCharCode(96) + String.fromCharCode(96);\nconst enc = new TextEncoder();\nfunction blen(s){ return enc.encode(s).length; }\nconst it = $input.first().json || {};\nconst channel = String(it.channel || '');\nconst text = (it.text == null) ? '' : String(it.text);\nconst threadTs = it.threadTs ? String(it.threadTs) : '';\nconst updateTs = it.updateTs ? String(it.updateTs) : '';\nconst threadEff = threadTs || updateTs;\nfunction hardSplit(line, maxb){ var out=[]; var cur=''; var arr=Array.from(line); for(var i=0;i<arr.length;i++){ var ch=arr[i]; if(blen(cur+ch)>maxb){ if(cur)out.push(cur); cur=ch; } else { cur+=ch; } } if(cur)out.push(cur); return out.length?out:['']; }\nfunction splitText(s, maxb){ if(!s) return ['']; var lines=s.split(NL); var chunks=[]; var cur=''; for(var i=0;i<lines.length;i++){ var line=lines[i]; var pieces=(blen(line)>maxb)?hardSplit(line,maxb):[line]; for(var k=0;k<pieces.length;k++){ var piece=pieces[k]; var cand=cur?(cur+NL+piece):piece; if(blen(cand)>maxb){ if(cur)chunks.push(cur); cur=piece; } else { cur=cand; } } } if(cur)chunks.push(cur); return chunks.length?chunks:['']; }\nvar chunks = splitText(text, MAXB);\nvar fixed=[]; var carry=null;\nfor(var i=0;i<chunks.length;i++){ var c=chunks[i]; if(carry!==null){ c=FENCE+carry+NL+c; } var fc=c.split(FENCE).length-1; carry=null; if(fc%2===1){ var lo=c.lastIndexOf(FENCE); var after=c.slice(lo+3); carry=(after.split(NL)[0]||'').trim(); c=c+NL+FENCE; } fixed.push(c); }\nchunks=fixed;\nvar total=chunks.length; var out=[];\nfor(var i=0;i<chunks.length;i++){ var isFirst=(i===0); var useUpdate=isFirst && !!updateTs; var label=(total>1)?(NL+NL+'_('+(i+1)+'/'+total+')_'):''; var body={channel:channel, text:chunks[i]+label}; if(useUpdate){ body.ts=updateTs; } else if(threadEff){ body.thread_ts=threadEff; } out.push({json:{apiUrl: useUpdate?'https://slack.com/api/chat.update':'https://slack.com/api/chat.postMessage', body:body, idx:i, total:total}}); }\nreturn out;",
+          "language": "javaScript",
+          "mode": "runOnceForAllItems"
+        },
+        "position": [
+          224,
+          0
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "slackApi": {
+            "id": "bjozecrw9OnFT8Lf",
+            "name": "Botmap"
+          }
+        },
+        "id": "5eb82808-a4f3-44a0-92b9-215f05f75759",
+        "name": "Slack 전송",
+        "parameters": {
+          "authentication": "predefinedCredentialType",
+          "contentType": "json",
+          "jsonBody": "={{ $json.body }}",
+          "method": "POST",
+          "nodeCredentialType": "slackApi",
+          "options": {
+            "batching": {
+              "batch": {
+                "batchInterval": 400,
+                "batchSize": 1
+              }
+            }
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "url": "={{ $json.apiUrl }}"
+        },
+        "position": [
+          448,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4
+      }
+    ],
+    "updatedAt": "2026-07-03T08:47:28.647Z",
+    "versionId": "bb895c29-775f-47fc-bc84-eb6f860da426",
+    "workflowId": "Vmgmo0MP7v2ghMD0",
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-07-03T08:49:38.365Z",
+        "event": "activated",
+        "id": 409,
+        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "versionId": "bb895c29-775f-47fc-bc84-eb6f860da426",
+        "workflowId": "Vmgmo0MP7v2ghMD0"
+      }
+    ]
+  },
+  "activeVersionId": "bb895c29-775f-47fc-bc84-eb6f860da426",
+  "connections": {
+    "전송 요청 수신": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "조각 나누기",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "조각 나누기": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Slack 전송",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2026-07-03T07:55:25.006Z",
+  "description": "호출 워크플로우가 넘긴 Slack 메시지를 2900자 이하 조각으로 자동 분할해 전송한다. updateTs가 있으면 첫 조각은 chat.update로 placeholder를 교체하고 나머지는 thread_ts로 이어붙인다(chat.postMessage). msg_too_long 방지용 공용 전송기.",
+  "id": "Vmgmo0MP7v2ghMD0",
+  "isArchived": false,
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp"
+  },
+  "name": "Overmind · Slack 안전 전송(자동 분할)",
+  "nodes": [
+    {
+      "id": "425591da-7604-4219-b104-f16235e23bef",
+      "name": "전송 요청 수신",
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "channel",
+              "type": "string"
+            },
+            {
+              "name": "text",
+              "type": "string"
+            },
+            {
+              "name": "threadTs",
+              "type": "string"
+            },
+            {
+              "name": "updateTs",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "de4df345-92de-484b-ac3d-2debbaddb778",
+      "name": "조각 나누기",
+      "parameters": {
+        "jsCode": "const MAXB = 2500;\nconst NL = String.fromCharCode(10);\nconst FENCE = String.fromCharCode(96) + String.fromCharCode(96) + String.fromCharCode(96);\nconst enc = new TextEncoder();\nfunction blen(s){ return enc.encode(s).length; }\nconst it = $input.first().json || {};\nconst channel = String(it.channel || '');\nconst text = (it.text == null) ? '' : String(it.text);\nconst threadTs = it.threadTs ? String(it.threadTs) : '';\nconst updateTs = it.updateTs ? String(it.updateTs) : '';\nconst threadEff = threadTs || updateTs;\nfunction hardSplit(line, maxb){ var out=[]; var cur=''; var arr=Array.from(line); for(var i=0;i<arr.length;i++){ var ch=arr[i]; if(blen(cur+ch)>maxb){ if(cur)out.push(cur); cur=ch; } else { cur+=ch; } } if(cur)out.push(cur); return out.length?out:['']; }\nfunction splitText(s, maxb){ if(!s) return ['']; var lines=s.split(NL); var chunks=[]; var cur=''; for(var i=0;i<lines.length;i++){ var line=lines[i]; var pieces=(blen(line)>maxb)?hardSplit(line,maxb):[line]; for(var k=0;k<pieces.length;k++){ var piece=pieces[k]; var cand=cur?(cur+NL+piece):piece; if(blen(cand)>maxb){ if(cur)chunks.push(cur); cur=piece; } else { cur=cand; } } } if(cur)chunks.push(cur); return chunks.length?chunks:['']; }\nvar chunks = splitText(text, MAXB);\nvar fixed=[]; var carry=null;\nfor(var i=0;i<chunks.length;i++){ var c=chunks[i]; if(carry!==null){ c=FENCE+carry+NL+c; } var fc=c.split(FENCE).length-1; carry=null; if(fc%2===1){ var lo=c.lastIndexOf(FENCE); var after=c.slice(lo+3); carry=(after.split(NL)[0]||'').trim(); c=c+NL+FENCE; } fixed.push(c); }\nchunks=fixed;\nvar total=chunks.length; var out=[];\nfor(var i=0;i<chunks.length;i++){ var isFirst=(i===0); var useUpdate=isFirst && !!updateTs; var label=(total>1)?(NL+NL+'_('+(i+1)+'/'+total+')_'):''; var body={channel:channel, text:chunks[i]+label}; if(useUpdate){ body.ts=updateTs; } else if(threadEff){ body.thread_ts=threadEff; } out.push({json:{apiUrl: useUpdate?'https://slack.com/api/chat.update':'https://slack.com/api/chat.postMessage', body:body, idx:i, total:total}}); }\nreturn out;",
+        "language": "javaScript",
+        "mode": "runOnceForAllItems"
+      },
+      "position": [
+        224,
+        0
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "credentials": {
+        "slackApi": {
+          "id": "bjozecrw9OnFT8Lf",
+          "name": "Botmap"
+        }
+      },
+      "id": "5eb82808-a4f3-44a0-92b9-215f05f75759",
+      "name": "Slack 전송",
+      "parameters": {
+        "authentication": "predefinedCredentialType",
+        "contentType": "json",
+        "jsonBody": "={{ $json.body }}",
+        "method": "POST",
+        "nodeCredentialType": "slackApi",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchInterval": 400,
+              "batchSize": 1
+            }
+          }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "url": "={{ $json.apiUrl }}"
+      },
+      "position": [
+        448,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4
+    }
+  ],
+  "pinData": null,
+  "settings": {
+    "availableInMCP": true,
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "createdAt": "2026-07-03T07:55:25.006Z",
+      "project": {
+        "createdAt": "2026-05-27T07:22:23.960Z",
+        "creatorId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
+        "description": null,
+        "icon": null,
+        "id": "501Q7eGEKoHjxZfp",
+        "name": "재은 김 <justin@bomapp.co.kr>",
+        "type": "personal",
+        "updatedAt": "2026-05-27T07:24:05.558Z"
+      },
+      "projectId": "501Q7eGEKoHjxZfp",
+      "role": "workflow:owner",
+      "updatedAt": "2026-07-03T07:55:25.006Z",
+      "workflowId": "Vmgmo0MP7v2ghMD0"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-07-03T08:47:28.645Z",
+  "versionCounter": 9,
+  "versionId": "bb895c29-775f-47fc-bc84-eb6f860da426"
+}

@@ -10,7 +10,7 @@ if [ -f .env ]; then set -a; . ./.env; set +a; fi
 : "${N8N_API_URL:?N8N_API_URL not set (n8n/.env 참고)}"
 : "${N8N_API_KEY:?N8N_API_KEY not set (n8n/.env 참고)}"
 
-WF_NAMES="wf1-context-gate wf2-listener wf3-handoff figma-vision wf-dispatch wf-watch wf-cleanup wf-enrich wf-notion-read wf-reset botmap wf-hub-create wf-incident-create"
+WF_NAMES="wf1-context-gate wf2-listener wf3-handoff figma-vision wf-dispatch wf-watch wf-cleanup wf-enrich wf-notion-read wf-reset botmap wf-hub-create wf-incident-create wf-slack-send"
 
 wf_id() {
   case "$1" in
@@ -27,6 +27,7 @@ wf_id() {
     botmap)           echo "hOsWherqkbKRzGH1" ;;
     wf-hub-create)    echo "XscK94nIO5wtbFiO" ;;
     wf-incident-create) echo "Kbd0fVok16El7Zsr" ;;
+    wf-slack-send)    echo "Vmgmo0MP7v2ghMD0" ;;
     *) echo "알 수 없는 워크플로우: $1 (가능: ${WF_NAMES})" >&2; return 1 ;;
   esac
 }

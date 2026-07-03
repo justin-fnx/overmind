@@ -28,7 +28,13 @@ n8n/
     wf-notion-read.json     # 서브WF · Notion 전문 읽기(표)  (id QHVMJ3uFEwlzumw3)
     figma-vision.json       # 서브WF · Figma 비전           (id YN6uIteF2X5BAo85)
     wf-reset.json           # WF-Reset · 기획 재검토 리셋    (id 40VRRfs2eAoTlsYH)
+    botmap.json             # 봇맵 · Slack 에이전트          (id hOsWherqkbKRzGH1)
+    wf-hub-create.json      # 서브WF · Context Hub 카드 생성  (id XscK94nIO5wtbFiO)
+    wf-incident-create.json # 서브WF · 장애 대응 기록 생성    (id Kbd0fVok16El7Zsr)
+    wf-slack-send.json      # 서브WF · Slack 안전 전송(자동 분할, msg_too_long 방지) (id Vmgmo0MP7v2ghMD0)
 ```
+
+`wf-slack-send` = 긴 Slack 메시지를 자동 분할해 보내는 공용 전송기. 입력 `{channel, text, threadTs, updateTs}` — `updateTs` 가 있으면 첫 조각은 chat.update 로 placeholder 를 교체하고 나머지는 thread_ts 로 이어붙인다(raw HTTP chat.postMessage). **분할 기준은 UTF-8 바이트(MAXB=2,500B)** — Slack `text` 실질 한도가 **≈4,000 바이트**라 한글(3B/자) 메시지는 문자 수로 자르면 안 되고 바이트로 잘라야 함(이게 1차 수정 실패 원인). 줄 경계 우선 + 코드펜스(```) 균형 유지 + `(n/total)` 라벨. 봇맵 `안전 전송`, WF3 `안전 전송` 이 executeWorkflow 로 호출. **새 Slack 전송 에이전트도 이 서브WF 를 호출해 큰 메시지를 안전 처리할 것.**
 
 ## 보안 — 외부 노출 표면 (2026-07-01 검토)
 
