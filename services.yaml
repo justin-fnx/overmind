@@ -49,7 +49,7 @@ services:
   - name: "next-backend"
     repo_url: "gitlab.bomapp.co.kr/bomapp/next-backend"   # 정본=GitLab(project id 40, group bomapp, default prod). 2026-06-16 정본 이전 — 작업은 GitLab MR(glab). github.com/bomapp-inc/next-backend 는 레거시 미러(PR 미사용).
     path: "../next-backend"
-    feature_base_branch: "dev"   # prod=운영, dev=개발통합, feature/*는 dev에서 분기→dev로 MR. docs/git-branching-strategy.md 참조.
+    feature_base_branch: "prod"   # 2026-07-06 트렁크 전환(MR!111): dev 통합 브랜치 폐지, prod 단일 트렁크. ⚠️ 그러나 작업은 rc/* 중심으로 진행한다 — 큰 작업(여러 PR)은 prod에서 rc/<작업이름>을 따고 세부 feature/*는 그 rc/*에서 분기→rc/*로 MR(target-branch=해당 rc/*), 완성 시 rc/*→prod. 단독 소형 피쳐/핫픽스만 prod에서 직접 분기→prod. 따라서 next-backend Task는 먼저 해당 작업의 rc/* 묶음 브랜치를 확인/지정하고 그것을 base·타깃으로 쓴다. docs/git-branching-strategy.md 참조.
     description: "차세대 BOMAPP 백엔드 플랫폼. Gradle 멀티모듈로 5계층(core/internal/domain/external/server) 아키텍처를 구성하고, 9개 마이크로서비스 앱(API, 배치, 채팅, 마이데이터, 웹훅 등)을 단일 리포에서 빌드/배포한다. 보험 상품 조회/추천/판매의 핵심 도메인 로직 담당."
     tech_stack: ["java-21", "spring-boot-3.4", "spring-cloud-2024", "gradle-multi-module", "querydsl", "kafka-msk", "redisson", "jwt", "elastic-apm", "jib", "distroless"]
     critical_paths:

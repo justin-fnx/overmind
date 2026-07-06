@@ -118,7 +118,7 @@
     cd ../<repo>-<task-id>
     ```
   - **`<feature_base_branch>`는 `services.yaml`의 `feature_base_branch` 필드 값을 사용한다.**
-    - `next-backend`: `dev` — MR도 반드시 `dev` 브랜치를 대상으로 생성한다.
+    - `next-backend`: `prod` (2026-07-06 트렁크 전환, MR!111 — `dev` 통합 브랜치 폐지). **단, 작업은 `rc/*` 중심으로 진행한다.** 큰 작업(여러 PR)은 `prod`에서 `rc/<작업이름>`을 따고, 세부 `feature/*`는 그 `rc/*`에서 분기 → `rc/*`로 MR(`--target-branch <해당 rc/*>`), 완성되면 `rc/*` → `prod`로 머지한다. 단독 소형 피쳐·핫픽스만 `prod`에서 직접 분기 → `prod`. 즉 next-backend Task는 먼저 그 작업의 `rc/*` 묶음 브랜치를 확인·지정하고 그것을 base·타깃으로 쓰며, 없을 때만 `prod`를 쓴다.
     - `infra`, `bomapp-vkey`, `next-frontend`, `bomapp-console`: `main`
     - `mydata-agent`: `prod`
     - `mydata-mgmts-api`, `legacy-backend`: `master`
