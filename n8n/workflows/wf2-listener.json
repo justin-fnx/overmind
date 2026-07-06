@@ -423,7 +423,7 @@
         ]
       }
     },
-    "createdAt": "2026-07-01T03:37:24.372Z",
+    "createdAt": "2026-07-06T06:33:25.007Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -1604,7 +1604,7 @@
         "id": "sigprep-wf2",
         "name": "서명 준비",
         "parameters": {
-          "jsCode": "const wh=$('Slack 인터랙션 수신').first(); const j=wh.json||{}; const h=j.headers||{};\nconst ts=String(h['x-slack-request-timestamp']||''); const sig=String(h['x-slack-signature']||'');\nlet raw=''; try{ const b=wh.binary; if(b&&b.data&&b.data.data) raw=Buffer.from(b.data.data,'base64').toString('utf8'); }catch(e){}\nconst secret=($env&&$env.SLACK_SIGNING_SECRET)||''; const now=Math.floor(Date.now()/1000);\nconst fresh=!!ts && Math.abs(now-Number(ts))<=300;\nreturn [{json:{basestring:'v0:'+ts+':'+raw, sig, ts, fresh, skip:(secret.length===0)}}];",
+          "jsCode": "const wh=$('Slack 인터랙션 수신').first(); const j=wh.json||{}; const h=j.headers||{};\nconst ts=String(h['x-slack-request-timestamp']||''); const sig=String(h['x-slack-signature']||'');\nconst cl=Number(h['content-length']||0);\n// Slack 은 application/x-www-form-urlencoded 로 'payload='+form-encoded(JSON) 을 보내고, 그 원본 바이트로 서명한다.\n// 이 n8n 인스턴스는 urlencoded 바디를 $json.body 로 파싱하고 binary(rawBody) 를 비워둔다(라이브 실측 exec 24710:\n// basestring 이 'v0:{ts}:' 로 raw 가 없어 정상 Slack 서명까지 전부 드롭 → 버튼 무반응). 원본 폼 바디를 복원한다.\n// form-urlencoded = RFC3986 percent-encoding + 공백은 '+' + !'()* 도 escape (encodeURIComponent 와 다름).\nfunction slackForm(s){\n  return encodeURIComponent(s)\n    .replace(/[!'()*]/g, function(c){ return '%'+c.charCodeAt(0).toString(16).toUpperCase(); })\n    .replace(/%20/g, '+');\n}\nlet raw='';\ntry{ const b=wh.binary; if(b&&b.data&&b.data.data) raw=Buffer.from(b.data.data,'base64').toString('utf8'); }catch(e){}\nif(!raw){\n  const body=j.body;\n  if(body&&typeof body==='object'&&typeof body.payload==='string') raw='payload='+slackForm(body.payload);\n  else if(typeof body==='string') raw=body;\n  else if(body&&typeof body==='object') raw=JSON.stringify(body);\n}\nconst secret=($env&&$env.SLACK_SIGNING_SECRET)||''; const now=Math.floor(Date.now()/1000);\nconst fresh=!!ts && Math.abs(now-Number(ts))<=300;\n// rawLen==contentLength 이면 복원 바이트가 Slack 원본과 일치(오프라인 검증: exec24710 payload 로 byte-exact 확인). 라이브 자기검증용 노출.\nreturn [{json:{basestring:'v0:'+ts+':'+raw, sig, ts, fresh, skip:(secret.length===0), rawLen:raw.length, contentLength:cl}}];\n",
           "mode": "runOnceForAllItems"
         },
         "position": [
@@ -1653,45 +1653,29 @@
         "typeVersion": 2
       }
     ],
-    "updatedAt": "2026-07-01T03:37:24.372Z",
-    "versionId": "8a5e4b72-9d0d-4367-a642-fadebce485a6",
+    "updatedAt": "2026-07-06T06:33:25.007Z",
+    "versionId": "0801e3cf-541e-41d4-ab17-a1ca8259cfa1",
     "workflowId": "3LyKi5A20HoPrP0p",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-07-01T03:37:24.462Z",
+        "createdAt": "2026-07-06T06:33:25.078Z",
         "event": "deactivated",
-        "id": 390,
+        "id": 414,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "8a5e4b72-9d0d-4367-a642-fadebce485a6",
+        "versionId": "0801e3cf-541e-41d4-ab17-a1ca8259cfa1",
         "workflowId": "3LyKi5A20HoPrP0p"
       },
       {
-        "createdAt": "2026-07-01T03:37:24.490Z",
+        "createdAt": "2026-07-06T06:33:25.104Z",
         "event": "activated",
-        "id": 391,
+        "id": 415,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "8a5e4b72-9d0d-4367-a642-fadebce485a6",
-        "workflowId": "3LyKi5A20HoPrP0p"
-      },
-      {
-        "createdAt": "2026-07-01T03:37:29.322Z",
-        "event": "deactivated",
-        "id": 394,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "8a5e4b72-9d0d-4367-a642-fadebce485a6",
-        "workflowId": "3LyKi5A20HoPrP0p"
-      },
-      {
-        "createdAt": "2026-07-01T03:37:29.347Z",
-        "event": "activated",
-        "id": 395,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "8a5e4b72-9d0d-4367-a642-fadebce485a6",
+        "versionId": "0801e3cf-541e-41d4-ab17-a1ca8259cfa1",
         "workflowId": "3LyKi5A20HoPrP0p"
       }
     ]
   },
-  "activeVersionId": "8a5e4b72-9d0d-4367-a642-fadebce485a6",
+  "activeVersionId": "0801e3cf-541e-41d4-ab17-a1ca8259cfa1",
   "connections": {
     "Slack HMAC": {
       "main": [
@@ -3299,7 +3283,7 @@
       "id": "sigprep-wf2",
       "name": "서명 준비",
       "parameters": {
-        "jsCode": "const wh=$('Slack 인터랙션 수신').first(); const j=wh.json||{}; const h=j.headers||{};\nconst ts=String(h['x-slack-request-timestamp']||''); const sig=String(h['x-slack-signature']||'');\nlet raw=''; try{ const b=wh.binary; if(b&&b.data&&b.data.data) raw=Buffer.from(b.data.data,'base64').toString('utf8'); }catch(e){}\nconst secret=($env&&$env.SLACK_SIGNING_SECRET)||''; const now=Math.floor(Date.now()/1000);\nconst fresh=!!ts && Math.abs(now-Number(ts))<=300;\nreturn [{json:{basestring:'v0:'+ts+':'+raw, sig, ts, fresh, skip:(secret.length===0)}}];",
+        "jsCode": "const wh=$('Slack 인터랙션 수신').first(); const j=wh.json||{}; const h=j.headers||{};\nconst ts=String(h['x-slack-request-timestamp']||''); const sig=String(h['x-slack-signature']||'');\nconst cl=Number(h['content-length']||0);\n// Slack 은 application/x-www-form-urlencoded 로 'payload='+form-encoded(JSON) 을 보내고, 그 원본 바이트로 서명한다.\n// 이 n8n 인스턴스는 urlencoded 바디를 $json.body 로 파싱하고 binary(rawBody) 를 비워둔다(라이브 실측 exec 24710:\n// basestring 이 'v0:{ts}:' 로 raw 가 없어 정상 Slack 서명까지 전부 드롭 → 버튼 무반응). 원본 폼 바디를 복원한다.\n// form-urlencoded = RFC3986 percent-encoding + 공백은 '+' + !'()* 도 escape (encodeURIComponent 와 다름).\nfunction slackForm(s){\n  return encodeURIComponent(s)\n    .replace(/[!'()*]/g, function(c){ return '%'+c.charCodeAt(0).toString(16).toUpperCase(); })\n    .replace(/%20/g, '+');\n}\nlet raw='';\ntry{ const b=wh.binary; if(b&&b.data&&b.data.data) raw=Buffer.from(b.data.data,'base64').toString('utf8'); }catch(e){}\nif(!raw){\n  const body=j.body;\n  if(body&&typeof body==='object'&&typeof body.payload==='string') raw='payload='+slackForm(body.payload);\n  else if(typeof body==='string') raw=body;\n  else if(body&&typeof body==='object') raw=JSON.stringify(body);\n}\nconst secret=($env&&$env.SLACK_SIGNING_SECRET)||''; const now=Math.floor(Date.now()/1000);\nconst fresh=!!ts && Math.abs(now-Number(ts))<=300;\n// rawLen==contentLength 이면 복원 바이트가 Slack 원본과 일치(오프라인 검증: exec24710 payload 로 byte-exact 확인). 라이브 자기검증용 노출.\nreturn [{json:{basestring:'v0:'+ts+':'+raw, sig, ts, fresh, skip:(secret.length===0), rawLen:raw.length, contentLength:cl}}];\n",
         "mode": "runOnceForAllItems"
       },
       "position": [
@@ -3376,7 +3360,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-07-01T03:37:24.370Z",
-  "versionCounter": 103,
-  "versionId": "8a5e4b72-9d0d-4367-a642-fadebce485a6"
+  "updatedAt": "2026-07-06T06:33:25.005Z",
+  "versionCounter": 109,
+  "versionId": "0801e3cf-541e-41d4-ab17-a1ca8259cfa1"
 }

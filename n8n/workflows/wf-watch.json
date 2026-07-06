@@ -71,7 +71,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-30T23:45:25.428Z",
+    "createdAt": "2026-07-06T06:03:49.983Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -185,7 +185,7 @@
         "parameters": {
           "mode": "once",
           "options": {
-            "waitForSubWorkflow": true
+            "waitForSubWorkflow": false
           },
           "source": "database",
           "workflowId": {
@@ -387,45 +387,29 @@
         "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-30T23:45:25.428Z",
-    "versionId": "5132f33d-0938-47cc-94aa-39461864ea06",
+    "updatedAt": "2026-07-06T06:03:49.983Z",
+    "versionId": "6eb19bfd-c340-4592-a792-93b3d4f73c9d",
     "workflowId": "Nivu3hdSDVlL5LrR",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-30T23:45:25.486Z",
+        "createdAt": "2026-07-06T06:03:50.028Z",
         "event": "deactivated",
-        "id": 345,
+        "id": 412,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "5132f33d-0938-47cc-94aa-39461864ea06",
+        "versionId": "6eb19bfd-c340-4592-a792-93b3d4f73c9d",
         "workflowId": "Nivu3hdSDVlL5LrR"
       },
       {
-        "createdAt": "2026-06-30T23:45:25.503Z",
+        "createdAt": "2026-07-06T06:03:50.050Z",
         "event": "activated",
-        "id": 346,
+        "id": 413,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "5132f33d-0938-47cc-94aa-39461864ea06",
-        "workflowId": "Nivu3hdSDVlL5LrR"
-      },
-      {
-        "createdAt": "2026-06-30T23:45:34.261Z",
-        "event": "deactivated",
-        "id": 351,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "5132f33d-0938-47cc-94aa-39461864ea06",
-        "workflowId": "Nivu3hdSDVlL5LrR"
-      },
-      {
-        "createdAt": "2026-06-30T23:45:34.274Z",
-        "event": "activated",
-        "id": 352,
-        "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "5132f33d-0938-47cc-94aa-39461864ea06",
+        "versionId": "6eb19bfd-c340-4592-a792-93b3d4f73c9d",
         "workflowId": "Nivu3hdSDVlL5LrR"
       }
     ]
   },
-  "activeVersionId": "5132f33d-0938-47cc-94aa-39461864ea06",
+  "activeVersionId": "6eb19bfd-c340-4592-a792-93b3d4f73c9d",
   "connections": {
     "WF3 호출": {
       "main": [
@@ -611,7 +595,7 @@
       "parameters": {
         "mode": "once",
         "options": {
-          "waitForSubWorkflow": true
+          "waitForSubWorkflow": false
         },
         "source": "database",
         "workflowId": {
@@ -844,7 +828,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-30T23:45:25.427Z",
-  "versionCounter": 28,
-  "versionId": "5132f33d-0938-47cc-94aa-39461864ea06"
+  "updatedAt": "2026-07-06T06:03:49.982Z",
+  "versionCounter": 32,
+  "versionId": "6eb19bfd-c340-4592-a792-93b3d4f73c9d"
 }
