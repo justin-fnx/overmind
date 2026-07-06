@@ -58,13 +58,14 @@ legacy-backend/
 | `vkey.bomapp.co.kr` | PROD | 8080 | **별개 프로젝트** [`bomapp-inc/transkey_servlet`](https://github.com/bomapp-inc/transkey_servlet) (Tomcat 9.0.45 WAR, `bm.service=bomapp_key`, PID 1205) ✓ — legacy-backend 가 아님. 라온시큐어 TouchEn 가상키보드 복호화 서블릿, 청구 플로우 주민번호 입력용. PROD-BACK 공용 WAS 컨테이너에 같이 떠 있어서 표에 함께 기재. [상세 서비스 문서](./bomapp-vkey.md) |
 | `f.bomapp.co.kr` | PROD | — | webview_server / 정적 파일 (CloudFront 경유 추정) |
 | `az.bomappworks.com` | PROD | 3001 (frontend ALB) | legacy az frontend |
-| `api-was1.bomapp.co.kr` `(10.1.1.10)` | PROD | — | 레거시 직접 호스트 (ECS 외) |
-| `api-was2.bomapp.co.kr` `(10.1.1.20)` | PROD | — | 레거시 직접 호스트 |
-| `mapi-was1.bomapp.co.kr` `(10.1.1.17)` | PROD | — | 레거시 mydata-api 직접 호스트 |
-| `mapi-was2.bomapp.co.kr` `(10.1.1.194)` | PROD | — | 레거시 mydata-api 직접 호스트 |
-| `batch-was.bomapp.co.kr` `(10.1.1.116)` | PROD | — | 레거시 batch 직접 호스트 |
+| ~~`api-was1.bomapp.co.kr`~~ `(10.1.1.10)` | PROD | — | 레거시 직접 호스트 (ECS 외) — **DNS 제거 2026-07-03** |
+| ~~`api-was2.bomapp.co.kr`~~ `(10.1.1.20)` | PROD | — | 레거시 직접 호스트 — **DNS 제거**; IP=현 PROD-BACK 존치(oauth/vkey config가 raw IP 참조) |
+| ~~`mapi-was1.bomapp.co.kr`~~ `(10.1.1.17)` | PROD | — | 레거시 mydata-api 직접 호스트 — **DNS 제거** |
+| ~~`mapi-was2.bomapp.co.kr`~~ `(10.1.1.194)` | PROD | — | 레거시 mydata-api 직접 호스트 — **DNS 제거** |
+| `batch-was.bomapp.co.kr` `(10.1.1.116)` | PROD | — | 레거시 batch 직접 호스트 (DNS 존치) |
 
 > 직접 호스트 도메인은 ECS 가 아닌 EC2 인스턴스에 직접 떠 있으며, Route53 A 레코드로 IP 매핑되어 있다. 정리(이관) 대상.
+> **2026-07-03 갱신**: 미사용 vanity DNS `api-was1/2`·`mapi-was1/2`·`front-was` A 레코드 제거(infra MR!67, 실사용 검증 후). **IP/EC2 서버 자체는 존치** — 라이브 마이데이터 내부 경로는 `int-mapi.bomapp.co.kr`(NLB), 라이브 vkey/oauth는 `10.1.1.20` raw IP 참조로 계속 동작.
 
 ---
 
@@ -148,7 +149,7 @@ legacy-backend/
 | **`bomapp_webview_server` 이전** | **✅ 완료 — 2026-06-10 신규 ECS 전면 컷오버** (BOM-137/138/139/154). `web.bomapp.co.kr` → `prod-bomapp-webview-ip-8080`. 사무실 카나리가 공지 상세 네이티브 브릿지 버그(`window.bomapp.webNoticeDetail`↔`androidNative.openWithNaviBar`, BOM-154) 잡아 수정. 정적 자산 S3+CloudFront 분리는 미적용(이미지 베이킹 유지). 구 :7778 롤백용 잔존 ([근거](../runtime-verification.md#5-legacy-backend--bomapp_webview_server-코드상-endpoint-검증)) |
 | **PROD-BACK 자가구동 프로세스** | **✅ 2026-06-11 라이브 read-only SSM 감사 — 없음.** 실행 java 앱 전부 `spring.profiles.active=prod`(`cron`/`my-data-cron`/`open-api-cron` 0, `bomapp_api_server` 미실행). 실행 = 롤백 stub(redmin/webview/open-api/bomapp-api/wings/구mydata jar) + dead `bomapp_oauth`(8888 좀비)뿐, 이들 `@Scheduled`=0 → **인바운드 없이 도는 배치 없음** |
 | **`mydata-mgmts-api`(auth:11000) 이관** | **✅ 완료 — 2026-06-11 신규 ECS 100% 컷오버** (별도 서비스, [mydata-mgmts-api.md](./mydata-mgmts-api.md)). 구 PROD-BACK 11000 jar 는 롤백 stub |
-| 직접 호스트(`api-was1/2`, `mapi-was1/2`, `batch-was`, `front-was`, `next-stg-back`) | 정리(폐기) 대상. ⚠ **`batch-was`(10.1.1.116)** = 레거시 `@Scheduled` 배치(규제 mydata 지원004 주간전송·휴면 알림톡·토큰재발급 1s)의 거처 추정 — decommission 시 라이브 여부 + next-backend 중복실행 별도 검증 |
+| 직접 호스트(`api-was1/2`, `mapi-was1/2`, `batch-was`, `front-was`, `next-stg-back`) | 정리(폐기) 대상. ✅ **`api-was1/2`·`mapi-was1/2`·`front-was` DNS A 레코드 제거 완료(2026-07-03, infra MR!67)** — 실사용 검증 후, IP/EC2 서버는 존치. ⚠ **`batch-was`(10.1.1.116)** = 레거시 `@Scheduled` 배치(규제 mydata 지원004 주간전송·휴면 알림톡·토큰재발급 1s)의 거처 추정 → **DNS·서버 존치**, decommission 시 라이브 여부 + next-backend 중복실행 별도 검증 |
 | Spring Boot 1.5 / Java 1.8 보안 | **EOL** — 잔존 모듈도 결국 이관 또는 재작성 필요 |
 | awslogs / SSH 22 / Circuit Breaker | ECS 감사 P0~P1 (PROD-BACK 대상) |
 

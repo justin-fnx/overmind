@@ -308,15 +308,17 @@ graph LR
 
 ### 6.4 직접 호스트 (레거시 IP 라우팅, 정리 대상)
 
+> **2026-07-03**: 실사용 검증(DNS 해석 · PROD-ALB host-header 규칙 · 코드 참조 grep · 트래픽) 후 미사용 vanity DNS 5종(`api-was1/2`, `mapi-was1/2`, `front-was`)의 Route53 A 레코드를 제거(infra MR!67). 아래 ~~취소선~~ = DNS 제거됨. **단 IP/EC2 서버 자체는 존치**할 수 있고(특히 `10.1.1.20`=현 PROD-BACK, oauth/vkey config가 raw IP로 참조), 라이브 마이데이터 내부 경로는 `int-mapi.bomapp.co.kr`(NLB)가 담당한다.
+
 | 도메인 | IP | 대상 |
 |--------|----|------|
-| `api-was1.bomapp.co.kr` | `10.1.1.10` | 레거시 backend |
-| `api-was2.bomapp.co.kr` | `10.1.1.20` | 레거시 backend |
-| `mapi-was1.bomapp.co.kr` | `10.1.1.17` | 레거시 mydata-api |
-| `mapi-was2.bomapp.co.kr` | `10.1.1.194` | 레거시 mydata-api |
-| `batch-was.bomapp.co.kr` | `10.1.1.116` | 레거시 batch |
-| `next-stg-back.bomapp.co.kr`, `stg-was.bomapp.co.kr` | `10.1.1.149` | STG backend |
-| `front-was.bomapp.co.kr` | `10.1.110.34` | 레거시 frontend |
+| ~~`api-was1.bomapp.co.kr`~~ | `10.1.1.10` | 레거시 backend (DNS 제거) |
+| ~~`api-was2.bomapp.co.kr`~~ | `10.1.1.20` | 레거시 backend (DNS 제거; IP=현 PROD-BACK 존치) |
+| ~~`mapi-was1.bomapp.co.kr`~~ | `10.1.1.17` | 레거시 mydata-api (DNS 제거) |
+| ~~`mapi-was2.bomapp.co.kr`~~ | `10.1.1.194` | 레거시 mydata-api (DNS 제거) |
+| `batch-was.bomapp.co.kr` | `10.1.1.116` | 레거시 batch (DNS 존치) |
+| `next-stg-back.bomapp.co.kr`, `stg-was.bomapp.co.kr` | `10.1.1.149` | STG backend (DNS 존치) |
+| ~~`front-was.bomapp.co.kr`~~ | `10.1.110.34` | 레거시 frontend (DNS 제거) |
 
 ### 6.5 운영/관제 도메인
 
