@@ -1313,7 +1313,7 @@
   },
   "activeVersionId": "b5b38b09-9a20-401d-be27-7f9e390ee70f",
   "connections": {
-    "Bedrock Claude Sonnet 5": {
+    "Bedrock Claude Sonnet 4.6": {
       "ai_languageModel": [
         [
           {
@@ -1922,16 +1922,17 @@
         }
       },
       "id": "0e62b6e0-5055-467f-89f7-5671d7d3a89f",
-      "name": "Bedrock Claude Sonnet 5",
+      "name": "Bedrock Claude Sonnet 4.6",
       "parameters": {
-        "model": "global.anthropic.claude-sonnet-5",
+        "model": "global.anthropic.claude-sonnet-4-6",
         "modelSource": "inferenceProfile",
         "options": {
           "cacheSystemPrompt": true,
           "cacheTools": true,
           "cacheTtl": "5m",
           "enablePromptCaching": true,
-          "maxTokensToSample": 8000
+          "maxTokensToSample": 8000,
+          "temperature": 0.3
         }
       },
       "position": [

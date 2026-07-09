@@ -2455,10 +2455,11 @@
       "id": "e52ac0de-6006-416c-825d-26ce00637d7c",
       "name": "재평가 Sonnet",
       "parameters": {
-        "model": "global.anthropic.claude-sonnet-5",
+        "model": "global.anthropic.claude-sonnet-4-6",
         "modelSource": "inferenceProfile",
         "options": {
-          "maxTokensToSample": 8000
+          "maxTokensToSample": 8000,
+          "temperature": 0.2
         }
       },
       "position": [

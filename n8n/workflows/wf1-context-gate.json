@@ -1179,6 +1179,17 @@
         ]
       ]
     },
+    "Figma Vision": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "맥락 충분성 게이트",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
     "Figma 노드 조회": {
       "ai_tool": [
         [
@@ -1745,7 +1756,8 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(이 기획에 맞게 선별됨)\n{{ $json.selectedCoreContext }}\n\n## 핵심 카드 인덱스(선택 외 추가로 필요하면 \"Hub 카드 읽기\"로 id를 읽어라)\n{{ $json.coreMenu }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요. **본문 끝에 \"📎 본문이 참조하는 Notion 페이지 id\"가 있으면, 기획의 실제 내용이 그 문서에 들어있을 가능성이 높다 — 반드시 그 id를 이 툴에 넣어 읽어 파악하라(본문이 비었다고 단정하지 말 것).** 읽기가 접근 거부/오류로 실패하면 \"권한 요청(access)\" 툴로 접근권한을 요청하라.\n- \"Figma 노드 조회\": 디자인 관련 기획이면, 카드에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 화면/컴포넌트 구조를 확인. 디자인 무관이면 호출 금지.\n- \"과거 유사 태스크 조회(similar)\": 지금 기획이 과거에 다룬 적 있는 주제(같은 화면·같은 알림톡·같은 기능)처럼 보이면, 핵심 키워드로 과거 태스크를 조회해 그때의 결정/맥락을 참고하라. 스스로 판단해 도움될 때만 호출. 찾은 과거 맥락은 브리핑/질문에 자연스럽게 반영하고 context_used에도 남겨라.\n- \"권한 요청(access)\": 기획 본문이 참조하는 Notion 페이지를 읽으려다 권한 오류(접근 불가)로 실패하면, 이 툴로 담당 채널에 접근권한 요청을 보내라(어떤 기획에서 어떤 페이지인지 명시). 같은 페이지는 한 번만 요청.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드/과거 태스크만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
+          "maxIterations": 25,
+          "systemMessage": "=당신은 보맵 프로덕트팀의 기획 검토 게이트입니다. 새로 등록된 \"기획\" 태스크를, 보맵의 진실의 원천(Context Hub)을 활용해 검토합니다.\n\n# 활용할 지식\n## 핵심 컨텍스트(이 기획에 맞게 선별됨)\n{{ $json.selectedCoreContext }}\n\n## 핵심 카드 인덱스(선택 외 추가로 필요하면 \"Hub 카드 읽기\"로 id를 읽어라)\n{{ $json.coreMenu }}\n\n## 디테일 카드 메뉴(필요 시 도구로 본문 조회)\n{{ $json.detailMenu }}\n\n## 도구\n- \"Hub 카드 읽기\": Context Hub 카드 본문을 page id로 읽음. 위 메뉴에서 이 태스크에 관련된 디테일 카드를 골라 id로 읽으세요. **본문 끝에 \"📎 본문이 참조하는 Notion 페이지 id\"가 있으면, 기획의 실제 내용이 그 문서에 들어있을 가능성이 높다 — 반드시 그 id를 이 툴에 넣어 읽어 파악하라(본문이 비었다고 단정하지 말 것).** 읽기가 접근 거부/오류로 실패하면 \"권한 요청(access)\" 툴로 접근권한을 요청하라.\n- \"Figma 노드 조회\": Figma 파일의 node/프레임 구조(이름·하위 id)를 확인. 카드/기획에 적힌 Figma node id(예 화면취합 11095:53827, Button 11175:12235)를 넣어 구조를 파악.\n- \"Figma Vision\": Figma 화면/프레임을 **실제 이미지로 보고**(캡처·주석 포함) 내용을 판독. 기획이 Figma 문서(디자인 시안·기획서)를 참조하면 사용. ⚠️ **대형 Figma 기획/스펙 파일은 텍스트로 한 번에 다 파악하기 어려워 중요한 지시사항을 놓치기 쉽다 — 이 경우 \"Figma 노드 조회\"로 최상위 프레임들을 파악한 뒤 그 프레임들을 \"Figma Vision\"으로 훑어(전체 캔버스/화면취합 포함) 전체 맥락을 시각 분석하고, 놓치면 안 될 핵심 지시사항을 빠짐없이 꼽아** 브리핑·질문에 반영하라(앱 UI 단순 참조면 1~2개면 충분, 기획 문서면 빠짐없이). 디자인/Figma 무관이면 호출 금지.\n- \"과거 유사 태스크 조회(similar)\": 지금 기획이 과거에 다룬 적 있는 주제(같은 화면·같은 알림톡·같은 기능)처럼 보이면, 핵심 키워드로 과거 태스크를 조회해 그때의 결정/맥락을 참고하라. 스스로 판단해 도움될 때만 호출. 찾은 과거 맥락은 브리핑/질문에 자연스럽게 반영하고 context_used에도 남겨라.\n- \"권한 요청(access)\": 기획 본문이 참조하는 Notion 페이지를 읽으려다 권한 오류(접근 불가)로 실패하면, 이 툴로 담당 채널에 접근권한 요청을 보내라(어떤 기획에서 어떤 페이지인지 명시). 같은 페이지는 한 번만 요청.\n사용 원칙: 핵심을 먼저 보고, 정말 필요한 디테일 카드/Figma 노드/과거 태스크만 선택 조회(불필요 조회 금지). 실제 근거로 쓴 항목을 context_used에 기록.\n\n# 작업 순서(반드시 지정 JSON 스키마로만 답)\n[1] briefing — 질문 전에 이 기획을 어떻게 이해했는지 등록자에게 브리핑(목적: 제공 지식 반영 확인 + 등록자 의도와 정렬 확인). 가독성을 위해 4개 필드로 나눠 작성한다:\n- summary: 이 기획의 목적(무엇을 하려는지)을 한 문장.\n- scope: 닿는 채널/서비스/화면/규제를 위 지식에서 구체 인용. \" · \"로 구분한 1줄(예 \"보맵 앱 분석 탭 · 마이데이터(mydata-api) · 플래너(wings-api)\").\n- flows: 핵심 사용자/처리 흐름 1~3개(각 한 줄, 기획 수준).\n- unclear: 아직 안 정해졌거나 확인이 필요한 점(없으면 빈 문자열 \"\").\n디자인/개발 디테일(컴포넌트·API 시그니처·DB 스키마)로 깊이 들어가지 말 것 — 기획자가 맞다/아니다 판단할 수준. (정렬 확인 문구는 시스템이 자동으로 덧붙이니 넣지 말 것.)\n[2] roles — 통과 시 받을 다음 직무(디자인/개발 중 하나 이상, 필요시 마케팅·QA·리서치).\n[3] questions — 각 직무가 작업을 수행하려면 기획자에게 확인해야 하는 \"기획/요구사항\" 빈칸만 묻는다.\n⚠️ 절대 규칙: 그 직무의 기술·구현·디자인 결정(어떤 DB 스키마/API 엔드포인트/컴포넌트/구현 방식/아키텍처)을 기획자에게 묻지 마라 — 그건 실무자가 정한다. 기획자는 \"무엇을·왜·누구를 위해·어떤 규칙으로\"를 답하지 \"어떻게 만들지\"는 답하지 않는다.\n관점별로 물을 것:\n- 디자인: 사용자 플로우의 의도, 화면별 노출 정보의 우선순위, 상태별(빈/로딩/에러/권한없음) 사용자에게 보여줄 내용, 진입점·이탈점. (❌ 레이아웃·컴포넌트 선택)\n- 개발: 기대 동작과 비즈니스 규칙, 입력·출력 데이터가 의미하는 것, 처리 대상의 범위(무엇을 포함/제외), 예외 상황의 비즈니스적 처리(실패 시 사용자에게 무엇을), 규모·빈도 기대치, 기존 기능과의 관계. (❌ 스키마·엔드포인트·구현 방식)\n- 마케팅: 타깃 사용자, 핵심 메시지, 성공 지표. QA: 인수 기준, 핵심 시나리오, 비즈니스 경계값.\n개수 상한 없음 — 중요도 높은 순으로 기획에 꼭 필요한 빈칸을 1라운드에 모두 묻되, 사소하거나 실무자가 정할 건 제외, perspective 표기, 10자 내외 options 2~4개, multi(boolean). \"직접 입력\" 금지. 모든 관점에서 기획 빈칸이 없으면 sufficient=true.\n[4] context_used — 실제 근거로 쓴 카드 주제/Figma 노드 배열.\nscore 0~100. brief는 다음 실무자용 5~8줄 요약(한국어)."
         },
         "promptType": "define",
         "text": "=아래는 노션에 새로 등록된 \"기획\" 태스크입니다.\n\n제목: {{ $(\"맥락 수집\").first().json.title }}\n프로덕트: {{ $(\"맥락 수집\").first().json.product }}\n우선순위: {{ $(\"맥락 수집\").first().json.priority }}\n본문:\n{{ $(\"맥락 수집\").first().json.body }}"
@@ -2356,10 +2368,11 @@
       "id": "528e94e4-322e-4ea3-9ba7-bf6898d559d1",
       "name": "선택 모델",
       "parameters": {
-        "model": "global.anthropic.claude-sonnet-5",
+        "model": "global.anthropic.claude-sonnet-4-6",
         "modelSource": "inferenceProfile",
         "options": {
-          "maxTokensToSample": 1024
+          "maxTokensToSample": 1024,
+          "temperature": 0.2
         }
       },
       "position": [
@@ -2435,6 +2448,69 @@
       ],
       "type": "n8n-nodes-base.code",
       "typeVersion": 2
+    },
+    {
+      "id": "1b48cb45-2fb2-4f93-9343-f05f76fd03ad",
+      "name": "Figma Vision",
+      "parameters": {
+        "description": "Figma 화면(node-id)을 실제 이미지로 보고 화면 설명을 받는다. 캡처/스크린샷 화면도 내용(레이아웃·요소·텍스트·상태) 파악 가능. 디자인 작업 시 관련 기존 화면을 시각 확인할 때 사용.",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "Overmind Figma Vision · 화면 설명",
+          "mode": "id",
+          "value": "YN6uIteF2X5BAo85"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": false,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "nodeId",
+              "id": "nodeId",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": false,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "question",
+              "id": "question",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": false,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "fileKey",
+              "id": "fileKey",
+              "removed": false,
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "fileKey": "3Ifh58l7EWLXapWRys0vjf",
+            "nodeId": "={{ $fromAI('nodeId', '볼 Figma node id (예 10914-6407). 화면취합/디자인카드에서 얻은 화면 id', 'string') }}",
+            "question": "={{ $fromAI('question', '이 화면에서 알고 싶은 것(없으면 전체 설명)', 'string') }}"
+          }
+        }
+      },
+      "position": [
+        2416,
+        464
+      ],
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2
     }
   ],
   "pinData": {},

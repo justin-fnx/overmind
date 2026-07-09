@@ -78,22 +78,25 @@ cp .env.example .env      # N8N_API_URL, N8N_API_KEY 채우기 (gitignored)
 
 ## 게이트 LLM · 프롬프트 캐싱 · 핵심카드 주입 (2026-07-09)
 
-- **게이트 모델 = AWS Bedrock `global.anthropic.claude-opus-4-8`** (커뮤니티 노드 `n8n-nodes-bedrock-advanced.lmChatAwsBedrockAdvanced`, inference profile). 적용: **WF1 맥락 게이트 · WF3 착수준비 게이트 · WF-Enrich 풍부화**. (WF2 재평가·WF-Dispatch 단계계획은 0툴 단일콜이라 Sonnet 유지 — 2026-07-09 **Sonnet 5** 일괄 업그레이드, 아래 참조.)
+- **게이트 모델 = AWS Bedrock `global.anthropic.claude-opus-4-8`** (커뮤니티 노드 `n8n-nodes-bedrock-advanced.lmChatAwsBedrockAdvanced`, inference profile). 적용: **WF1 맥락 게이트 · WF3 착수준비 게이트 · WF-Enrich 풍부화**. (WF2 재평가·WF-Dispatch 단계계획은 0툴 단일콜이라 **Sonnet 4.6** 유지. Sonnet 5 일괄 상향은 시도했으나 reasoning_content 비호환으로 롤백 — 아래 참조.)
   - ⚠️ **Opus 4.8은 `temperature`·`top_p` 가 deprecated** → 값(0.2 등)을 보내면 `ValidationException`(`temperature`=1 만 허용, 모델이 무시). **모델 노드 options 에서 temperature 제거**(미지정=드롭). 라이브 검증 시 실제로 아무 에러 없이 동작.
   - 캐싱: `enablePromptCaching`+`cacheSystemPrompt`+`cacheTools`(TTL 5m). **Opus 최소 캐시 임계 = 4,096 토큰**(Sonnet 1,024) — 캐시 프리픽스가 이보다 작으면 캐시 미발생.
 - **WF1 핵심카드 = 2단계 select→cache** (Context Hub '핵심' 카드 본문을 전량 주입하지 않는다):
   1. `카드 메뉴 구성` — 핵심카드 **인덱스**(주제/영역/직무/id)만 생성(+디테일 메뉴).
-  2. `핵심 선택`(Basic LLM Chain, **Sonnet 5**) — 태스크에 맞는 핵심카드 id 를 **모델이 선택**(id만 줄단위 출력).
+  2. `핵심 선택`(Basic LLM Chain, **Sonnet 4.6**) — 태스크에 맞는 핵심카드 id 를 **모델이 선택**(id만 줄단위 출력). (Sonnet 5 는 reasoning_content 비호환으로 롤백 — 아래 참조.)
   3. `선택 ID 분리`(코드, id 파싱·코어 id 교집합·0건이면 전체 폴백) → `선택 본문 읽기`(executeWorkflow → `wf-notion-read`, **카드별 mode=each**) — **선택된 카드 본문만** fetch(표 포함).
   4. `선택 컨텍스트 합치기` → `selectedCoreContext` 를 게이트 systemMessage 프리픽스에 주입 → **`cacheSystemPrompt` 가 '선택 확정 후'의 이 프리픽스를 캐시**(내부 추론 루프에서 재사용 = "첫 캐시").
   - 게이트 systemMessage 는 **핵심 인덱스(coreMenu)** 도 함께 받아, 선택 외 카드가 필요하면 `Hub 카드 읽기` 툴로 id 를 추가 조회 가능(안전망).
   - 검증(exec 27194): 핵심 9카드 중 **6 선택** → 본문 fetch → `selectedCoreContext` 8.3K 주입 → 게이트 구조화 출력(sufficient/score 88/roles) 성공. CloudWatch `AWS/Bedrock`(opus-4-8) **CacheWrite 12,555 / CacheRead 12,555** = 선택 핵심카드 캐싱 확정.
   - 배경: 커뮤니티 노드의 `cacheConversationHistory` 는 체크포인트를 '태스크(human) 메시지' 뒤에 놓아 **단일 에이전트로는 툴로 읽은 카드가 캐시되지 않음** → 그래서 선택된 본문을 시스템 프리픽스에 넣어 `cacheSystemPrompt` 로 캐시하는 2단계 방식을 택함.
 
-## Sonnet 모델 일괄 → Sonnet 5 (2026-07-09)
+## ⚠️ Sonnet 5 일괄 상향 시도 → 롤백 (reasoning_content 비호환, 2026-07-09)
 
-- 게이트(Opus)를 제외한 **모든 Sonnet 노드를 `global.anthropic.claude-sonnet-5` 로 일괄 상향**: `wf1 선택 모델` · `wf2 재평가 Sonnet` · `wf-dispatch 단계 Sonnet` · `figma-vision 비전 Sonnet` · `botmap`(노드 리네임 `Bedrock Claude Sonnet 4.6`→`5`).
-- ⚠️ **Sonnet 5 도 `temperature`·`top_p` deprecated**(Opus 4.8 과 동일) → 다섯 노드 모두 **temperature 제거**. 빌트인 `lmChatAwsBedrock` 노드도 미지정 시 값을 안 보냄을 라이브 검증(exec 27214: WF1 `선택 모델` Sonnet 5, temp 없이 정상 — `핵심 선택` 7카드 선택·게이트 통과, 에러 0).
+- 게이트(Opus) 외 5개 Sonnet 노드(`wf1 선택 모델`·`wf2 재평가 Sonnet`·`wf-dispatch 단계 Sonnet`·`figma-vision 비전 Sonnet`·`botmap`)를 `global.anthropic.claude-sonnet-5` 로 상향했으나 **롤백(→ `global.anthropic.claude-sonnet-4-6`)**.
+- **원인**: **Sonnet 5 는 비자명한 프롬프트에서 `reasoning_content`(확장 사고) 파트를 반환**(단순 텍스트 호출은 text-only이나 tool-use/복잡 프롬프트에서 emit)하는데, **이 n8n 인스턴스의 langchain 버전이 이를 문자열로 변환하지 못함** → `Cannot coerce "reasoning_content" message part into a string` 로 **간헐 실패**(WF1 `핵심 선택` chainLlm exec 27284 error; exec 27214 는 우연히 통과 = 코인플립). 빌트인 `lmChatAwsBedrock` 노드엔 **reasoning 끄는 옵션(additionalModelRequestFields/thinking)이 없음** → 회피 불가.
+  - Bedrock Converse API 레벨에선 `additional-model-request-fields '{"thinking":{"type":"disabled"}}'` 로 억제 가능(검증됨). 즉 n8n 노드가 이 필드를 넘길 수 있으면 Sonnet 5 사용 가능.
+  - **Opus 4.8 은 reasoning_content 를 emit 하지 않아**(테스트상 text/toolUse만) 게이트(WF1/WF3)·WF-Enrich 는 무영향.
+- **Sonnet 5 재도입 조건**: ① n8n 업그레이드(신 langchain 은 reasoning_content 처리) 또는 ② `thinking:{type:disabled}`(additionalModelRequestFields) 를 넘길 수 있는 모델 노드(커뮤니티 노드 `lmChatAwsBedrockAdvanced` 가 지원할 가능성 — 검증 필요) 로 5노드 스왑. 그전까지 **Sonnet 계열은 4.6 유지**.
 
 ## WF3 태스크 정의서 = 선행·형제 단계 교차검토 + 계약 준수 (2026-07-09)
 
@@ -101,3 +104,13 @@ cp .env.example .env      # N8N_API_URL, N8N_API_KEY 채우기 (gitignored)
 - `priorContext` 메커니즘은 이미 정상: WF-Watch `디스패치 판정`이 그 부모의 **모든 선행·형제 created 단계 지시서**(`## [단계] 작업 지시서`)+담당자 산출물을 모아 전달하고, WF-Dispatch 는 **프론트엔드 dependsOn=['디자인','백엔드']**(백엔드 존재 시)로 설정해 FE 가 두 지시서를 모두 받는다.
 - 근본 원인 = **프롬프트**: `착수준비 게이트` systemMessage 의 선행-산출물 안내가 '디자인' 예시·'재탐색 방지' 위주라, 형제 단계 **계약을 준수**하라는 지시가 약했다.
 - 수정: systemMessage 를 **"선행·형제 단계 작업 지시서를 전부 교차검토, 다른 단계가 확정한 계약(특히 백엔드 API 계약: 경로·메서드·요청/응답 필드명·타입·에러코드·페이지네이션·인증)을 글자 그대로 준수·재발명 금지, 없으면 결정 사항에 명시"** 로 강화(게이트 text priorContext 라벨도 동일 취지로 보강).
+
+## 대형 Figma 기획 문서 = 전체 비전 캡처 (2026-07-09)
+
+- 문제: **Figma 로 만든 기획 문서(기획서·스펙)는 파일이 매우 커서** 텍스트/노드 구조만으로 한 번에 다 파악하기 어렵고, 주석·플로우·조건 같은 **놓치면 안 되는 지시사항**을 빠뜨리기 쉽다.
+- 방식(대형 Figma 기획을 읽을 때): ① node/프레임 구조로 최상위 프레임 목록 파악 → ② 그 프레임들을 **이미지로 렌더해 비전으로 전체 맥락 시각 분석**(전체 캔버스/화면취합 포함) → ③ 보이는 **모든 텍스트·주석·지시·수치·조건·예외를 빠짐없이 나열**하고 **'놓치면 안 될 핵심 지시사항'을 별도로 꼽아** 처리에 반영. (앱 UI 단순 참조는 1~2개면 충분, **기획 문서는 빠짐없이**.)
+- 구현:
+  - **WF1 맥락 게이트**: `Figma Vision` 툴(→ `figma-vision` 서브WF `YN6uIteF2X5BAo85`) **신규 추가** + systemMessage 에 위 지침. `Figma 노드 조회`(구조)와 `Figma Vision`(이미지) 2단. **maxIterations 25**(멀티툴+비전).
+  - **WF3 착수준비 게이트**: 기존 `Figma Vision` 안내의 '1~3개 화면' 제한을 **앱 UI 참조 화면에만** 적용하도록 명시하고, **대형 Figma 기획/스펙 파일은 전체 프레임 스윕** 예외 추가.
+  - **figma-vision `비전 설명`**: 프레임이 UI 시안이 아니라 **기획서/스펙**이면 모든 텍스트·주석·지시를 빠짐없이 항목화하고 핵심 지시를 강조하도록 강화.
+- 진실의 원천: Context Hub 카드 "Figma 기획 문서 읽는 방식 — 대형 파일은 전체 비전 캡처"(결정로그·디테일·확정, `398673e8-5b34-810f-af60-c0ed4eec6a2d`)에도 동일 방식 기록.

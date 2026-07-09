@@ -391,7 +391,7 @@
           "passthroughBinaryImages": true
         },
         "promptType": "define",
-        "text": "=이 이미지는 보맵 앱의 UI 화면(Figma 디자인) 캡처입니다. 요청: {{ $('URL 추출').first().json.question || '화면 전체를 설명' }}\\n\\n레이아웃 구조(위→아래 영역 순서), 주요 UI 요소와 배치, 보이는 텍스트/라벨, 화면의 목적과 상태를 한국어로 구체적으로 설명하세요. 추측은 추측이라고 표시."
+        "text": "=이 이미지는 보맵 앱의 UI 화면(Figma 디자인) 캡처입니다. 요청: {{ $('URL 추출').first().json.question || '화면 전체를 설명' }}\\n\\n레이아웃 구조(위→아래 영역 순서), 주요 UI 요소와 배치, 보이는 텍스트/라벨, 화면의 목적과 상태를 한국어로 구체적으로 설명하세요. 추측은 추측이라고 표시.\n\n만약 이 화면이 UI 시안이 아니라 **기획서/스펙 프레임**(주석·플로우·지시·요구사항·표·조건이 적힌 경우)이면, 보이는 **모든 텍스트·주석·지시사항·수치·조건·예외를 하나도 빠짐없이** 항목으로 나열하고, 그중 '놓치면 안 되는 핵심 지시사항'을 별도로 꼽아 강조하라(요약으로 뭉개지 말 것)."
       },
       "position": [
         900,
@@ -410,10 +410,11 @@
       "id": "69c5ea2a-3097-4733-9f72-8221326de713",
       "name": "비전 Sonnet",
       "parameters": {
-        "model": "global.anthropic.claude-sonnet-5",
+        "model": "global.anthropic.claude-sonnet-4-6",
         "modelSource": "inferenceProfile",
         "options": {
-          "maxTokensToSample": 1500
+          "maxTokensToSample": 1500,
+          "temperature": 0.3
         }
       },
       "position": [
