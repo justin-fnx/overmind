@@ -76,12 +76,16 @@ cp .env.example .env      # N8N_API_URL, N8N_API_KEY 채우기 (gitignored)
 - 현재 연결: Notion account(`b03vHUApw6s0O5jS`) / Botmap slackApi(`bjozecrw9OnFT8Lf`) / Figma account(`Rg6fKjWcdHHj0e1O`) / AWS (IAM) account(`GftVHJqfxQshQZ4P`) / **Notion Webhook Token(`httpHeaderAuth`, `xuAMs5mpZiSnoXgI`) — WF1 `검토 요청 수신` 웹훅 인증(헤더 `X-Webhook-Token`); 토큰 값은 n8n 크레덴셜에만 저장**.
 - push 는 이 참조를 보존하므로 재연결 불필요.
 
-## 현재 상태 / 미반영 작업
+## 게이트 LLM · 프롬프트 캐싱 · 핵심카드 주입 (2026-07-09)
 
-- **WF1 게이트 LLM = AWS Bedrock Amazon Nova Pro** 로 전환 중(구 Gemini, 503 회피).
-  - IAM: 사용자 `n8n-bedrock-invoke` + Nova 호출 전용 정책 (infra TF, MR !46 머지 완료).
-  - **모델 노드 설정 수정 필요** — `workflows/wf1-context-gate.json` 의 `AWS Bedrock Chat Model` 노드:
-    `modelSource: "inferenceProfile"`, `model: "apac.amazon.nova-pro-v1:0"`,
-    `options.temperature: 0.2`, `options.maxTokensToSample: 4000`.
-    (on-demand `amazon.nova-pro-v1:0` 직접 호출은 미지원 → inference profile 필수.)
-  - 적용: 위 JSON 수정 → `./sync.sh push wf1-context-gate` → n8n 에서 publish.
+- **게이트 모델 = AWS Bedrock `global.anthropic.claude-opus-4-8`** (커뮤니티 노드 `n8n-nodes-bedrock-advanced.lmChatAwsBedrockAdvanced`, inference profile). 적용: **WF1 맥락 게이트 · WF3 착수준비 게이트 · WF-Enrich 풍부화**. (WF2 재평가·WF-Dispatch 단계계획은 0툴 단일콜이라 Sonnet 4.6 유지.)
+  - ⚠️ **Opus 4.8은 `temperature`·`top_p` 가 deprecated** → 값(0.2 등)을 보내면 `ValidationException`(`temperature`=1 만 허용, 모델이 무시). **모델 노드 options 에서 temperature 제거**(미지정=드롭). 라이브 검증 시 실제로 아무 에러 없이 동작.
+  - 캐싱: `enablePromptCaching`+`cacheSystemPrompt`+`cacheTools`(TTL 5m). **Opus 최소 캐시 임계 = 4,096 토큰**(Sonnet 1,024) — 캐시 프리픽스가 이보다 작으면 캐시 미발생.
+- **WF1 핵심카드 = 2단계 select→cache** (Context Hub '핵심' 카드 본문을 전량 주입하지 않는다):
+  1. `카드 메뉴 구성` — 핵심카드 **인덱스**(주제/영역/직무/id)만 생성(+디테일 메뉴).
+  2. `핵심 선택`(Basic LLM Chain, **Sonnet 4.6**) — 태스크에 맞는 핵심카드 id 를 **모델이 선택**(id만 줄단위 출력).
+  3. `선택 ID 분리`(코드, id 파싱·코어 id 교집합·0건이면 전체 폴백) → `선택 본문 읽기`(executeWorkflow → `wf-notion-read`, **카드별 mode=each**) — **선택된 카드 본문만** fetch(표 포함).
+  4. `선택 컨텍스트 합치기` → `selectedCoreContext` 를 게이트 systemMessage 프리픽스에 주입 → **`cacheSystemPrompt` 가 '선택 확정 후'의 이 프리픽스를 캐시**(내부 추론 루프에서 재사용 = "첫 캐시").
+  - 게이트 systemMessage 는 **핵심 인덱스(coreMenu)** 도 함께 받아, 선택 외 카드가 필요하면 `Hub 카드 읽기` 툴로 id 를 추가 조회 가능(안전망).
+  - 검증(exec 27194): 핵심 9카드 중 **6 선택** → 본문 fetch → `selectedCoreContext` 8.3K 주입 → 게이트 구조화 출력(sufficient/score 88/roles) 성공. CloudWatch `AWS/Bedrock`(opus-4-8) **CacheWrite 12,555 / CacheRead 12,555** = 선택 핵심카드 캐싱 확정.
+  - 배경: 커뮤니티 노드의 `cacheConversationHistory` 는 체크포인트를 '태스크(human) 메시지' 뒤에 놓아 **단일 에이전트로는 툴로 읽은 카드가 캐시되지 않음** → 그래서 선택된 본문을 시스템 프리픽스에 넣어 `cacheSystemPrompt` 로 캐시하는 2단계 방식을 택함.

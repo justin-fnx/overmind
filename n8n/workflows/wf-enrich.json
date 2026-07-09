@@ -147,7 +147,7 @@
         ]
       }
     },
-    "createdAt": "2026-06-22T05:40:41.137Z",
+    "createdAt": "2026-06-29T00:54:22.745Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -274,6 +274,10 @@
           "model": "global.anthropic.claude-sonnet-4-6",
           "modelSource": "inferenceProfile",
           "options": {
+            "cacheSystemPrompt": true,
+            "cacheTools": true,
+            "cacheTtl": "5m",
+            "enablePromptCaching": true,
             "maxTokensToSample": 16000,
             "temperature": 0.2
           }
@@ -282,8 +286,8 @@
           900,
           520
         ],
-        "type": "@n8n/n8n-nodes-langchain.lmChatAwsBedrock",
-        "typeVersion": 1.1
+        "type": "n8n-nodes-bedrock-advanced.lmChatAwsBedrockAdvanced",
+        "typeVersion": 1
       },
       {
         "id": "enrich-parser-001",
@@ -620,29 +624,29 @@
         "typeVersion": 1.1
       }
     ],
-    "updatedAt": "2026-06-22T05:40:41.137Z",
-    "versionId": "becee83f-ffaf-40a5-b321-f3a40f1da786",
+    "updatedAt": "2026-06-29T00:54:22.745Z",
+    "versionId": "f2ef053a-bb58-4a83-a0f9-03c37dffdaa7",
     "workflowId": "bPNVUvuHpaograNX",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-22T05:40:41.177Z",
+        "createdAt": "2026-06-29T00:54:22.782Z",
         "event": "deactivated",
-        "id": 261,
+        "id": 294,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "becee83f-ffaf-40a5-b321-f3a40f1da786",
+        "versionId": "f2ef053a-bb58-4a83-a0f9-03c37dffdaa7",
         "workflowId": "bPNVUvuHpaograNX"
       },
       {
-        "createdAt": "2026-06-22T05:40:41.199Z",
+        "createdAt": "2026-06-29T00:54:22.810Z",
         "event": "activated",
-        "id": 262,
+        "id": 295,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "becee83f-ffaf-40a5-b321-f3a40f1da786",
+        "versionId": "f2ef053a-bb58-4a83-a0f9-03c37dffdaa7",
         "workflowId": "bPNVUvuHpaograNX"
       }
     ]
   },
-  "activeVersionId": "becee83f-ffaf-40a5-b321-f3a40f1da786",
+  "activeVersionId": "f2ef053a-bb58-4a83-a0f9-03c37dffdaa7",
   "connections": {
     "라우팅": {
       "main": [
@@ -709,7 +713,7 @@
         ]
       ]
     },
-    "풍부화 Sonnet": {
+    "풍부화 Opus": {
       "ai_languageModel": [
         [
           {
@@ -912,17 +916,16 @@
         }
       },
       "id": "enrich-sonnet-001",
-      "name": "풍부화 Sonnet",
+      "name": "풍부화 Opus",
       "parameters": {
-        "model": "global.anthropic.claude-sonnet-4-6",
+        "model": "global.anthropic.claude-opus-4-8",
         "modelSource": "inferenceProfile",
         "options": {
           "cacheSystemPrompt": true,
           "cacheTools": true,
           "cacheTtl": "5m",
           "enablePromptCaching": true,
-          "maxTokensToSample": 16000,
-          "temperature": 0.2
+          "maxTokensToSample": 16000
         }
       },
       "position": [
@@ -1297,7 +1300,7 @@
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-06-22T05:40:41.135Z",
-  "versionCounter": 7,
-  "versionId": "becee83f-ffaf-40a5-b321-f3a40f1da786"
+  "updatedAt": "2026-06-29T00:54:22.744Z",
+  "versionCounter": 11,
+  "versionId": "f2ef053a-bb58-4a83-a0f9-03c37dffdaa7"
 }
