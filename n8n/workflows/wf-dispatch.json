@@ -773,11 +773,10 @@
       "id": "e3a726d7-e595-48a4-b5cd-b4c7406196fc",
       "name": "단계 Sonnet",
       "parameters": {
-        "model": "global.anthropic.claude-sonnet-4-6",
+        "model": "global.anthropic.claude-sonnet-5",
         "modelSource": "inferenceProfile",
         "options": {
-          "maxTokensToSample": 2000,
-          "temperature": 0.2
+          "maxTokensToSample": 2000
         }
       },
       "position": [

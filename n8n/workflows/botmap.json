@@ -20,7 +20,7 @@
           [
             {
               "index": 0,
-              "node": "답변 갱신",
+              "node": "안전 전송",
               "type": "main"
             }
           ]
@@ -272,7 +272,7 @@
         ]
       }
     },
-    "createdAt": "2026-07-01T03:37:24.685Z",
+    "createdAt": "2026-07-03T08:11:27.555Z",
     "description": null,
     "name": null,
     "nodes": [
@@ -881,38 +881,6 @@
         "typeVersion": 2.2
       },
       {
-        "credentials": {
-          "slackApi": {
-            "id": "bjozecrw9OnFT8Lf",
-            "name": "Botmap"
-          }
-        },
-        "id": "8849e0bc-d146-41e9-9df4-bc17e855cc58",
-        "name": "답변 갱신",
-        "parameters": {
-          "channelId": {
-            "__rl": true,
-            "mode": "id",
-            "value": "={{ $(\"입력 정규화\").item.json.channel }}"
-          },
-          "messageType": "text",
-          "operation": "update",
-          "otherOptions": {
-            "includeLinkToWorkflow": false
-          },
-          "resource": "message",
-          "text": "={{ $json.output ?? \"⚠️ 처리 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.\" }}",
-          "ts": "={{ $(\"생각중 표시\").item.json.message.ts ?? $(\"생각중 표시\").item.json.message_timestamp }}"
-        },
-        "position": [
-          2400,
-          540
-        ],
-        "type": "n8n-nodes-base.slack",
-        "typeVersion": 2.4,
-        "webhookId": "340c9571-9356-4926-bcc4-84ad81e3a2f2"
-      },
-      {
         "id": "8967d0c9-b606-4fc2-b01d-722a3f05f516",
         "name": "HubCreate",
         "parameters": {
@@ -1232,49 +1200,120 @@
         ],
         "type": "n8n-nodes-base.code",
         "typeVersion": 2
+      },
+      {
+        "id": "botmap-safe-send-0001",
+        "name": "안전 전송",
+        "parameters": {
+          "mode": "once",
+          "options": {
+            "waitForSubWorkflow": true
+          },
+          "source": "database",
+          "workflowId": {
+            "__rl": true,
+            "cachedResultName": "Overmind · Slack 안전 전송(자동 분할)",
+            "mode": "id",
+            "value": "Vmgmo0MP7v2ghMD0"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "matchingColumns": [],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "channel",
+                "id": "channel",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "text",
+                "id": "text",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "threadTs",
+                "id": "threadTs",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "updateTs",
+                "id": "updateTs",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "channel": "={{ $(\"입력 정규화\").item.json.channel }}",
+              "text": "={{ $json.output ?? \"⚠️ 처리 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.\" }}",
+              "threadTs": "={{ $(\"입력 정규화\").item.json.threadTs }}",
+              "updateTs": "={{ $(\"생각중 표시\").item.json.message.ts ?? $(\"생각중 표시\").item.json.message_timestamp }}"
+            }
+          }
+        },
+        "position": [
+          2400,
+          540
+        ],
+        "type": "n8n-nodes-base.executeWorkflow",
+        "typeVersion": 1.3
       }
     ],
-    "updatedAt": "2026-07-01T03:37:24.685Z",
-    "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
+    "updatedAt": "2026-07-03T08:11:27.555Z",
+    "versionId": "b5b38b09-9a20-401d-be27-7f9e390ee70f",
     "workflowId": "hOsWherqkbKRzGH1",
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-07-01T03:37:24.763Z",
+        "createdAt": "2026-07-03T08:11:27.641Z",
         "event": "deactivated",
-        "id": 392,
+        "id": 400,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
+        "versionId": "b5b38b09-9a20-401d-be27-7f9e390ee70f",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-07-01T03:37:24.793Z",
+        "createdAt": "2026-07-03T08:11:27.669Z",
         "event": "activated",
-        "id": 393,
+        "id": 401,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
+        "versionId": "b5b38b09-9a20-401d-be27-7f9e390ee70f",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-07-01T03:37:31.773Z",
+        "createdAt": "2026-07-03T08:11:35.657Z",
         "event": "deactivated",
-        "id": 396,
+        "id": 402,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
+        "versionId": "b5b38b09-9a20-401d-be27-7f9e390ee70f",
         "workflowId": "hOsWherqkbKRzGH1"
       },
       {
-        "createdAt": "2026-07-01T03:37:31.793Z",
+        "createdAt": "2026-07-03T08:11:35.690Z",
         "event": "activated",
-        "id": 397,
+        "id": 403,
         "userId": "a21b517f-2fe1-415b-b9fb-6be427af4460",
-        "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
+        "versionId": "b5b38b09-9a20-401d-be27-7f9e390ee70f",
         "workflowId": "hOsWherqkbKRzGH1"
       }
     ]
   },
-  "activeVersionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c",
+  "activeVersionId": "b5b38b09-9a20-401d-be27-7f9e390ee70f",
   "connections": {
-    "Bedrock Claude Sonnet 4.6": {
+    "Bedrock Claude Sonnet 5": {
       "ai_languageModel": [
         [
           {
@@ -1290,7 +1329,7 @@
         [
           {
             "index": 0,
-            "node": "답변 갱신",
+            "node": "안전 전송",
             "type": "main"
           }
         ]
@@ -1883,17 +1922,16 @@
         }
       },
       "id": "0e62b6e0-5055-467f-89f7-5671d7d3a89f",
-      "name": "Bedrock Claude Sonnet 4.6",
+      "name": "Bedrock Claude Sonnet 5",
       "parameters": {
-        "model": "global.anthropic.claude-sonnet-4-6",
+        "model": "global.anthropic.claude-sonnet-5",
         "modelSource": "inferenceProfile",
         "options": {
           "cacheSystemPrompt": true,
           "cacheTools": true,
           "cacheTtl": "5m",
           "enablePromptCaching": true,
-          "maxTokensToSample": 8000,
-          "temperature": 0.3
+          "maxTokensToSample": 8000
         }
       },
       "position": [
@@ -2155,38 +2193,6 @@
       ],
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2
-    },
-    {
-      "credentials": {
-        "slackApi": {
-          "id": "bjozecrw9OnFT8Lf",
-          "name": "Botmap"
-        }
-      },
-      "id": "8849e0bc-d146-41e9-9df4-bc17e855cc58",
-      "name": "답변 갱신",
-      "parameters": {
-        "channelId": {
-          "__rl": true,
-          "mode": "id",
-          "value": "={{ $(\"입력 정규화\").item.json.channel }}"
-        },
-        "messageType": "text",
-        "operation": "update",
-        "otherOptions": {
-          "includeLinkToWorkflow": false
-        },
-        "resource": "message",
-        "text": "={{ $json.output ?? \"⚠️ 처리 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.\" }}",
-        "ts": "={{ $(\"생각중 표시\").item.json.message.ts ?? $(\"생각중 표시\").item.json.message_timestamp }}"
-      },
-      "position": [
-        2400,
-        540
-      ],
-      "type": "n8n-nodes-base.slack",
-      "typeVersion": 2.4,
-      "webhookId": "340c9571-9356-4926-bcc4-84ad81e3a2f2"
     },
     {
       "id": "8967d0c9-b606-4fc2-b01d-722a3f05f516",
@@ -2508,6 +2514,77 @@
       ],
       "type": "n8n-nodes-base.code",
       "typeVersion": 2
+    },
+    {
+      "id": "botmap-safe-send-0001",
+      "name": "안전 전송",
+      "parameters": {
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        },
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "Overmind · Slack 안전 전송(자동 분할)",
+          "mode": "id",
+          "value": "Vmgmo0MP7v2ghMD0"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "channel",
+              "id": "channel",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "text",
+              "id": "text",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "threadTs",
+              "id": "threadTs",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "updateTs",
+              "id": "updateTs",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "channel": "={{ $(\"입력 정규화\").item.json.channel }}",
+            "text": "={{ $json.output ?? \"⚠️ 처리 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.\" }}",
+            "threadTs": "={{ $(\"입력 정규화\").item.json.threadTs }}",
+            "updateTs": "={{ $(\"생각중 표시\").item.json.message.ts ?? $(\"생각중 표시\").item.json.message_timestamp }}"
+          }
+        }
+      },
+      "position": [
+        2400,
+        540
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3
     }
   ],
   "pinData": {},
@@ -2538,7 +2615,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2026-07-01T03:37:24.683Z",
-  "versionCounter": 80,
-  "versionId": "d3e81d11-5bef-4671-99c6-ed98fa23344c"
+  "updatedAt": "2026-07-03T08:11:27.553Z",
+  "versionCounter": 85,
+  "versionId": "b5b38b09-9a20-401d-be27-7f9e390ee70f"
 }

@@ -410,11 +410,10 @@
       "id": "69c5ea2a-3097-4733-9f72-8221326de713",
       "name": "비전 Sonnet",
       "parameters": {
-        "model": "global.anthropic.claude-sonnet-4-6",
+        "model": "global.anthropic.claude-sonnet-5",
         "modelSource": "inferenceProfile",
         "options": {
-          "maxTokensToSample": 1500,
-          "temperature": 0.3
+          "maxTokensToSample": 1500
         }
       },
       "position": [
@@ -453,6 +452,6 @@
   "tags": [],
   "triggerCount": 0,
   "updatedAt": "2026-06-30T23:43:27.047Z",
-  "versionCounter": 17,
+  "versionCounter": 18,
   "versionId": "2456c00c-fdd6-4ecb-a97b-857a4f8c3729"
 }
