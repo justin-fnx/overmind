@@ -166,6 +166,12 @@ ORDER BY data_length DESC LIMIT 30;
 2. `mysql -h <prod-writer> -u <admin> -p < preload.sql` (한 세션).
 3. 출력의 `SHOW MASTER STATUS` File:Position 기록 → CdcStartPosition.
 
+> ⚠️ **커넥션 예산(1040 Too many connections)**: full-load는 태스크당
+> MaxFullLoadSubTasks(기본 8)×5태스크=~40 로드 커넥션 + validation(ThreadCount 5×5)
+> + 앱 커넥션이 겹친다. 소형 Aurora는 초과로 제일 무거운 태스크(mydata 46테이블)부터
+> RECOVERABLE 실패(dev 실증). prod: ①태스크 **스태거드 시작**(전부 동시 X) ②prod
+> `max_connections` 헤드룸 사전 확인 ③부족 시 MaxFullLoadSubTasks 하향.
+
 ### P4. DMS → CDC-only 전환 + 시작
 - `module "prod_dms"` 에 `migration_type="cdc"` + `cdc_start_position="<file>:<pos>"` +
   `start_replication_task=true`.
