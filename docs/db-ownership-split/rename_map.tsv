@@ -1,0 +1,210 @@
+# DB 오너십 분리 — 테이블 rename 맵 초안 (B안)
+# 규칙: 잉여 서비스 토큰만 제거. * = 변경 없음
+# old	new	schema
+
+## chat
+ban_word	ban_word	chat	(변경없음)
+chat_activation_history	activation_history	chat
+chat_bot_block	bot_block	chat
+chat_bot_block_button	bot_block_button	chat
+chat_bot_block_image	bot_block_image	chat
+chat_bot_scenario	bot_scenario	chat
+chat_bot_scenario_activation_setting	bot_scenario_activation_setting	chat
+chat_bot_scenario_deployment_history	bot_scenario_deployment_history	chat
+chat_bot_template	bot_template	chat
+chat_bot_template_button	bot_template_button	chat
+chat_button	button	chat
+chat_consultation_end_message	consultation_end_message	chat
+chat_consultation_end_message_button	consultation_end_message_button	chat
+chat_consultation_history	consultation_history	chat
+chat_file	file	chat
+chat_global_template	global_template	chat
+chat_global_template_button	global_template_button	chat
+chat_image	image	chat
+chat_member_tag	member_tag	chat
+chat_message	message	chat
+chat_message_result	message_result	chat
+chat_room	room	chat
+chat_room_memo	room_memo	chat
+chat_room_requested_data_request	room_requested_data_request	chat
+chat_status	status	chat
+chat_template	template	chat
+chat_template_button	template_button	chat
+chat_template_category	template_category	chat
+chat_template_favorite	template_favorite	chat
+chat_template_image	template_image	chat
+chat_view_state	view_state	chat
+chat_work_hour	work_hour	chat
+chat_work_hour_setting	work_hour_setting	chat
+deployed_chat_bot_block	deployed_bot_block	chat
+deployed_chat_bot_block_button	deployed_bot_block_button	chat
+deployed_chat_bot_block_image	deployed_bot_block_image	chat
+deployed_chat_bot_scenario	deployed_bot_scenario	chat
+kakao_kakaopay_member	kakao_kakaopay_member	chat	(변경없음)
+kakaopay_chat_bot_template	kakaopay_bot_template	chat
+kakaopay_chat_bot_template_button	kakaopay_bot_template_button	chat
+kakaopay_chat_button	kakaopay_button	chat
+kakaopay_chat_consultation_history	kakaopay_consultation_history	chat
+kakaopay_chat_file	kakaopay_file	chat
+kakaopay_chat_image	kakaopay_image	chat
+kakaopay_chat_member_tag	kakaopay_member_tag	chat
+kakaopay_chat_memo	kakaopay_memo	chat
+kakaopay_chat_message	kakaopay_message	chat
+kakaopay_chat_message_result	kakaopay_message_result	chat
+kakaopay_chat_room	kakaopay_room	chat
+kakaopay_chat_room_status_history	kakaopay_room_status_history	chat
+kakaopay_consultation	kakaopay_consultation	chat	(변경없음)
+kakaopay_consultation_cancel_reason	kakaopay_consultation_cancel_reason	chat	(변경없음)
+kakaopay_consultation_status_history	kakaopay_consultation_status_history	chat	(변경없음)
+
+## mydata
+log_my_data_alimtalk_send	log_alimtalk_send	mydata
+log_my_data_api_request	log_api_request	mydata
+log_my_data_api_request_v2	log_api_request_v2	mydata
+log_my_data_member_token_reissue	log_member_token_reissue	mydata
+my_data_detail_request	detail_request	mydata
+my_data_detail_request_queue	detail_request_queue	mydata
+my_data_insurance	insurance	mydata
+my_data_insurance_basic	insurance_basic	mydata
+my_data_insurance_car	insurance_car	mydata
+my_data_insurance_car_transaction	insurance_car_transaction	mydata
+my_data_insurance_contract	insurance_contract	mydata
+my_data_insurance_general_basic	insurance_general_basic	mydata
+my_data_insurance_general_contract	insurance_general_contract	mydata
+my_data_insurance_general_insured	insurance_general_insured	mydata
+my_data_insurance_general_transaction	insurance_general_transaction	mydata
+my_data_insurance_insured	insurance_insured	mydata
+my_data_insurance_payment	insurance_payment	mydata
+my_data_insurance_payment_average	insurance_payment_average	mydata
+my_data_insurance_transaction	insurance_transaction	mydata
+my_data_insured_basic	insured_basic	mydata
+my_data_insured_contract	insured_contract	mydata
+my_data_irp	irp	mydata
+my_data_irp_basic	irp_basic	mydata
+my_data_irp_detail	irp_detail	mydata
+my_data_irp_transaction	irp_transaction	mydata
+my_data_linkage_count	linkage_count	mydata
+my_data_management_statistics	management_statistics	mydata
+my_data_management_statistics_org	management_statistics_org	mydata
+my_data_management_statistics_org_api	management_statistics_org_api	mydata
+my_data_management_statistics_org_api_error_count	management_statistics_org_api_error_count	mydata
+my_data_management_statistics_org_api_time_slot	management_statistics_org_api_time_slot	mydata
+my_data_management_statistics_user_count	management_statistics_user_count	mydata
+my_data_member_consents	member_consents	mydata
+my_data_member_token	member_token	mydata
+my_data_member_token_duplicate	member_token_duplicate	mydata
+my_data_member_token_refresh_fail	member_token_refresh_fail	mydata
+my_data_org	org	mydata
+my_data_org_api	org_api	mydata
+my_data_org_api_version	org_api_version	mydata
+my_data_org_domain_ip	org_domain_ip	mydata
+my_data_org_inspection_time	org_inspection_time	mydata
+my_data_org_ip	org_ip	mydata
+my_data_org_schedule_time	org_schedule_time	mydata
+my_data_refresh_member	refresh_member	mydata
+my_data_signup_org	signup_org	mydata
+my_data_support_agreement_history	support_agreement_history	mydata
+
+## planner
+planner_profile	planner_profile	planner	(변경없음)
+planner_profile_featured_product	planner_profile_featured_product	planner	(변경없음)
+recommend_amount_member	recommend_amount_member	planner	(변경없음)
+recommend_amount_planner	recommend_amount_planner	planner	(변경없음)
+w_consultation	consultation	planner
+w_consultation_allocation_history	consultation_allocation_history	planner
+w_consultation_allocation_setting	consultation_allocation_setting	planner
+w_consultation_apply_history	consultation_apply_history	planner
+w_consultation_cancel_reason	consultation_cancel_reason	planner
+w_consultation_status_history	consultation_status_history	planner
+w_corp_one_depth	corp_one_depth	planner
+w_corp_organization	corp_organization	planner
+w_corp_three_depth	corp_three_depth	planner
+w_corp_two_depth	corp_two_depth	planner
+w_corporation	corporation	planner
+w_faq	faq	planner
+w_insurer	insurer	planner
+w_insurer_archive	insurer_archive	planner
+w_insurer_archive_support	insurer_archive_support	planner
+w_insurer_archive_support_category	insurer_archive_support_category	planner
+w_insurer_archive_support_file	insurer_archive_support_file	planner
+w_insurer_bookmark	insurer_bookmark	planner
+w_marketing_agree	marketing_agree	planner
+w_memo	memo	planner
+w_notification	notification	planner
+w_planner	planner	planner
+w_planner_insurance_premium	planner_insurance_premium	planner
+w_planner_main_force_product	planner_main_force_product	planner
+w_planner_member	planner_member	planner
+w_policy_agree	policy_agree	planner
+w_role_corp	role_corp	planner
+w_role_mapping	role_mapping	planner
+w_role_planner	role_planner	planner
+w_user_action_log	user_action_log	planner
+
+## messaging
+alimtalk_message_queue	alimtalk_message_queue	messaging	(변경없음)
+alimtalk_message_setting	alimtalk_message_setting	messaging	(변경없음)
+alimtalk_recipient	alimtalk_recipient	messaging	(변경없음)
+alimtalk_recipient_extraction_job	alimtalk_recipient_extraction_job	messaging	(변경없음)
+alimtalk_send_condition	alimtalk_send_condition	messaging	(변경없음)
+log_notification_alimtalk	log_notification_alimtalk	messaging	(변경없음)
+notification	notification	messaging	(변경없음)
+notification_message_setting	notification_message_setting	messaging	(변경없음)
+notification_recipient	notification_recipient	messaging	(변경없음)
+
+## bomapp
+analysis_survey	analysis_survey	bomapp	(변경없음)
+analysis_survey_children	analysis_survey_children	bomapp	(변경없음)
+biological_age	biological_age	bomapp	(변경없음)
+biomarker	biomarker	bomapp	(변경없음)
+cancer_analysis_summary	cancer_analysis_summary	bomapp	(변경없음)
+cancer_rate_prediction	cancer_rate_prediction	bomapp	(변경없음)
+cancer_risk_prediction	cancer_risk_prediction	bomapp	(변경없음)
+car_info	car_info	bomapp	(변경없음)
+contract_car	contract_car	bomapp	(변경없음)
+contract_car_guarantee	contract_car_guarantee	bomapp	(변경없음)
+contract_credit	contract_credit	bomapp	(변경없음)
+contract_credit_item	contract_credit_item	bomapp	(변경없음)
+contract_credit_statistics	contract_credit_statistics	bomapp	(변경없음)
+coocon_session	coocon_session	bomapp	(변경없음)
+disease_risk_prediction	disease_risk_prediction	bomapp	(변경없음)
+diseases_code	diseases_code	bomapp	(변경없음)
+family_health_checkup	family_health_checkup	bomapp	(변경없음)
+family_health_checkup_crypto	family_health_checkup_crypto	bomapp	(변경없음)
+family_health_survey	family_health_survey	bomapp	(변경없음)
+from_age_interval_changes	from_age_interval_changes	bomapp	(변경없음)
+from_age_pdf	from_age_pdf	bomapp	(변경없음)
+from_age_risk_detail	from_age_risk_detail	bomapp	(변경없음)
+from_age_risk_incidence_rate_age	from_age_risk_incidence_rate_age	bomapp	(변경없음)
+from_age_risk_result	from_age_risk_result	bomapp	(변경없음)
+gnnet_hospitals	gnnet_hospitals	bomapp	(변경없음)
+health_checkup_analysis_pdf_crypto	health_checkup_analysis_pdf_crypto	bomapp	(변경없음)
+health_checkup_bio_age_analysis_guide_crypto	health_checkup_bio_age_analysis_guide_crypto	bomapp	(변경없음)
+health_checkup_bio_age_life_expectancy_crypto	health_checkup_bio_age_life_expectancy_crypto	bomapp	(변경없음)
+health_checkup_crypto	health_checkup_crypto	bomapp	(변경없음)
+health_checkup_detail_crypto	health_checkup_detail_crypto	bomapp	(변경없음)
+health_letter	health_letter	bomapp	(변경없음)
+health_letter_template	health_letter_template	bomapp	(변경없음)
+ins_claim_history	ins_claim_history	bomapp	(변경없음)
+ins_claim_member_info	ins_claim_member_info	bomapp	(변경없음)
+ins_comp	ins_comp	bomapp	(변경없음)
+insurance_guarantee	insurance_guarantee	bomapp	(변경없음)
+insurance_guarantee_contract	insurance_guarantee_contract	bomapp	(변경없음)
+insurance_guarantee_request	insurance_guarantee_request	bomapp	(변경없음)
+insurance_guarantee_request_queue	insurance_guarantee_request_queue	bomapp	(변경없음)
+insurer_inspection_time	insurer_inspection_time	bomapp	(변경없음)
+log_agreement_health	log_agreement_health	bomapp	(변경없음)
+log_coocon	log_coocon	bomapp	(변경없음)
+log_from_age_analysis_result	log_from_age_analysis_result	bomapp	(변경없음)
+log_health_checkup_analysis_register	log_health_checkup_analysis_register	bomapp	(변경없음)
+log_insurance_guarantee_request	log_insurance_guarantee_request	bomapp	(변경없음)
+log_pdf_result	log_pdf_result	bomapp	(변경없음)
+log_scrap_health_checkup	log_scrap_health_checkup	bomapp	(변경없음)
+medical_data	medical_data	bomapp	(변경없음)
+peer_premium_statistics	peer_premium_statistics	bomapp	(변경없음)
+policy	policy	bomapp	(변경없음)
+policy_detail	policy_detail	bomapp	(변경없음)
+popular_insurance_statistics	popular_insurance_statistics	bomapp	(변경없음)
+product	product	bomapp	(변경없음)
+product_group	product_group	bomapp	(변경없음)
+scrap_report_ins	scrap_report_ins	bomapp	(변경없음)
