@@ -171,6 +171,21 @@ ORDER BY data_length DESC LIMIT 30;
 > + 앱 커넥션이 겹친다. 소형 Aurora는 초과로 제일 무거운 태스크(mydata 46테이블)부터
 > RECOVERABLE 실패(dev 실증). prod: ①태스크 **스태거드 시작**(전부 동시 X) ②prod
 > `max_connections` 헤드룸 사전 확인 ③부족 시 MaxFullLoadSubTasks 하향.
+>
+> 🔴 **writer CPU 포화(prod 카나리 실측)**: mydata 단독 full-load(subtasks=8)만으로
+> **writer CPU 11%→99% 포화**(ReadIOPS 8→1500, ReadLat은 4ms로 버팀). 병목=CPU.
+> STOP하면 회복(부작용=타깃 부분데이터, 재실행 reload로 덮음). **prod 대형 full-load는:
+> ①반드시 새벽 저트래픽 ②MaxFullLoadSubTasks 8→4/2 하향 ③대형(mydata/bomapp) 순차
+> (하나로도 CPU 포화 → 동시 금지) ④CloudWatch CPU/ReadLatency 감시.** 경량 스키마
+> (chat/planner/messaging ~10GB)는 업무시간에도 무해(카나리로 5pass 확인).
+>
+> 🔴 **타깃 FK 제약 → CDC 1216 실패 (필수 선반영)**: 타깃 스키마에 FK가 있으면
+> (chat 9/mydata 16/bomapp 4/planner 2) CDC 적용이 부모-자식 순서를 못 지켜
+> `NativeError 1216 (foreign key constraint fails)`로 태스크 FATAL(prod chat 실증).
+> **full-load는 벌크라 통과하고 CDC 전환 후에야 터진다**(초기엔 안 보임). 해법 = 타깃
+> 엔드포인트 `extra_connection_attributes="initstmt=SET FOREIGN_KEY_CHECKS=0"`
+> (소스가 무결성 보장 → 안전; infra MR!82). 엔드포인트 modify는 시크릿 인증 보존되나
+> (test-connection 확인) 돌던 태스크는 **재시작해야 반영**. messaging(FK 0)만 무관.
 
 ### P4. DMS → CDC-only 전환 + 시작
 - `module "prod_dms"` 에 `migration_type="cdc"` + `cdc_start_position="<file>:<pos>"` +
