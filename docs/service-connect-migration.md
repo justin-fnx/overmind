@@ -62,7 +62,7 @@ UpdateService가 성공한다. 따라서 **apply/deploy 순서**는:
 | **T0** SC 기반+전체등록 | infra (`main`, GitLab) | **✅ Done** (SC 라이브 + OOM 인시던트 해소) | Teammate(Sonnet) | [infra !70](https://gitlab.bomapp.co.kr/bomapp/infra/-/merge_requests/70) merged(669c4a9) | apply 5add/20change/0destroy. 사이드카 OOM 인시던트는 메모리 부여(+[!109](https://gitlab.bomapp.co.kr/bomapp/next-backend/-/merge_requests/109))로 해소, 18서비스 healthy |
 | **T1** next-backend TD named-port | next-backend (`dev`, GitLab) | **✅ Done** (머지+named-port 반영) | Teammate(Sonnet) | [next-backend !105](https://gitlab.bomapp.co.kr/bomapp/next-backend/-/merge_requests/105) | 템플릿 3종, port_name=서비스명. STEP1로 live TD 반영 |
 | **T2** mydata-agent TD named-port | mydata-agent (`prod`, GitHub) | **✅ Done** (머지+named-port 반영) | Teammate(Sonnet) | [mydata-agent #12](https://github.com/bomapp-inc/mydata-agent/pull/12) | 템플릿 2종, named-port=mydata-agent, 전 env 8080 |
-| **T3** mydata 삼각형 컷오버 | next-backend(`dev`)+mydata-mgmts-api(`master`) | **Todo** (준비됨 — blockedBy 해제) | — | — | 설정 URL→SC 논리이름. mgmts leg는 caveat(↓) |
+| **T3** mydata 삼각형 컷오버 | next-backend(`dev`) | **✅ Done** (머지+빌드+배포, SC 직결 라이브) | Teammate(Sonnet)+Leader | [!113](https://gitlab.bomapp.co.kr/bomapp/next-backend/-/merge_requests/113) merged | dev·stg 6프로퍼티→SC 이름. 4서비스 새 이미지 배포·healthy. mgmts leg 제외 |
 
 ### port_name 계약 (T0 SC ↔ T1/T2 TD named-port — 통합 정합 확인됨)
 | 서비스 | port_name / SC dns_name | 소스 |
@@ -179,6 +179,46 @@ Leader가 `describe-services`로 SC 엔드포인트 등록 + namespace 연결 + 
 1. T0 apply 후 dev `aws ecs describe-services`로 SC 엔드포인트 등록·namespace 연결 확인.
 2. T3 컷오버 후 논리이름 호출 성공 + internal-ALB RequestCount 감소(SC 우회) 확인.
 
+## T3 완료 (2026-07-06)
+
+dev·stg mydata 삼각형이 SC 논리이름으로 **컷오버 완료**. 설정은 이미지에 baked라 **빌드+배포** 수행:
+- MR !113 머지 → bomapp-api 빌드(`20260706-59d6c946`) → **bomapp-api dev·stg** 배포(deploy 단독) + **mydata-api dev**(build+deploy) + **mydata-api stg** 배포.
+- 4서비스 전부 새 이미지 반영·rollout COMPLETED(mydata-api stg는 desired 0)·**failedTasks 0**. mydata-api dev 로그 정상, **SC 이름해석 오류(UnknownHost/connect) 0건**.
+- **CI 트리거 교훈**: `glab api -f "variables[][key]="`(폼 배열)은 변수 전달 실패 → PIPELINE_TARGET이 기본값 `build`로 폴백(초기 빌드가 그래서 deploy 누락). **`glab ci run --variables KEY:VALUE`** 가 정답. build-and-deploy는 build 잡만 재시도하면 deploy-after-build 캐스케이드 누락 → 전체 파이프라인 재시도 or build/deploy 분리.
+- **✅ SC 직결 실측 완료(2026-07-07)**: STG mydata-api 태스크의 SC 프록시 컨테이너에서 ECS Exec(SSM)로 SC 논리이름 직접 콜 —
+  `curl -f http://mydata-agent:8080/actuator/health` → **HTTP 200**(EXIT 0), `curl -f http://bomapp-api:8080/actuator/health` → **HTTP 200 + 헤더 `Server: envoy` / `X-Envoy-Upstream-Service-Time` / 본문 `{"status":"UP"}`**.
+  Envoy 헤더 = 트래픽이 **SC Envoy 데이터플레인을 실제 경유**했다는 증거 → **SC 이름해석+라우팅 end-to-end 동작 확정**.
+  (exec 법: session-manager-plugin 로컬 추출 + `--container ecs-service-connect-*`. 앱은 distroless라 프록시 컨테이너의 AppNet minimal-curl 사용, 플래그 `-f/-v/-m`만 지원.)
+- **잔여(트래픽 시프트 규모)**: 실 mydata 비즈니스 트래픽의 ALB→SC 이동 규모는 실사용 트래픽 도착 시 SC/ALB RequestCount로 확인(현재 dev/stg 조직 트래픽 미미). 경로 동작 자체는 위에서 실증됨.
+
+## prod SC 차터 (진행 중, 2026-07-07~)
+
+dev·stg 검증 완료 후 prod 적용 착수(사용자 승인 = 단계적 전체 실행 + 게이트). **규제필수 mydata + 전 prod 서비스 롤링재배포 수반 → 각 단계 검증 게이트.**
+
+**prod 실측**: 서비스 대부분 mem꽉(bomapp-api 2048/2048, chat-api 3072/3072, open-api 1536/1536, wings-api 2048/2048, batch mem꽉; mydata-api gap128·mydata-agent gap256) → **SC 켜기 전 메모리 헤드룸 필수(안 그러면 prod OOM)**. PROD-Cluster 5×m7g.xlarge 잔여 ~28GB(수용 가능). prod 브랜치는 named-port 템플릿+메모리 공식 보유(dev 4커밋 앞섬). prod 배포는 prod 브랜치에서만.
+
+| Phase | 내용 | 상태 |
+|-------|------|------|
+| **P1** infra 스캐폴드 | SC-PROD namespace + PROD 클러스터 defaults + SG-PROD self-ingress (additive·트래픽0·OOM0) | 위임(infra `feature/sc-prod-enroll`) |
+| **P2** 메모리 헤드룸 | prod 오버레이 8개 TASK_MEMORY +256 + HEADROOM 256 → build+deploy(named-port+메모리, 롤링·OOM예방) | 위임(next-backend `feature/sc-prod-mem-headroom`, base=prod) |
+| **P3** SC 등록 | prod 서비스 `service_connect_configuration` apply(Envoy 사이드카 롤링) — **P2 배포 후에만** | 대기 |
+| **P4** mydata 컷오버 | prod yml→SC 이름 build+deploy(bomapp-api/mydata-api) | **✅ Done** ([!120](https://gitlab.bomapp.co.kr/bomapp/next-backend/-/merge_requests/120) 머지, 빌드`20260707-68165c60`+배포·검증) |
+
+**prod P1~P3 완료(2026-07-07)**:
+- **P1** apply: SC-PROD namespace(ns-zxs5nmwwpp6uv5h7)+PROD 클러스터 defaults+SG self (2add/1change/0destroy). infra [!73](https://gitlab.bomapp.co.kr/bomapp/infra/-/merge_requests/73) — **미머지(사용자 머지 대기, PROD infra라 2-party)**. ⚠️P3 적용됨→!73 미머지=main-state 드리프트, 조속 머지 필요.
+- **P2** 메모리+named-port: [!116](https://gitlab.bomapp.co.kr/bomapp/next-backend/-/merge_requests/116) 머지+8개 next-backend deploy(재빌드 없이, 현 이미지 재사용) + mydata-agent GH Actions deploy(20260609-4062d7c). 9서비스 task_mem+256·named-port·healthy·OOM0.
+- **P3** SC 등록 apply: P3a(비규제6, -target) + P3b(규제3, -target) = 9서비스 `service_connect_configuration` in-place(0 destroy). **9/9 SC-enabled, healthy, Envoy OOM0.** mydata-agent 외부 mTLS(api.mydatacenter.or.kr:8443) = P3 전후 baseline 동일(SC 미간섭 확인).
+- **P4 완료(2026-07-07)**: [!120](https://gitlab.bomapp.co.kr/bomapp/next-backend/-/merge_requests/120)(prod yml 2파일→SC 이름) 머지 → bomapp-api·mydata-api prod 브랜치 빌드(`20260707-68165c60`, SC config baked) → **개별 배포**(mydata-api 먼저 검증→bomapp-api). 무중단 롤링(서비스 2/2 유지). infra [!73](https://gitlab.bomapp.co.kr/bomapp/infra/-/merge_requests/73) 머지(main=state 정합).
+  - **검증**: 두 호출자 SC config 이미지·2/2·fail0·OOM0. **SC 이름해석 오류 0**(bomapp-api·mydata-api). **mydatacenter 외부 mTLS 에러율 baseline 유지**(컷오버 무영향 — SC는 내부만, 외부는 우회). prod 9/9 SC-enrolled.
+
+## 🏁 전 환경 SC 완결 (dev·stg·prod)
+
+dev·stg(T0~T3) + prod(P1~P4) 모두 완료. **mydata 삼각형(mydata-api↔mydata-agent, int-mapi)이 전 환경에서 SC 논리이름 직결**로 통신. 규제 mydata 외부 mTLS 무영향, 전 서비스 healthy.
+- **핵심 안전패턴**: SC Envoy 사이드카 OOM 방지 = task memory +256 헤드룸 **선반영 후** SC 등록(prod는 P2→P3 순서 엄수로 OOM 0 달성).
+- **잔여(선택)**: prod SC 왕복 exec 실증은 prod-exec 승인 필요(로그 기반으로 무오류 확인됨). recipient-extractor/vkey/az/sapi/mgmts leg는 원천 제외. at-risk STG chat-api·wings-api는 다음 CI 배포 시 !109 정합.
+
+⚠️ 순서 불변: P2(메모리+named-port 배포) → P3(SC 등록 apply) → P4(컷오버). P2 없이 P3 하면 prod OOM.
+
 ## 변경 이력
 - 2026-07-06: 착수. Linear 불가 → 본 문서로 프로세스 관리. T0·T1·T2 위임.
 - 2026-07-06: T0·T1·T2 완료 + Leader 리뷰 통과(각 MR/PR 코멘트). 포트 팩트 정정(mydata-agent 전 env 8080).
@@ -226,3 +266,17 @@ Leader가 `describe-services`로 SC 엔드포인트 등록 + namespace 연결 + 
   - **최종 게이트**: **전 18서비스 rollout COMPLETED + run==des + failedTasks 0** 확인. SC 라이브·healthy·ALB 경로 무변화.
   - **잔여(라이브 vs CI 정합 참고)**: 인시던트 대응 중 dev·stg 서비스 다수가 surgical out-of-band TD 리비전으로 떠 있음(메모리 +256 포함). !109 머지로 CI 소스는 정합 → 각 서비스의 **다음 정규 CI 배포 시 CI-렌더 TD로 수렴**(선택적으로 지금 일괄 CI 재배포해 정합 가능, 라이브는 이미 healthy라 필수 아님).
   - **다음 = T3**(mydata 삼각형 SC 컷오버) 착수 가능. mgmts leg caveat(위) 유효.
+- 2026-07-06: **open-api OOM 근본 교정**(사용자 지시 = open-api만). open-api는 SC 이전부터 app **1024로 과소**(실수요 1536+, 타 API는 1536).
+  내 인시던트 대응 +256은 task만 1280으로 올리고 app 1024 방치 → OOM(exit137) 지속. !109도 open-api를 task1280/app1024로 과소설정.
+  → 라이브 TD를 **task1792/app1536**으로 교정(DEV :27 / STG :20), 검증: **새 TD에서 OOM 0**, 137은 전부 옛 TD(:26/:19). 오버레이 정본 교정 MR [next-backend !112](https://gitlab.bomapp.co.kr/bomapp/next-backend/-/merge_requests/112)(open-api dev/stg TASK_MEMORY 1280→1792) — Leader 리뷰 통과, **사람 머지 대기**.
+  - **잔존 리스크(사용자 스코프상 미수정)**: STG bomapp-api/chat-api/wings-api mem꽉(1536/1536, bump no-op), STG mydata-api gap128 — 현재 미OOM이나 헤드룸 부족. 후속 CI 재배포(!109+open-api교정)로 정합 권장.
+
+## 🔴 사후 인시던트 (2026-07-08): prod mydata callback Host 검증 실패
+
+P4(MR !120) prod 컷오버가 mydata-api 의 `mydata.server.domain` 만 SC 논리이름(`http://mydata-api:8080`)으로 바꾸고 **mydata-agent 의 callback URL 생성 경로는 함께 정리하지 않아**, agent 콜백이 여전히 구 도메인 `http://int-mapi.bomapp.co.kr:8080` 으로 들어와 mydata-api `InternalServerAspect` Host 검증에 거절(`code=4000`)됨. 보험사 응답(`rsp_code=00000`)은 정상이었으나 콜백 저장 단계에서 보험료·납입·거래내역 실데이터가 전부 폐기됨.
+
+- **영향**: 2026-07-07 **12:02 KST**(mydata-api prod 배포 직후) ~ 07-08 **10:45 KST**(핫픽스 배포), 약 **23시간** 마이데이터 신규 연동/재연동 무력화. ES `logs-prod-mydata-api` ERROR `보낸 요청이 아닙니다` 약 99,879건.
+- **핫픽스**: [MR !143](https://gitlab.bomapp.co.kr/bomapp/next-backend/-/merge_requests/143) — `mydata.server.allowed-domains` 허용목록 신설, prod 에 `http://int-mapi.bomapp.co.kr:8080` 병행 허용(임시 완화). **후속: agent callback URL 을 SC 이름으로 정리 후 allowed-domains 임시항목 제거.**
+- **사후부검(3대 실책)**: ① SC 컷오버 검증이 헬스체크·SC 이름해석 curl 에 그쳐 **실제 '연동 해제→재연동→데이터 표시' e2e 를 검증하지 않음**(콜백 Host 검증은 비동기 콜백 저장 단계에서만 발현 → 동기 헬스체크로 안 잡힘). ② 결정적 단서(agent `callback_url=int-mapi`, `invalid_request`)가 **INFO 레벨**로만 기록돼 자동 알림 미발생. ③ **mydata-agent 가 APM 미연동**이라 콜백 구간 분산추적 불가.
+- **교훈**: 마이데이터 삼각형처럼 **비동기·다단계·규제 경로의 컷오버는 헬스체크/이름해석 확인이 필요조건일 뿐 충분조건이 아니다.** 향후 SC/도메인 컷오버 릴리스 체크리스트에 실 연동 e2e(해제→재연동→보험료·거래내역 조회)를 필수화한다.
+- 상세 사후부검: Notion 🚨 장애 대응 기록 DB — <https://app.notion.com/p/397673e85b3481898163fb5d20fbb447>
