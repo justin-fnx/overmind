@@ -153,12 +153,30 @@ next-frontend/
 - API base URL, Sentry DSN, Amplitude project ID 등을 `VITE_*` 변수로 주입
 
 ### 5.2 CI/CD (GitLab CI/CD)
-- `.gitlab-ci.yml`
+- `.gitlab-ci.yml` (project id 14)
 - 브랜치 → 환경 매핑:
   - `develop` → dev (자동 빌드, 수동 배포)
-  - `staging` → stg (자동 빌드, 수동 배포)
+  - `staging` → stg (자동 빌드, 수동 배포) — ※ staging 브랜치는 폐기 방향, 실사용은 아래 임시 배포
   - `main` → prod (자동 빌드, 수동 배포)
 - 2026-04 부터 피쳐 브랜치 임시 배포 지원
+
+#### 5.2.1 피쳐/rc 브랜치 stg 배포 (bomapp-web) — 2026-07-10 확립
+rc/* 등 임의 브랜치를 stg 로 배포하려면 **두 조건이 모두** 충족돼야 한다.
+1. **CI 소스 게이트**: `install/build/deploy:bomapp-web:stg` rules 가 `CI_PIPELINE_SOURCE =~ /^(web|api)$/`. (구버전은 `== "web"` 라 GitLab UI "Run pipeline" 만 가능했음 → MR !543 으로 `api`(glab) 트리거 허용. dev/prod 는 여전히 web 전용.)
+2. **브랜치 보호**: 공유 러너가 `ref_protected` 라 **대상 브랜치가 보호브랜치여야 잡을 수령**한다. 비보호 브랜치는 `runner: None` 무한 pending. 보호 패턴 = `main, staging, develop, fix/*, feat/*, refactor/*, qa/*, rc/*`(rc/* 는 2026-07-10 추가, push/merge=Developers+Maintainers). ⚠️ rc/* 는 현재 `allow_force_push=false` → 리베이스 후 force-push 필요 시 이 옵션을 켜야 한다.
+
+glab 트리거 절차 (bomapp-web stg):
+```bash
+# 1) 파이프라인 트리거 (ref = 대상 rc 브랜치)
+glab api --method POST projects/14/pipeline -H "Content-Type: application/json" --input - <<'JSON'
+{"ref":"<rc-branch>","variables":[{"key":"DEPLOY_TARGET","value":"stg"},{"key":"DEPLOY_APP","value":"bomapp-web"}]}
+JSON
+# 2) build:bomapp-web:stg 성공 대기 → deploy 는 when:manual
+glab api --method POST "projects/14/jobs/<deploy-job-id>/play"
+```
+- ⚠️ `--input` + `-H "Content-Type: application/json"` 필수. `-F "variables[][key]"` 는 무시됨(HTTP 415).
+- deploy 권한은 Protected Environment `stg/*` 로 계속 가드된다.
+- 배포 스크립트 = `yarn build-stg` → `aws s3 sync dist/ s3://<bucket>/ --delete --exclude index.html`(immutable) → `index.html`(no-cache) → CloudFront invalidation(`E19R110W3JUKC2`).
 
 ### 5.3 배포 산출물
 - 정적 SPA: Vite 빌드 → S3 (`bomapp-static-{env}-{app}`) 업로드 → CloudFront 무효화
@@ -174,7 +192,7 @@ next-frontend/
 | DEV | `dev-padmin.bomapp.co.kr` | OAC | `bomapp-static-dev-padmin` |
 | DEV | `dev-planner.bomapp.co.kr` | OAC | `bomapp-static-dev-planner` |
 | DEV | `dev-dplanner.bomapp.co.kr` | OAC | `bomapp-static-dev-dplanner` |
-| STG | `stg-web.bomapp.co.kr` | OAC | `bomapp-static-stg-web` |
+| STG | `stg-web.bomapp.co.kr` | `E19R110W3JUKC2` | `stg-web.bomapp.co.kr` (검증됨 2026-07-10; 표의 `bomapp-static-*` 패턴과 불일치 — 실 버킷명=도메인) |
 | STG | `stg-padmin.bomapp.co.kr` | OAC | `bomapp-static-stg-padmin` |
 | STG | `stg-planner.bomapp.co.kr` | OAC | `bomapp-static-stg-planner` |
 | STG | `stg-dplanner.bomapp.co.kr` | OAC | `bomapp-static-stg-dplanner` |
@@ -224,6 +242,7 @@ graph LR
 | 2025 | 보맵웹 재설계, 기능 확장 |
 | 2026-04 | 피쳐 브랜치 임시 배포 지원 (dev/stg 수동) |
 | 2026-04~05 | 채팅 UI 개선, 건강검진 알림톡 기능, 카카오페이 고객 알림 |
+| 2026-07-10 | bomapp-web stg 배포 glab/API 트리거 허용 (MR !543) + `rc/*` 보호브랜치 추가 (§5.2.1) |
 
 ---
 
