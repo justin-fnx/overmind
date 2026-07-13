@@ -5,7 +5,7 @@
 | 항목 | 값 |
 |------|----|
 | 경로 | `../mydata-agent` |
-| 리포 | `github.com/bomapp-inc/mydata-agent` (GitLab `bomapp/mydata-agent` 프로젝트 없음, 2026-06-23 확인) |
+| 리포 | **`gitlab.bomapp.co.kr/bomapp/mydata-agent`** (정본=GitLab, project id 43, default `prod`, 2026-07-08 이전 — BOM-377). `github.com/bomapp-inc/mydata-agent` 는 레거시 미러 |
 | 언어/플랫폼 | Java 17 / Spring Boot 3.0.6 / Spring WebFlux (Reactive) |
 | 빌드 | Gradle |
 | 첫 커밋 | 2023-05-11 |
@@ -123,8 +123,9 @@ next-backend / mydata-api
 
 | 항목 | 내용 |
 |------|------|
-| Dockerfile | (미확인) — Fargate 에 배포되므로 컨테이너 이미지가 ECR 에 존재할 것 |
-| CI/CD | GitHub Actions 폴더 미발견 (수동 배포 추정) |
+| 이미지 | Jib(distroless java17 arm64) → ECR `mydata-agent`(IMMUTABLE). slim/debug 변종. Dockerfile 없음(Jib) |
+| CI/CD | **GitLab CI `.gitlab-ci.yml`(BOM-377, 2026-07-08)** — build(Jib→ECR, build-once-deploy-many) + deploy(ECS register/update, circuit-breaker rollback, FireLens + SSL 변종 secrets-init). 폼 변수 PIPELINE_TARGET/ENVIRONMENT/VARIANT/IMAGE_TAG, web/MR/api 트리거·when:manual. 구 GitHub Actions(build/ecs-deploy/build-and-deploy)는 이전 시 제거. ⚠ 프로젝트 CI/CD 변수 `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` 등록 필요 |
+| APM | **Elastic APM 연동(BOM-377)** — elastic-apm-agent 부착, `ops/ecs/base/apm-{env}.env`(elastic.bomapp.co.kr:8200, 공유 시크릿 `shared/apm/api-key-iPaiAq`), service_name=mydata-agent. 2026-07-08 마이데이터 23h 장애 실책③(agent APM 미연동) 해소 |
 | 로깅 | awslogs (Fargate 모범 사례) |
 | 헬스체크 | `GET /` |
 | 오토스케일링 | min=2, max=10 |

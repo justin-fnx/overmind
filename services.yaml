@@ -196,25 +196,34 @@ services:
   # MyData Layer (마이데이터 연동)
   # ─────────────────────────────────────────────
   - name: "mydata-agent"
-    repo_url: "github.com/bomapp-inc/mydata-agent"
+    repo_url: "gitlab.bomapp.co.kr/bomapp/mydata-agent"   # 정본=GitLab(project id 43, group bomapp, default prod). 2026-07-08 정본 이전(BOM-377) — 작업은 GitLab MR(glab). github.com/bomapp-inc/mydata-agent 는 레거시 미러(PR 미사용).
     path: "../mydata-agent"
     feature_base_branch: "prod"
     description: "마이데이터 게이트웨이. 외부 마이데이터 기관과의 SSL 통신을 담당하며 next-backend의 mydata-api로부터 호출되어 보험 상품 데이터를 수집/조회한다. WebFlux 기반 비동기 처리."
-    tech_stack: ["java-17", "spring-boot-3.0", "spring-webflux", "gradle"]
+    tech_stack: ["java-17", "spring-boot-3.0", "spring-webflux", "gradle", "jib-distroless", "gitlab-ci", "elastic-apm"]
     critical_paths:
       - path: "src/main/java/kr/co/mydata_agent"
         description: "에이전트 애플리케이션 진입점 및 핵심 로직"
       - path: "src/main/java/kr/co/mydata_agent/gateway"
-        description: "마이데이터 기관 통신 게이트웨이 (SSL 인증서 기반)"
+        description: "마이데이터 기관 통신 게이트웨이 (SSL 인증서 기반). MyDataGatewayService 가 외부 기관 호출 후 mydata-api callback URL 로 결과 통보 — 콜백 실패가 2026-07-08 마이데이터 장애의 발현 지점."
       - path: "src/main/resources"
-        description: "application.yml 및 SSL keystore 경로 설정"
+        description: "application.yml 및 SSL keystore 경로 설정, logback-spring.xml(FireLens JSON)"
+      - path: ".gitlab-ci.yml"
+        description: "GitLab CI(BOM-377). build(Jib→ECR arm64, build-once-deploy-many) + deploy(ECS register/update, circuit-breaker rollback, FireLens + SSL 변종 secrets-init). PIPELINE_TARGET/ENVIRONMENT/VARIANT/IMAGE_TAG 폼 변수, web/MR/api 트리거·when:manual."
+      - path: "ops/ecs"
+        description: "ECS task-definition(base) + overlays/{dev,stg,prod}, es-{env}.env, apm-{env}.env(APM, BOM-377). ECR immutable `mydata-agent`."
     dependencies: []
     test_command: "./gradlew test"
     lint_command: null
+    docs_to_read:
+      - "docs/services/mydata-agent.md"   # overmind 문서(리포 내부엔 CLAUDE.md/AGENTS.md 없음)
     notes:
-      - "포트: stg=8008. 기본/prod 포트는 application.yml 에서 환경별로 확인 필요."
-      - "SSL 키스토어 (jks) 경로가 설정에 하드코딩되어 있어 배포 환경마다 차이 주의."
-      - "단일 application.yml 에 모든 환경 프로파일이 포함되어 있다."
+      - "**정본 이전(BOM-377, 2026-07-08)**: GitHub Actions(build/ecs-deploy/build-and-deploy) → GitLab CI(`.gitlab-ci.yml`) 포팅 + `.github/workflows` 제거 후 GitLab `bomapp/mydata-agent`(id 43, default prod) 로 이전. CI/CD 변수 `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`(masked) 프로젝트 등록 필요(그룹 공용 변수 없음). MR 머지는 사용자 직접."
+      - "**ES APM 연동(BOM-377, 2026-07-08 마이데이터 23h 장애 후속 실책③)**: elastic-apm-agent 1.55.6(Jib `/app/apm`, `-javaagent`) + `ops/ecs/base/apm-{env}.env`(server=elastic.bomapp.co.kr:8200, 공유 시크릿 `shared/apm/api-key-iPaiAq`), service_name=mydata-agent, IGNORE_URLS=`/`. **stg(2026-07-09 taskDef:19) → prod(2026-07-10 taskDef:7, image 20260709-1a6baa22, 2/2 무중단 롤링) 배포 완료.** ES 인제스트 확인: stg=idle(service_summary), **prod=실트래픽(15분 transaction 1,349·span 2,686, 2태스크). 콜백 구간 분산추적 prod 라이브 → 장애 실책③ 실질 해소.**"
+      - "포트: dev=8080, stg/prod=8008(overlay 관리). CONTAINER_PORT 는 overlay 값. Service Connect named-port(PORT_NAME=mydata-agent)."
+      - "SSL 키스토어(jks)는 secrets-init 사이드카가 SM(`bomapp/{env}/external-mydata/auth-jks`)에서 마운트, SSL_KEYSTORE_*/SSL_TRUSTSTORE_* env 주입(BOM-132). application.yml 의 key-password 하드코딩(164521)은 SM(SSL_KEY_PASSWORD)으로 일원화됨(구 스냅샷엔 잔존)."
+      - "환경: prod desired=2(가동), stg desired=1(가동), dev desired=0. ECS PROD-Cluster 단일 가동."
+      - "**로그레벨 정합(BOM-377 실책②)**: 콜백 실패/외부기관 non-2xx/invalid_request 를 WARN 이상으로 재분류(logging-standards.md 준수). 기존엔 INFO 매몰(52,984건)로 알림 미발생."
 
   - name: "mydata-mgmts-api"   # 구 이름 bomapp_my_data (BOM-121 리네임, 2026-06)
     repo_url: "github.com/bomapp-inc/mydata-mgmts-api"
