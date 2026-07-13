@@ -186,6 +186,18 @@ ORDER BY data_length DESC LIMIT 30;
 > 엔드포인트 `extra_connection_attributes="initstmt=SET FOREIGN_KEY_CHECKS=0"`
 > (소스가 무결성 보장 → 안전; infra MR!82). 엔드포인트 modify는 시크릿 인증 보존되나
 > (test-connection 확인) 돌던 태스크는 **재시작해야 반영**. messaging(FK 0)만 무관.
+>
+> 🔴 **생성 컬럼(GENERATED) → CDC 3105 (필수 선반영)**: `payment_no_numeric`
+> (mydata insurance_general_transaction·insurance_transaction, GENERATED ALWAYS AS
+> …VIRTUAL) 처럼 생성 컬럼이 있으면 **full-load는 자동 제외해 통과하지만 CDC는
+> binlog 기반 INSERT에 포함**→`NativeError 3105 (value specified for generated column
+> not allowed)`→FATAL. **한 테이블 3105가 태스크 전체를 stall**(다른 테이블 로드까지
+> 멈춤 — mydata가 46GB 대형 테이블 앞에서 멈춘 게 실은 이 3105 루프였음). 해법 = 태스크
+> table-mappings에 `rule-action: remove-column`(object-locator=소스명, column-name=
+> 생성컬럼) → modify-replication-task → resume-processing(45개 재적재 없이 이어감).
+> ⚠️ module 매핑생성은 컬럼 메타가 없어 자동으로 못 넣음 → 현재는 CLI 수정(teardown이
+> destroy하므로 OK; 태스크 재생성 시 유실 주의). **FK 1216과 함께 "full-load 통과·CDC
+> 폭발" 쌍둥이 함정** — 반드시 CDC 전환 전 두 설정을 선반영.
 
 ### P4. DMS → CDC-only 전환 + 시작
 - `module "prod_dms"` 에 `migration_type="cdc"` + `cdc_start_position="<file>:<pos>"` +
