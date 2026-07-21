@@ -367,6 +367,9 @@ mydata-mgmts-api (구 bomapp_my_data; SB 3.4/Java 21, 마이데이터 표준 mgm
 - **마이데이터 호출이력 파티션 정리 (BOM-217)**: `log_my_data_api_request_v2` 는 신용정보법 시행령 제18조의6 제10항상 보관의무 대상이며 금감원이 월/분기/연 단위로 자료를 요청한다. `created_at` 월별 RANGE 파티셔닝 — 매월 1일 신규 파티션 생성 + 내부기준 **5년 경과 파티션 `DROP PARTITION`** 자동화. v1(`log_my_data_api_request`)은 적재 중단된 구버전이나 보관의무 대상이라 드롭 불가. 보관기간 5년은 내부 추정치 → 보안팀/마데 운영 컨펌 필요.
   - 상세: `docs/db-table-cleanup.md`, `docs/services/mydata-platform.md §9`
 
+- **DB 스키마 관리 = Flyway 단일 정본 (SCHEMA, 2026-07-13)**: `next-backend` DB 스키마의 **유일 정본은 Flyway `bomapp-server/e2e-schema/db/schema`**(V001 = 실 prod `bomapp_member` 덤프, 3개 e2e 앱이 공유 소비). 모든 DDL 변경은 **여기 versioned migration(V002+)으로만** 작성하고, **사람이 그 SQL을 dev→stg→prod 순으로 수동 반영**한다(Flyway auto-migrate 안 함, `ddl-auto: none`). 스키마 DDL을 `docs/*.sql`·소스 `resources/sql`·`db/manual` 등 Flyway 밖에 새로 만들지 않는다. 앱별 테스트 시드는 `db/seed`(V500+). 배경: 과거 DDL 산재로 e2e baseline이 prod와 드리프트해 엔티티 경유 INSERT가 500(W9/BOM-298/BOM-285). Hibernate `ddl-auto=validate`는 CHAR/VARCHAR 등 타입차로 too-strict라 가드로 부적합 → **존재-only 검증기**(엔티티 매핑 테이블/컬럼 실재만 확인)로 미래 드리프트 차단.
+  - 상세: `next-backend/docs/schema-management.md`, Context Hub 카드 `399673e8-5b34-8189-85ac-d1f7bce50130`
+
 ### DB 테이블 정리 시 주의 (BOM-207)
 
 - **"정적 코드 참조 미존재 ≠ 드롭 가능"** — 테이블 드롭 판정 시 다음을 반드시 교차 검증한다.
