@@ -212,6 +212,7 @@ ORDER BY data_length DESC LIMIT 30;
 - CDC 라이브 스모크: 소스에 테스트 행 INSERT → 타깃 수 초 내 반영 확인 → 삭제(삭제도 전파).
 
 ### P6. 컷오버(별도 단계) → teardown
+- **✅ prod 컷오버 완료(2026-07-21, BOM-399/BOM-423).** 절차·실행 결과 정본 = `docs/db-ownership-split/cutover-runbook.md`. teardown(`dms_prod_enabled=false`)은 롤백 윈도우 유지 후 **별도 승인**으로 실행(§4 사후).
 - **프리로드 ≠ 컷오버.** 컷오버 = 앱 datasource 를 신규 스키마로 전환(오너=write, 비오너=내부 API).
   CDC가 그 사이를 계속 따라잡으므로 새벽 프리로드와 다른 시점이어도 됨. single-writer flip.
 - 컷오버·검증 후: `dms_prod_enabled=false` apply → **DMS 임시자원 전량 teardown**(토글 한 방;

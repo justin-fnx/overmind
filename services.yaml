@@ -42,6 +42,8 @@ services:
       - "변경 전 반드시 terraform state를 완전히 읽어 확인 후 plan/apply 수행."
       - "ECS 배포 대상 서비스: bomapp-api, chat-api, mydata-api, open-api, bomapp-batch, mydata-batch, statics-batch, wings-api"   # alimtalk-callback 디커미션됨 (BOM-180, 2026-06-16)"
       - "bomapp-console 인프라 리소스(ECR/IAM/Secrets metadata/log/SG/TG/listener/Route53 + frontend S3/CloudFront + ECS service bootstrap)는 Terraform 코드 기준으로 준비 중이다. 실제 AWS service apply/deploy는 아직 완료되지 않았다."
+      - "**prod CloudFront 점검중 페이지 토글(BOM-399, MR !85)**: `prod-maintenance-page` CF Function(viewer-request 503 + 인라인 HTML, modules/prod/templates/maintenance-page.js.tftpl). `-var 'prod_maintenance_sites=[...]'`(dplanner/planner/padmin/console/apps 키) + `-var prod_maintenance_schedule_text` 로 static_site_prod 배포에 연결 ON, -var 제거 apply 로 OFF. 평시 기본값 []=무영향. function 은 상시 존치(재사용). 2026-07-21 컷오버 창에서 planner/dplanner 실전 검증 완료. **절차 정본: overmind docs/maintenance-page-runbook.md** (컷오버 적용 사례=docs/db-ownership-split/cutover-runbook.md §3.1/§3.8)."
+      - "**static_site_prod[\"web\"] CF = 보맵 웹 실서빙 — 단, 실접근 도메인은 alias 쪽(2026-07-21 정정)**: 사용자 트래픽은 `web-2z9w75bv.bomapp.co.kr`·`bomapp.im`(둘 다 이 배포의 alias, CF 엣지 실측)으로 들어오며 CF 토글·점검페이지 유효(07-21 실전 노출 확인, 네이티브 앱 화면 포함). **⚠️ 함정: `web.bomapp.co.kr` 호스트 자체는 Route53 CNAME→prod-nlb(비-CF 별개 경로, 루트 404)** — 이 호스트로 CF 동작을 검증하면 무효과로 오판함(07-21 실제 발생). 검증·테스트는 web-2z9w75bv/bomapp.im 으로."
 
   # ─────────────────────────────────────────────
   # Next-Generation Backend Platform
@@ -95,6 +97,7 @@ services:
       - "환경별 프로파일 분리: local/dev/stg/prod. application-{profile}.yml 다중 사용."
       - "JUnit 5 사용 (useJUnitPlatform). checkstyle/ktlint 미설정."
       - "**GitLab 정본 이전 완료(2026-06-16)**: gitlab.bomapp.co.kr/bomapp/next-backend (project id 40, default prod). 이후 작업은 GitLab MR(`glab`)로 처리하고 GitHub `bomapp-inc/next-backend` 는 레거시 미러/보류 PR 용도로만 본다."
+      - "**✅ DB 오너십 분리 물리 컷오버 완료 (BOM-399/BOM-423, 2026-07-21, big-bang)**: 단일 `bomapp_member` 공유 스키마 → 소유 스키마 5종 분리. 9앱이 각자 소유 스키마 datasource로 flip 완료 — chat-api→`chat`, wings-api→`planner`, mydata-api/mydata-batch→`mydata`, bomapp-api/bomapp-batch/statics-batch/open-api→`bomapp`, recipient-extractor(messaging repo)→`messaging`, 경계모호/PII/open_* 등은 잔류 `bomapp_member`. 방식=엔티티 `@Table(schema=)`(MR!197) + native/JDBC 완전 한정(MR!207) + **schema-aware dialect(`NameQualifierSupport=SCHEMA`) 실서비스 배선(BOM-421)** + datasource 시크릿 `bomapp/{env}/datasource/{schema}`(MR!192) + 앱별 크로스스키마 grant + 5스키마 CDC 중지. 배포 사고 2건(mydata-mgmts IAM 누락→MR!86 복구 / chat·bomapp-api 레거시 유저 grant 누락→팀 복구) 모두 해소. **사후 남음(§4, 별도 승인)**: DMS teardown(`dms_prod_enabled=false`) + `bomapp_member` 중복테이블 정리 + 구 datasource-* 시크릿 삭제. 정본: `docs/db-ownership-split/cutover-runbook.md`(§실행 결과), 롤백=`cutover-rollback-reference.md`."
       - "**GitLab CI 가동 중**: `.gitlab-ci.yml` 은 GitLab dev 에 머지됨(MR !1). 파이프라인 검증 완료(2026-06-15, api trigger pipeline 502, PIPELINE_TARGET=pr-check success) + api 소스 영구 허용(MR !2). 제약: OIDC 불가→정적 AWS 키 CI/CD 변수, amazon/aws-cli entrypoint 우회, AWS CLI v2 번들 설치, ECR 직접 push, ref_protected 러너. GitHub PR #462 와 GitHub Claude 워크플로우 제거는 비긴급 보류."
       - "**알림톡 동적 모수화 에픽(BOM-285)은 rc 수집 브랜치 사용 (2026-07-02 사용자 지시):** 하위 피처 브랜치(A~I, BOM-286~297)는 dev 직행이 아니라 **`rc/bom-285-audience-segment`**(dev에서 분기)를 타깃으로 MR·머지해 수집한다. rc로의 MR 머지는 리더가 직접 실행 승인. dev 환경 테스트 필요 시 rc 브랜치를 빌드. 후속 트랙 worktree 는 `origin/rc/bom-285-audience-segment` 에서 분기할 것. **A(BOM-286) 계약 머지 완료(MR !83, d615f378)**: `kr.co.bomapp.domain.rds.audience` 패키지(AudienceSegmentDefinition record·ConditionNode sealed 4종+엄격 Jackson serde·AudienceSegmentLimits depth≤5/leaf≤50/pageSize 1~50000·인터페이스 3종 Compiler/ExtractionService/CheckConditionResolver) + `BatchConditionRef`(decorator, 객체형 `{key,params}`) + DDL `docs/db-migration-BOM-285-audience-segment.sql`(utf8mb4·ALGORITHM 고정, 미적용 문서). 계약 확정: entityPredicate=`MemberEntityCondition`(test(Member)), mosu/check=`MemberCondition`(test(Long)), 빈 all/any는 B(BOM-287) 검증서 거부. C(BOM-289)/D(BOM-290) 착수 가능. 함정: gradle 모듈명 `:bomapp-domain-rds`(flat), 리포에 docs/TESTING_GUIDE.md 실존 안 함."
 
@@ -453,22 +456,24 @@ services:
     test_command: null
     lint_command: null
     notes:
-      - "**CI/CD 없음.** 전 과정이 개발자 로컬 머신 수동 실행: download-bundles.sh(번들 내려받기) → build.sh(dist 생성) → deploy.sh(rsync 업로드). GitLab 파이프라인 미구성."
-      - "**번들 round-trip 비효율**: 모든 .apk/.ipa(대용량) 를 prod 서버에서 로컬로 내려받고 → dist/archive 로 복사 → 다시 prod 서버로 rsync 업로드. 배포마다 전체 바이너리가 랩탑을 왕복."
-      - "**단일 PROD 사이트가 dev/stg/prod 빌드를 모두 호스팅**: next-frontend 처럼 환경별 버킷/배포로 갈리지 않음. 사이트 표 안에서 환경 컬럼(운영/스테이징/개발)으로 구분. 단일 main 브랜치."
+      - "**✅ GitLab CI 트리거 허브 가동 (BOM-102/BOM-100, 2026-06~07 완료).** `.gitlab-ci.yml`(3스테이지 fetch→build→deploy) + `CONTRACT.md` 존재. 모바일 리포가 `POST /projects/24/trigger/pipeline`(source=trigger)로 호출하면: ①fetch-bundle=`TRIGGER_PACKAGE_URL`(generic registry)에서 .ipa/.apk 다운로드 ②build-portal=`aws s3 ls archive/`로 기존 번들 전체 목록 취득 + 신규 파일명 합쳐 `main.js --bundle-list`로 index.html/manifest 재생성 ③deploy-to-s3=S3 업로드(archive=immutable, index/manifest=no-cache) + CloudFront(E3LGGOKIL0E4CC) 무효화. **인증=정적 deploy-static 키**(내부 GitLab이라 OIDC 불가, BOM-109 롤백). CI 변수: `AWS_ACCESS_KEY_ID/SECRET/REGION`, `S3_BUCKET_APPS_PROD`, `CF_DIST_ID_APPS_PROD`."
+      - "**⚠️ deploy/*.sh(prod-front rsync)는 레거시**: `download-bundles.sh`/`deploy.sh`/`env.sh`(PEM+StrictHostKeyChecking=no)는 리포에 잔존하나 **S3+CF CI로 대체됨**. 이관 전 '개발자 로컬 rsync→prod-front EC2:3001' 경로는 더 이상 정본 아님(사용 금지). 번들 source-of-truth = **S3 `s3://$S3_BUCKET_APPS_PROD/archive/`**."
+      - "**호스팅=S3+CloudFront (BOM-101 DNS 컷오버 완료, 2026-06-30)**: `apps.bomapp.co.kr` 공개 Route53(Z2QFKPQ14G2OAB)은 A/AAAA-alias→CloudFront `d3aivtpi991d7z.cloudfront.net`. 단일 배포가 dev/stg/prod 빌드를 모두 호스팅(표 안 환경 컬럼으로 구분). ⚠️사내 split-horizon(hq-ad AD CNAME)은 인프라팀 소관 별도. [[reference_bomapp_split_horizon_dns]]"
       - "**번들 파일명 규약**: `<app>-<version>-<env>.<apk|ipa>` (예: `bomapp-4.2.9-prod.apk`, `planner-1.1.5-stg.ipa`). main.js 가 이 규약에 강결합."
       - "**manifest URL 하드코딩**: index.html/main.js/manifest.plist 안에 `https://apps.bomapp.co.kr/archive/...`, `/manifest/...`, `/img/...` 절대경로 하드코딩. 도메인/경로 구조 변경 시 동반 수정 필요."
       - "**보안**: env.sh 의 StrictHostKeyChecking=no, prod 직접 rsync(--delete) 권한, PEM 키 로컬 의존. S3+CF 이관 시 IAM deploy-static 키 기반으로 대체 가능."
       - "**iOS bundleId 규약**: bomapp=`kr.co.bomapp.iOSBomappBeta`(+`.staging`/`.dev`), planner=`kr.co.bomapp.planner`(+`.stg`/`.dev`). main.js getIosBundleId 에 하드코딩."
       - "**도메인 노출**: apps.bomapp.co.kr (HTTP 캐시 무효화 meta 사용). 이관 후엔 CloudFront no-cache(index/manifest) + immutable(아카이브) 분리 캐시 정책 권장."
       - "**알려진 버그**: manifest.plist 의 display-image/full-size-image 가 bomapp_57.png/bomapp_512.png 로 고정 — planner 앱 설치 시에도 보맵 아이콘 노출."
-      - "**업스트림 producer (이관 후)**: bomapp-ios / bomapp-aos / planner-ios / planner-aos 4개 네이티브 앱 리포가 빌드 산출물을 GitLab generic registry 에 publish 하고 apps-distribution 파이프라인을 트리거한다. 번들 파일명 env 토큰은 dev/stg/prod 로 정규화(bomapp-ios `.staging`→stg, bomapp-aos `stage`→stg/`product`→prod)."
+      - "**✅ 업스트림 producer 4개 전부 가동**: bomapp-ios / bomapp-aos / planner-ios / planner-aos 리포 CI가 .ipa/.apk 를 각 리포 generic registry(`{app}/{ver}/{app}-{ver}-{env}.{ipa|apk}`)에 publish 후 apps-distribution(24) 트리거. env 토큰 정규화: iOS bundleId `.staging`/`.stg`→stg·`.dev`→dev, AOS flavor `stage`→stg/`product`→prod. **버전은 각 리포 빌드시점 MARKETING_VERSION(iOS)/versionName(AOS)에서 추출** → 특정 과거 버전 재배포는 그 값이 박힌 ref에서 파이프라인을 돌려야 함(main tip은 현재 버전만 산출)."
+      - "**운영: 특정 env만 배포/누락 보정**: iOS는 env별 잡(build:dev/stg/prod). 어떤 버전의 특정 env가 포털에 없으면 = 그 env 잡이 미실행된 것. 보정법 = 해당 리포에서 `POST /projects/<id>/pipeline -F ref=main -F 'variables[][key]=ENV' -F 'variables[][value]=dev|stg'` (web 파이프라인). ⚠️ref=main이면 rule상 build:prod도 함께 돎(대개 무해). AOS는 build:apk 한 잡이 dev/stg/prod 3 flavor 일괄+trigger가 env 3회 → 1파이프라인으로 전체."
 
   # ─────────────────────────────────────────────
   # Native Mobile App Projects (앱 빌드 소스)
   # 보맵/플래너 × iOS/Android. 빌드 산출물(.ipa/.apk)을 GitLab Package
   # Registry 에 publish → apps-distribution OTA 포털 파이프라인 트리거.
-  # 4개 모두 현재 CI 부재(개발자 로컬 수동 빌드) — GitLab CI 신설 대상.
+  # ✅ 4개 모두 GitLab CI 가동(BOM-100/103/104/105, 2026-06~07 완료). 러너: iOS=id3(macOS
+  #    콘솔 GUI 세션 포그라운드 필수 — Local Network 프라이버시), AOS=id1(Linux docker).
   # ─────────────────────────────────────────────
   - name: "bomapp-ios"
     repo_url: "gitlab.bomapp.co.kr/bomapp/bomapp-ios"
@@ -495,13 +500,13 @@ services:
       - service: "apps-distribution"
         type: "async"
         interface: "package-registry + pipeline-trigger"
-        note: "CI 신설 후 .ipa 를 generic registry 에 publish → apps-distribution 트리거. 현재는 개발자 로컬 빌드 후 prod 서버로 수동 반영."
+        note: "✅ CI 가동(BOM-103). .ipa 를 generic registry 에 publish → apps-distribution(24) 트리거. env별 잡(build:dev/stg/prod)."
     docs_to_read: []   # CLAUDE.md/AGENTS.md 부재.
     test_command: null   # xcodebuild test 가능하나 CI 미구성.
     lint_command: null
     notes:
-      - "**CI 부재.** .gitlab-ci.yml/.github/bitrise/Jenkins/codemagic 전무. iOS 빌드는 **macOS 러너 + Xcode** 필수가 핵심 과제."
-      - "**코드사이닝**: manual + fastlane match(readonly). CI 에서 match git 저장소 접근 토큰 + 키체인 셋업 필요. dev/stg 는 ad-hoc, prod OTA 는 별도 ad-hoc export(`ProductionAdHocExportOptions.plist`) 신설 검토."
+      - "**✅ GitLab CI 가동 (BOM-103, main).** `.gitlab-ci.yml` build(env별)→trigger 2스테이지. archive 미서명(`CODE_SIGNING_ALLOWED=NO`)+export 서명(ad-hoc). 러너=macOS id3(콘솔 GUI 세션 포그라운드 필수). keychain은 `CI_JOB_ID` 단위 격리(동시빌드 충돌 방지). CocoaPods(`pod install`) 사용."
+      - "**코드사이닝**: manual + fastlane match(readonly, `--git_branch main`). cert=Apple Distribution(iPhone Distribution 아님). match repo=`bomapp/ios-certificates`(PID37). CI 변수 MATCH_GIT_URL/TOKEN/PASSWORD."
       - "**버전 소스**: project.pbxproj MARKETING_VERSION. 포털 파일명 `bomapp-<version>-<env>.ipa` 로 매핑."
       - "**bundle id**: `kr.co.bomapp.iOSBomappBeta`(+`.staging`/`.dev`). apps-distribution `getIosBundleId('bomapp', env)` 와 정확히 일치."
 
@@ -526,13 +531,13 @@ services:
       - service: "apps-distribution"
         type: "async"
         interface: "package-registry + pipeline-trigger"
-        note: "CI 신설 후 release .apk 를 generic registry 에 publish → apps-distribution 트리거. flavor 명을 포털 env 토큰으로 정규화(stage→stg, product→prod)."
+        note: "✅ CI 가동(BOM-104). release .apk 를 generic registry 에 publish → apps-distribution(24) 트리거. flavor→env 정규화(stage→stg, product→prod)."
     docs_to_read: []
-    test_command: "./gradlew test"   # 가능하나 CI 미구성.
+    test_command: "./gradlew test"
     lint_command: null
     notes:
-      - "**CI 부재.** GitLab CI 신설 대상. JDK + Android SDK 35 도커 이미지 + Gradle 캐시가 핵심."
-      - "**서명 보안 이슈**: signingconfig.properties 평문 비밀번호. CI 에서 keystore base64 시크릿 + 비번 변수 주입으로 대체, 가능하면 키 로테이션 검토."
+      - "**✅ GitLab CI 가동 (BOM-104, 기본 브랜치 `prod` 에 `.gitlab-ci.yml`).** build:apk 한 잡이 dev/stage/product 3 flavor 일괄 빌드(`assembleDevRelease` 등) → trigger 가 env 3회 루프 트리거. 러너=Linux docker id1(amazoncorretto:17 + Android SDK35). ⚠️ 기본 브랜치는 `main` 아닌 `prod`."
+      - "**서명 보안 이슈**: signingconfig.properties 평문 비밀번호가 git 히스토리 잔존(`jhkstl35#`). CI는 시크릿 주입으로 전환했으나 히스토리 로테이션은 BOM-107 미완."
       - "**flavor↔env 정규화 주의**: dev/stage/product → 포털 dev/stg/prod. 파일명 `bomapp-<version>-<env>.apk` 생성 시 매핑 필수."
       - "**버전 소스**: app/build.gradle defaultConfig versionName(4.3.0). APK 산출 경로 `app/build/outputs/apk/<flavor>Release/`."
       - "**APK vs AAB**: 최근 커밋에 AAB 빌드 흔적. 포털 OTA 는 .apk 필요(AAB 는 Play 전용)."
@@ -558,14 +563,15 @@ services:
       - service: "apps-distribution"
         type: "async"
         interface: "package-registry + pipeline-trigger"
-        note: "CI 신설 후 .ipa 를 generic registry 에 publish → apps-distribution 트리거."
+        note: "✅ CI 가동(BOM-105). .ipa 를 generic registry(`planner/{ver}/planner-{ver}-{env}.ipa`)에 publish → apps-distribution(24) 트리거. env별 잡(build:dev/stg/prod → trigger:dev/stg/prod)."
     docs_to_read: []
     test_command: null
     lint_command: null
     notes:
-      - "**CI 부재.** macOS 러너 + Xcode 필수. SPM 이라 `xcodebuild -resolvePackageDependencies` 로 의존성 해결(CocoaPods 불필요)."
-      - "**코드사이닝**: 현재 automatic + app-store-connect(`manageAppVersionAndBuildNumber=true`). OTA(ad-hoc) 배포를 위해 환경별 ExportOptions(ad-hoc) + (fastlane match 도입 또는 수동 프로파일) 셋업 필요 — bomapp-ios 대비 추가 과제."
-      - "**버전 소스**: project.pbxproj MARKETING_VERSION(1.1.5). 포털 파일명 `planner-<version>-<env>.ipa` 로 매핑. history.yaml planner ios 1.x 대와 정합."
+      - "**✅ GitLab CI 가동 (BOM-105, main `.gitlab-ci.yml`).** build(env별)→trigger 2스테이지. SPM(`-resolvePackageDependencies`, pod 불필요). archive 미서명(`CODE_SIGNING_ALLOWED=NO`, scheme `planner-{env}`/config DEV·STG·PROD)+export 서명(ad-hoc, `fastlane/ExportOptions_{dev,stg,prod}.plist`). 러너=macOS id3(콘솔 GUI 세션 포그라운드 필수). keychain=`CI_JOB_ID` 단위 격리."
+      - "**특정 env 배포(예: dev 누락 보정)**: env별 잡이라 포털에 특정 env가 없으면 그 잡이 미실행된 것. `POST /projects/29/pipeline -F ref=main -F 'variables[][key]=ENV' -F 'variables[][value]=dev'`(web). ⚠️ref=main이면 build:prod도 함께 돎. **⚠️버전 함정**: VERSION은 빌드시점 MARKETING_VERSION(planner-prod scheme)에서 추출 → main tip=현재 버전만. 과거 버전(예 1.1.4) dev를 만들려면 그 값이 박힌 ref/커밋에서 파이프라인을 돌려야 함."
+      - "**코드사이닝**: CI는 manual + fastlane match(readonly, `--git_branch main`, cert=Apple Distribution). 개발자 로컬 기본값은 automatic+app-store-connect라 상이. match repo=`bomapp/ios-certificates`(planner 3식별자 포함)."
+      - "**버전 소스**: project.pbxproj MARKETING_VERSION(현 1.1.5). 포털 파일명 `planner-<version>-<env>.ipa` 로 매핑. history.yaml planner ios 1.x 대와 정합."
       - "**Apple Team**: R5RFEZ8DV2 (bomapp-ios 와 동일)."
 
   - name: "planner-aos"
@@ -587,13 +593,13 @@ services:
       - service: "apps-distribution"
         type: "async"
         interface: "package-registry + pipeline-trigger"
-        note: "CI 신설 후 release .apk 를 generic registry 에 publish → apps-distribution 트리거. flavor 가 이미 dev/stg/prod 라 정규화 단순."
+        note: "✅ CI 가동(BOM-104). release .apk 를 generic registry 에 publish → apps-distribution(24) 트리거. flavor 가 이미 dev/stg/prod 라 정규화 단순."
     docs_to_read: []
     test_command: "./gradlew test"
     lint_command: null
     notes:
-      - "**CI 부재.** GitLab CI 신설 대상. JDK + Android SDK 35 이미지 + Gradle 캐시."
-      - "**서명 보안 이슈**: signingconfig.properties 평문 비밀번호(`Wings0405!!`). CI 시크릿 주입으로 대체 + 평문 제거 필요. keystore 는 .p12(PKCS#12)."
+      - "**✅ GitLab CI 가동 (BOM-104, main `.gitlab-ci.yml`).** build:apk 한 잡이 dev/stg/prod 3 flavor 일괄 → trigger 가 env 3회 루프. 러너=Linux docker id1(amazoncorretto:17 + Android SDK35). (첫 전 구간 실검증 producer, 2026-06-08.)"
+      - "**서명 보안 이슈**: signingconfig.properties 평문 비밀번호(`Wings0405!!`)가 git 히스토리 잔존. CI는 시크릿 주입으로 전환. keystore=.p12(PKCS#12), keyAlias=planner_playstore_upload_key. 히스토리 로테이션+Play Console 동반은 BOM-107 미완."
       - "**flavor↔env**: dev/stg/prod 이미 포털 토큰과 일치 — bomapp-aos(stage/product) 대비 매핑 단순."
       - "**버전 소스**: app/build.gradle versionName(1.1.7). 산출물 기본명 `app-<flavor>-release.apk` → 포털 `planner-<version>-<env>.apk` 로 rename 필요. history.yaml planner aos 1.x 대와 정합."
       - "**APK vs AAB**: 최근 prod 산출은 AAB(Play). 포털 OTA 는 .apk 빌드 필요."
